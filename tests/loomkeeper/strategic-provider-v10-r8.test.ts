@@ -45,9 +45,9 @@ test('WP-027 adapter accepts one strict selection and records abstention without
     assert.equal(first.outcome, 'selected');
     assert.deepEqual(first.decision, selected);
     assert.equal(first.responseBytes, Buffer.byteLength(JSON.stringify(selected)));
-    assert.equal(requests[0].promptVersion, 'v10-r8-strategic-prompt-r2');
+    assert.equal(requests[0].promptVersion, 'v10-r8-strategic-prompt-r3');
     assert.equal(requests[0].brief, boundary.brief);
-    assert.equal(requests[0].deadlineMs, 5_960);
+    assert.equal(requests[0].deadlineMs, 7_960);
 
     const second = await adapter.request('wp027_adapter_match_02', boundary.brief, 0);
     assert.equal(second.outcome, 'abstained');
@@ -350,7 +350,7 @@ function validDecision(
     brief: StrategicDecisionBriefV10R8,
     strategy: Extract<StrategicDecisionV10R8, { candidateId: string }>['strategy'] = 'switch'
 ): Extract<StrategicDecisionV10R8, { candidateId: string }> {
-    const candidate = brief.legalCandidates.find(item => !item.deterministicFallback) ?? brief.legalCandidates[0];
+    const candidate = brief.legalCandidates[0];
     return Object.freeze({
         candidateId: candidate.candidateId,
         strategy,

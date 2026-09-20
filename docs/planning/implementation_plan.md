@@ -41,9 +41,24 @@ Phaser/Socket.IO stack.
   `v10-r8-strategic-prompt-r2`; the failed `r1` artifact remains immutable
   evidence and private `r1` replay is not promoted. Frozen thresholds and
   deterministic authority remain unchanged. Local focused and change-selected
-  verification passed with zero retries. The next gate is deployment followed by
-  one new zero-retry five-probe artifact. No live Gemini selection, public R8
-  promotion or reward-path change is authorized.
+  verification passed with zero retries. The corrected `r2` gate then ran once
+  on the deployed service and failed without retry: 4/5 valid, 1/5 useful, 5/5
+  on time, one provider fallback, zero authority violations, 5,999 ms p95 and
+  USD 0.013213 cost. Measurement and reliability now satisfy their frozen
+  thresholds, but strategic usefulness does not. Every valid response selected
+  first-listed `c01`, which is also exposed as the deterministic fallback; only
+  the destroyed-route repair was useful. Direct atlas review also found that
+  route consequences remain generic rather than strategy-relative, leaving the
+  model to infer the global effect from local metrics. Do not rerun the gate.
+  The bundled `r3`/brief-`r2` refinement now adds compact per-candidate ASCII and
+  structured after-state deltas, removes fallback identity from the model-facing
+  brief, and assigns IDs and presentation positions through separate
+  basis-derived deterministic orders. The fallback remains private server
+  authority. Because the corrected gate exhausted its six-second window at
+  5,999 ms, the owner authorized an eight-second whole-window deadline and p95
+  threshold. Local focused verification passes; one new deployed zero-retry
+  five-probe artifact is the next gate.
+  No live Gemini selection, public R8 promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.
@@ -354,7 +369,7 @@ Phaser/Socket.IO stack.
   candidate selection. The server prepares a compact objective/ASCII battlefield/
   current-strategy/recent-change brief and roughly 8–12 diverse simulated
   candidates describing immediate effects, future opportunities and risks.
-  Target latency is 3–6 seconds with a six-second whole-window deadline and
+  Target latency is 3–8 seconds with an eight-second whole-window deadline and
   permanent deterministic fallback. A current-atlas resolver alone constructs
   internal execution capabilities; strategic updates commit only after observed
   execution. Feedback retains milestone horizons, temporary costs, player

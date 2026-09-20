@@ -79,6 +79,7 @@ const MAX_ATLAS_CANDIDATES = 12;
 const MAX_ROLLOUT_TICKS = 1_050;
 const PLANNING_TICKS = 30;
 const MAX_OPERATIONS_PER_TICK = 8;
+const MAX_ASCII_DELTA_BYTES = 512;
 
 export const V10_R8_CANDIDATE_CAPS = Object.freeze({
     sourcePlans: 180,
@@ -90,7 +91,7 @@ export const V10_R8_CANDIDATE_CAPS = Object.freeze({
     operationsPerTick: MAX_OPERATIONS_PER_TICK,
     battlefieldWidth: BRIEF_WIDTH,
     battlefieldHeight: BRIEF_HEIGHT,
-    briefBytes: 16_384,
+    briefBytes: 24_576,
     responseBytes: 1_024
 });
 
@@ -114,9 +115,28 @@ export type StrategicCandidateFamilyV10R8 =
     | 'survival'
     | 'combat';
 
+type StrategicWorldActorV10R8 = Readonly<{
+    id: SimulationActor;
+    x: number;
+    y: number;
+    stitching: number;
+    alive: boolean;
+    grounded: boolean;
+    support: string;
+}>;
+
+type StrategicWorldObjectV10R8 = Readonly<{
+    id: string;
+    kind: V10R8ObjectiveObject['kind'];
+    owner: SimulationActor | null;
+    x: number;
+    y: number;
+    status: V10R8ObjectiveObject['status'];
+    support: string;
+}>;
+
 export type StrategicCandidateSummaryV10R8 = Readonly<{
     candidateId: string;
-    deterministicFallback: boolean;
     families: readonly StrategicCandidateFamilyV10R8[];
     action: Readonly<{
         movement: 'stay' | 'toward' | 'away';
@@ -142,6 +162,20 @@ export type StrategicCandidateSummaryV10R8 = Readonly<{
     opportunities: readonly string[];
     risks: readonly string[];
     uncertainty: readonly string[];
+    worldDelta: Readonly<{
+        asciiRuns: readonly string[];
+        asciiTruncated: boolean;
+        actorsAfter: readonly StrategicWorldActorV10R8[];
+        objectsAfter: readonly StrategicWorldObjectV10R8[];
+        committedTargetAfter: Readonly<{
+            id: string;
+            status: string;
+            x: number;
+            y: number;
+            support: string;
+            distanceFromLoomkeeper: number;
+        }> | null;
+    }>;
 }>;
 
 export type StrategicDecisionBriefV10R8 = Readonly<{
@@ -165,24 +199,8 @@ export type StrategicDecisionBriefV10R8 = Readonly<{
         height: typeof BRIEF_HEIGHT;
         ascii: string;
         legend: Readonly<Record<string, string>>;
-        actors: readonly Readonly<{
-            id: SimulationActor;
-            x: number;
-            y: number;
-            stitching: number;
-            alive: boolean;
-            grounded: boolean;
-            support: string;
-        }>[];
-        objects: readonly Readonly<{
-            id: string;
-            kind: V10R8ObjectiveObject['kind'];
-            owner: SimulationActor | null;
-            x: number;
-            y: number;
-            status: V10R8ObjectiveObject['status'];
-            support: string;
-        }>[];
+        actors: readonly StrategicWorldActorV10R8[];
+        objects: readonly StrategicWorldObjectV10R8[];
         relationships: readonly string[];
     }>;
     currentStrategy: CommittedStrategicVoyageV10R8;
@@ -190,16 +208,14 @@ export type StrategicDecisionBriefV10R8 = Readonly<{
     legalCandidates: readonly StrategicCandidateSummaryV10R8[];
 }>;
 
-type CandidateSummaryCoreV10R8 = Omit<
-    StrategicCandidateSummaryV10R8,
-    'candidateId' | 'deterministicFallback'
->;
+type CandidateSummaryCoreV10R8 = Omit<StrategicCandidateSummaryV10R8, 'candidateId'>;
 
 type SimulatedCandidate = Readonly<{
     candidate: LoomkeeperCandidateV9;
     prefix: V9Prefix;
     completed: CandidateOutcomeV10R8;
-    summary: Omit<StrategicCandidateSummaryV10R8, 'candidateId'>;
+    deterministicFallback: boolean;
+    summary: CandidateSummaryCoreV10R8;
 }>;
 
 type CandidateObjectiveProjectionV10R8 = {
@@ -255,11 +271,28 @@ export type ResolvedCandidateV10R8 = Readonly<{
 export class StrategicDecisionBoundaryV10R8 {
     readonly brief: StrategicDecisionBriefV10R8;
     readonly #candidates: ReadonlyMap<string, SimulatedCandidate>;
+    readonly #deterministicFallbackCandidateId: string;
 
-    constructor(token: symbol, brief: StrategicDecisionBriefV10R8, candidates: ReadonlyMap<string, SimulatedCandidate>) {
+    constructor(
+        token: symbol,
+        brief: StrategicDecisionBriefV10R8,
+        candidates: ReadonlyMap<string, SimulatedCandidate>,
+        deterministicFallbackCandidateId: string
+    ) {
         if (token !== boundaryToken) throw new Error('Strategic decision boundaries are server-owned.');
+        if (!candidates.has(deterministicFallbackCandidateId)) {
+            throw new Error('Strategic boundary deterministic fallback is missing from its private atlas.');
+        }
         this.brief = brief;
         this.#candidates = candidates;
+        this.#deterministicFallbackCandidateId = deterministicFallbackCandidateId;
+    }
+
+    deterministicFallbackCandidate(): StrategicCandidateSummaryV10R8 {
+        const candidate = this.brief.legalCandidates.find(item =>
+            item.candidateId === this.#deterministicFallbackCandidateId);
+        if (!candidate) throw new Error('Strategic boundary deterministic fallback is unavailable.');
+        return candidate;
     }
 
     resolve(candidateId: string): CandidateCapabilityV10R8 {
@@ -321,13 +354,17 @@ export function buildStrategicDecisionBoundaryV10R8(
         input.challengeId, state, currentStrategy, recentChanges, deterministicFallback
     );
     const stateHash = hashSimulationStateV10R8(state);
-    const simulations = buildCandidateAtlas(state, deterministicFallback);
+    const simulations = buildCandidateAtlas(state, deterministicFallback, currentStrategy);
     const candidates = new Map<string, SimulatedCandidate>();
-    const legalCandidates = simulations.map((simulation, index) => {
+    const identified = orderCandidates(simulations, basisId, 'identity').map((simulation, index) => {
         const candidateId = `c${String(index + 1).padStart(2, '0')}`;
         candidates.set(candidateId, simulation);
-        return Object.freeze({ candidateId, ...simulation.summary });
+        return Object.freeze({ candidateId, simulation });
     });
+    const legalCandidates = orderIdentifiedCandidates(identified, basisId).map(({ candidateId, simulation }) =>
+        Object.freeze({ candidateId, ...simulation.summary }));
+    const deterministicFallbackCandidateId = identified.find(item => item.simulation.deterministicFallback)?.candidateId;
+    if (!deterministicFallbackCandidateId) throw new Error('Strategic atlas lost its deterministic fallback.');
     const own = unit(state, 'loomkeeper');
     const brief: StrategicDecisionBriefV10R8 = Object.freeze({
         revision: V10_R8_BRIEF_REVISION,
@@ -357,7 +394,12 @@ export function buildStrategicDecisionBoundaryV10R8(
     if (Buffer.byteLength(JSON.stringify(brief), 'utf8') > V10_R8_CANDIDATE_CAPS.briefBytes) {
         throw new Error('Strategic decision brief exceeds its byte cap.');
     }
-    return new StrategicDecisionBoundaryV10R8(boundaryToken, brief, candidates);
+    return new StrategicDecisionBoundaryV10R8(
+        boundaryToken,
+        brief,
+        candidates,
+        deterministicFallbackCandidateId
+    );
 }
 
 export function strategicBasisIdV10R8(input: BuildStrategicDecisionBoundaryV10R8): string {
@@ -403,14 +445,28 @@ function strategicBasisIdFromValidatedInput(
 
 function buildCandidateAtlas(
     source: SimulationStateV10R8,
-    deterministicFallback: ResolvedCandidateV10R8
+    deterministicFallback: ResolvedCandidateV10R8,
+    currentStrategy: CommittedStrategicVoyageV10R8
 ): readonly SimulatedCandidate[] {
-    const fallback = simulateCandidate(source, deterministicFallback.candidate, true);
+    const beforeSurface = projectWorldSurfaceV10R8(source);
+    const fallback = simulateCandidate(
+        source,
+        deterministicFallback.candidate,
+        true,
+        currentStrategy,
+        beforeSurface
+    );
     if (!fallback) throw new Error('The deterministic fallback is not a legal complete-turn candidate.');
     const proposalOrdinals = proposedOrdinals();
     const simulated = proposalOrdinals
         .filter(ordinal => ordinal !== deterministicFallback.candidate.ordinal)
-        .map(ordinal => simulateCandidate(source, v10gCandidateAt(ordinal), false))
+        .map(ordinal => simulateCandidate(
+            source,
+            v10gCandidateAt(ordinal),
+            false,
+            currentStrategy,
+            beforeSurface
+        ))
         .filter((candidate): candidate is SimulatedCandidate => candidate !== undefined);
     const distinct = deduplicateSimulations([fallback, ...simulated]);
     const selected: SimulatedCandidate[] = [fallback];
@@ -426,6 +482,40 @@ function buildCandidateAtlas(
         throw new Error('Strategic atlas selection lost legal candidate diversity.');
     }
     return Object.freeze(selected);
+}
+
+function orderCandidates(
+    candidates: readonly SimulatedCandidate[],
+    basisId: string,
+    purpose: 'identity' | 'presentation'
+): SimulatedCandidate[] {
+    return [...candidates].sort((left, right) =>
+        candidateOrderKey(basisId, purpose, left).localeCompare(candidateOrderKey(basisId, purpose, right)) ||
+        left.candidate.ordinal - right.candidate.ordinal);
+}
+
+function orderIdentifiedCandidates(
+    candidates: readonly Readonly<{ candidateId: string; simulation: SimulatedCandidate }>[],
+    basisId: string
+): ReadonlyArray<Readonly<{ candidateId: string; simulation: SimulatedCandidate }>> {
+    return [...candidates].sort((left, right) =>
+        candidateOrderKey(basisId, 'presentation', left.simulation)
+            .localeCompare(candidateOrderKey(basisId, 'presentation', right.simulation)) ||
+        left.candidateId.localeCompare(right.candidateId));
+}
+
+function candidateOrderKey(
+    basisId: string,
+    purpose: 'identity' | 'presentation',
+    candidate: SimulatedCandidate
+): string {
+    return hashCanonicalV10Value({
+        basisId,
+        purpose,
+        ordinal: candidate.candidate.ordinal,
+        prefix: candidate.prefix,
+        action: candidate.summary.action
+    });
 }
 
 function proposedOrdinals(): readonly number[] {
@@ -456,7 +546,9 @@ function validateFallback(
 function simulateCandidate(
     source: SimulationStateV10R8,
     candidate: LoomkeeperCandidateV9,
-    deterministicFallback: boolean
+    deterministicFallback: boolean,
+    currentStrategy: CommittedStrategicVoyageV10R8,
+    beforeSurface: StrategicDecisionBriefV10R8['battlefield']
 ): SimulatedCandidate | undefined {
     const mechanics = mechanicsForV10(V10_R7_RULESET_ID);
     const dynamics = dynamicsForV10(V10_R7_RULESET_ID);
@@ -520,7 +612,8 @@ function simulateCandidate(
         candidate: Object.freeze({ ...candidate }),
         prefix,
         completed,
-        summary: Object.freeze({ deterministicFallback, ...summarizeCandidate(source, completed, candidate, prefix) })
+        deterministicFallback,
+        summary: summarizeCandidate(source, completed, candidate, prefix, currentStrategy, beforeSurface)
     });
 }
 
@@ -528,7 +621,9 @@ function summarizeCandidate(
     source: SimulationStateV10R8,
     completed: CandidateOutcomeV10R8,
     candidate: LoomkeeperCandidateV9,
-    prefix: V9Prefix
+    prefix: V9Prefix,
+    currentStrategy: CommittedStrategicVoyageV10R8,
+    beforeSurface: StrategicDecisionBriefV10R8['battlefield']
 ): CandidateSummaryCoreV10R8 {
     const ownBefore = unit(source, 'loomkeeper');
     const ownAfter = unit(completed.combat, 'loomkeeper');
@@ -588,7 +683,8 @@ function summarizeCandidate(
         risks: Object.freeze(risks),
         uncertainty: Object.freeze([
             'Later objective access depends on the player response and future terrain state.'
-        ])
+        ]),
+        worldDelta: summarizeWorldDelta(source, completed, currentStrategy, beforeSurface)
     });
 }
 
@@ -607,6 +703,97 @@ function candidateFamilies(
     if (terrainCellsRemoved > 0 || candidate.relicId === 'spoolburst') families.push('terrain');
     if (candidate.direction === 'away' || candidate.jump) families.push('survival');
     return families;
+}
+
+function summarizeWorldDelta(
+    source: SimulationStateV10R8,
+    completed: CandidateOutcomeV10R8,
+    currentStrategy: CommittedStrategicVoyageV10R8,
+    before: StrategicDecisionBriefV10R8['battlefield']
+): StrategicCandidateSummaryV10R8['worldDelta'] {
+    const after = projectWorldSurfacePartsV10R8({
+        terrain: completed.combat.terrain,
+        units: completed.combat.units,
+        objective: completed.objective.state
+    });
+    const delta = asciiDeltaRuns(before.ascii, after.ascii);
+    const actorsAfter = after.actors.filter(actor => {
+        const previous = before.actors.find(item => item.id === actor.id);
+        return JSON.stringify(previous) !== JSON.stringify(actor);
+    });
+    const objectsAfter = after.objects.filter(object => {
+        const previous = before.objects.find(item => item.id === object.id);
+        return JSON.stringify(previous) !== JSON.stringify(object);
+    });
+    return Object.freeze({
+        asciiRuns: delta.runs,
+        asciiTruncated: delta.truncated,
+        actorsAfter: Object.freeze(actorsAfter),
+        objectsAfter: Object.freeze(objectsAfter),
+        committedTargetAfter: committedTargetAfter(currentStrategy.targetId, after)
+    });
+}
+
+function asciiDeltaRuns(beforeAscii: string, afterAscii: string): Readonly<{
+    runs: readonly string[];
+    truncated: boolean;
+}> {
+    const beforeRows = beforeAscii.split('\n');
+    const afterRows = afterAscii.split('\n');
+    const candidates: Array<Readonly<{ y: number; changed: number; encoded: string }>> = [];
+    for (let y = 0; y < beforeRows.length; y += 1) {
+        const before = beforeRows[y];
+        const after = afterRows[y];
+        let first = -1;
+        let last = -1;
+        let changed = 0;
+        for (let x = 0; x < before.length; x += 1) {
+            if (before[x] === after[x]) continue;
+            if (first < 0) first = x;
+            last = x;
+            changed += 1;
+        }
+        if (first < 0) continue;
+        candidates.push(Object.freeze({
+            y,
+            changed,
+            encoded: `${y}:${first}-${last}:${before.slice(first, last + 1)}>${after.slice(first, last + 1)}`
+        }));
+    }
+    const selected: Array<Readonly<{ y: number; encoded: string }>> = [];
+    let bytes = 0;
+    for (const candidate of [...candidates].sort((left, right) =>
+        right.changed - left.changed || left.y - right.y)) {
+        const candidateBytes = Buffer.byteLength(candidate.encoded, 'utf8');
+        if (bytes + candidateBytes > MAX_ASCII_DELTA_BYTES) continue;
+        selected.push(candidate);
+        bytes += candidateBytes;
+    }
+    selected.sort((left, right) => left.y - right.y);
+    return Object.freeze({
+        runs: Object.freeze(selected.map(candidate => candidate.encoded)),
+        truncated: selected.length !== candidates.length
+    });
+}
+
+function committedTargetAfter(
+    targetId: string | null,
+    after: StrategicDecisionBriefV10R8['battlefield']
+): StrategicCandidateSummaryV10R8['worldDelta']['committedTargetAfter'] {
+    if (!targetId) return null;
+    const loomkeeper = after.actors.find(actor => actor.id === 'loomkeeper');
+    const actor = after.actors.find(candidate => candidate.id === targetId);
+    const object = after.objects.find(candidate => candidate.id === targetId);
+    const target = actor ?? object;
+    if (!target || !loomkeeper) return null;
+    return Object.freeze({
+        id: target.id,
+        status: 'alive' in target ? target.alive ? 'active' : 'defeated' : target.status,
+        x: target.x,
+        y: target.y,
+        support: target.support,
+        distanceFromLoomkeeper: Math.abs(target.x - loomkeeper.x) + Math.abs(target.y - loomkeeper.y)
+    });
 }
 
 function deduplicateSimulations(simulations: readonly SimulatedCandidate[]): SimulatedCandidate[] {
@@ -748,6 +935,12 @@ export function projectWorldSurfaceV10R8(
     state: SimulationStateV10R8
 ): StrategicDecisionBriefV10R8['battlefield'] {
     assertSimulationInvariantsV10R8(state);
+    return projectWorldSurfacePartsV10R8(state);
+}
+
+function projectWorldSurfacePartsV10R8(
+    state: Pick<SimulationStateV10R8, 'terrain' | 'units' | 'objective'>
+): StrategicDecisionBriefV10R8['battlefield'] {
     const rows: string[][] = Array.from({ length: BRIEF_HEIGHT }, (_, briefY) =>
         Array.from({ length: BRIEF_WIDTH }, (_, briefX) => {
             let solids = 0;
@@ -825,7 +1018,11 @@ function winningCondition(state: SimulationStateV10R8): string {
     return 'Prevent the player from capturing the Loomkeeper chest.';
 }
 
-function targetFor(state: SimulationStateV10R8, xFp: number, yFp: number): V10R8ObjectiveObject | undefined {
+function targetFor(
+    state: Pick<SimulationStateV10R8, 'objective'>,
+    xFp: number,
+    yFp: number
+): V10R8ObjectiveObject | undefined {
     const active = state.objective.objects.filter(object => object.status === 'active');
     if (state.objective.objectiveMode !== 'collect') return active[0];
     return [...active].sort((left, right) =>

@@ -13,7 +13,7 @@ import {
     type StrategicTurnRecordV10R8
 } from '../../../shared/strategic-voyage-v10-r8';
 
-export const V10_R8_STRATEGIC_DEADLINE_MS = 6_000;
+export const V10_R8_STRATEGIC_DEADLINE_MS = 8_000;
 
 export type StrategicDecisionProviderRequestV10R8 = Readonly<{
     promptVersion: typeof V10_R8_PROMPT_VERSION;

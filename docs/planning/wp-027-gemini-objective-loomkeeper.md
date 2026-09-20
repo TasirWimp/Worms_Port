@@ -1,6 +1,6 @@
 # WP-027 Strategic-Voyage Gemini Loomkeeper
 
-Status: **in progress; Waypoint 1 deterministic boundary implemented**
+Status: **in progress; Waypoint 3 r3 boundary refinement implemented locally**
 Required predecessor: completed WP-026 R8 objective-mode canary
 
 ## Product outcome
@@ -14,7 +14,7 @@ Claim through one bounded Gemini decision per turn. The practical question is:
 The server prepares legal complete-turn candidates. Gemini sees those concrete
 possibilities together with the battlefield, current strategy and recent
 changes, then selects a candidate and proposes strategic continuation in one
-response. Target decision latency is 3–6 seconds, with a six-second whole-window
+response. Target decision latency is 3–8 seconds, with an eight-second whole-window
 deadline and permanent deterministic R8 fallback. Faster valid answers execute
 immediately; there is no artificial minimum wait.
 
@@ -204,10 +204,10 @@ never authorizes a payout.
 The provisional budget is:
 
 - one request per Loomkeeper turn, with no in-turn retry;
-- approximately 2,000–3,000 input tokens, including the map and candidate atlas;
+- approximately 3,500–5,500 input tokens, including the map, candidate atlas and deltas;
 - approximately 150–250 visible output tokens;
-- target 3–6 seconds from decision-window start to validated selection; and
-- a six-second whole-window deadline covering preparation, provider latency,
+- target 3–8 seconds from decision-window start to validated selection; and
+- an eight-second whole-window deadline covering preparation, provider latency,
   reasoning and validation. Valid faster responses execute immediately.
 
 The token ranges and candidate count are profiling targets, not measured
@@ -223,9 +223,9 @@ other matches. A trusted failure that prevents even valid fallback is a server
 fault, not a successful model-failure recovery.
 
 Measure preparation, provider and validation times separately, plus total
-p50/p95 latency, useful valid-answer rate before six seconds, timeout/fallback
+p50/p95 latency, useful valid-answer rate before eight seconds, timeout/fallback
 frequency and cost. Deployed shadow must establish the achievable latency;
-never claim the target from local fakes alone. Changing the six-second limit
+never claim the target from local fakes alone. Changing the eight-second limit
 requires an explicit contract change and phone review.
 
 Pin an exact stable model and prompt version; do not use floating, preview or
@@ -348,7 +348,7 @@ execution cannot hide an incurred call or make the proposal claim an observed
 result. Prompt prose,
 wallet/session identity, raw errors and credentials never enter operational
 logs. Replay reconstructs the retained shadow proposal without calling Gemini.
-The one-call adapter keeps the six-second total deadline, two-request deployment
+The one-call adapter keeps the eight-second total deadline, two-request deployment
 concurrency, 250-request process budget, cancellation, no retry and a
 three-failure/60-second circuit breaker. Google documents the pinned model as
 [stable](https://ai.google.dev/gemini-api/docs/models/gemini-3.6-flash), the
@@ -442,6 +442,59 @@ Because the system instruction changed, the exact prompt identity advances to
 Focused and change-selected verification passed once with zero retries. No
 provider call is authorized until this refinement is deployed.
 
+Corrected deployed gate result, 2026-09-19: exact prompt `r2` ran once with
+zero retries and preserved deterministic authority. The captured
+[sanitized result](../evidence/wp-027-shadow-gate-gemini-3.6-v2/result.json)
+records 4/5 valid responses, 1/5 useful choices, 5/5 on-time results, one
+provider fallback, zero authority violations, 5,999 ms p95 and USD 0.013213
+estimated cost. Validity, on-time count, fallback count, authority, p95 and cost
+meet the frozen thresholds; usefulness does not meet its required 4/5.
+
+The temporary-cost call used 3,461 ms for preparation and exhausted the
+remaining provider window at 5,999 ms. The continuation response switched from
+the still-feasible committed `coin-1` route to immediate `coin-3` scoring. The
+destroyed-route response correctly repaired. The future-option response claimed
+to preserve the route while choosing a higher-destruction action, and the
+information-gap response ignored the stated missing support fact. All four
+valid responses selected `c01`, which is both first in the candidate list and
+explicitly marked as the deterministic fallback.
+
+Treat this as a boundary-design finding rather than evidence to strengthen the
+prompt or change models immediately. The operational fallback designation is
+server authority metadata, but its model-facing position and label confound the
+strategy test. The candidate atlas also reports generic terrain opportunities
+and risks instead of an evidenced strategy-relative consequence such as route
+preserved, route closed or unknown because support evidence is missing. Review
+those two inputs and the one-millisecond p95 margin before authorizing another
+five-call artifact. Do not rerun the unchanged gate; live Gemini remains blocked.
+
+Candidate-delta and neutral-presentation refinement, 2026-09-20: the owner
+authorized bundling the two boundary corrections and widening the previous
+six-second ceiling to eight seconds. Exact prompt identity advances to
+`v10-r8-strategic-prompt-r3` and brief revision to
+`v10-r8-strategic-brief-r2`; private older-policy R8 matches are not migrated.
+The current 64x36 battlefield remains the shared before-state. Every legal
+candidate now adds a bounded `worldDelta` with compact changed-row spans encoded
+as `y:xStart-xEnd:before>after`, structured actor/object after-facts and the
+committed target's resulting status, support, position and Loomkeeper distance.
+The server reports only simulated facts; it does not invent a route-preserved or
+route-closed label when reachability has not been computed. Each candidate's
+ASCII delta is capped at 512 bytes with an explicit truncation flag, and the
+whole brief is capped at 24,576 bytes.
+
+The model-facing candidate no longer contains `deterministicFallback`. Candidate
+ID assignment and presentation order use separate basis-derived deterministic
+orders, so neither a stable identifier nor first position reveals fallback
+identity. The server boundary alone retains the fallback candidate ID and still
+mints the same current-basis one-use capability. Shadow authority, no retry,
+concurrency, request budget, circuit breaker and strict response validation are
+unchanged. The eight-second deadline and p95 threshold are the only timing-policy
+changes. Local diagnostics across the five probes produced 16.2-18.7 KB briefs,
+1-7 ASCII delta rows per candidate with no truncation, varied first/fallback IDs
+and roughly 1.1-1.3 seconds of preparation on the development host. A new real
+five-probe artifact is required before Phone Gate A; no provider call occurs in
+local verification.
+
 ### Phone Gate A - live Gemini Practice
 
 Enable live Gemini only in the R8 Practice canary. Across Defend, Collect and
@@ -451,7 +504,7 @@ Claim, verify:
 2. preparation and continuation through a reasonable temporary cost;
 3. repair/switch after a player action invalidates a necessary route;
 4. legal world-shaping actions with visible consequences matching simulation;
-5. decision waits within the six-second bound, with smooth controls/presentation;
+5. decision waits within the eight-second bound, with smooth controls/presentation;
 6. close/reopen preserves the same match, selected action and committed strategy;
 7. controlled provider failure falls back and finishes the match; and
 8. operational recovery permits Gemini to resume without requiring fallback to

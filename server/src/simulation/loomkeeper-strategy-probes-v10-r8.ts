@@ -29,7 +29,7 @@ export const WP027_PROBE_THRESHOLDS = Object.freeze({
     minimumOnTime: 4,
     maximumProviderFallbacks: 1,
     maximumAuthorityViolations: 0,
-    maximumP95Ms: 6_000,
+    maximumP95Ms: 8_000,
     maximumCostUsdMicros: 50_000
 });
 
@@ -332,9 +332,7 @@ function temporaryCost(candidate: StrategicCandidateSummaryV10R8): boolean {
 }
 
 function deterministicFallback(fixture: Wp027ProbeFixture): StrategicCandidateSummaryV10R8 {
-    const fallback = fixture.boundary.brief.legalCandidates.find(candidate => candidate.deterministicFallback);
-    if (!fallback) throw new Error('Probe fixture is missing its deterministic fallback.');
-    return fallback;
+    return fixture.boundary.deterministicFallbackCandidate();
 }
 
 function percentile(values: readonly number[], fraction: number): number {

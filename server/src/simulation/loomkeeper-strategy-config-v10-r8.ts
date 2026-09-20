@@ -39,7 +39,7 @@ export function loomkeeperStrategyRuntimeFromEnvironmentV10R8(
         strategicAdapter: new StrategicDecisionAdapterV10R8(
             new GeminiStrategicDecisionProviderV10R8(providerMode, apiKey, fetchImpl),
             {
-                deadlineMs: 6_000,
+                deadlineMs: 8_000,
                 maxConcurrentRequests: 2,
                 maxRequests: 250,
                 failureThreshold: 3,

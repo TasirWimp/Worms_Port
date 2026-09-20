@@ -35,8 +35,7 @@ export function authorizeStrategicTurnV10R8(input: Readonly<{
         input.currentStrategy ?? EMPTY_COMMITTED_VOYAGE_V10_R8
     );
     const providerResult = input.providerResult;
-    const fallback = input.boundary.brief.legalCandidates.find(candidate => candidate.deterministicFallback);
-    if (!fallback) throw new Error('Strategic boundary has no deterministic fallback.');
+    const fallback = input.boundary.deterministicFallbackCandidate();
 
     let selected = fallback;
     let providerDecision: StrategicDecisionV10R8 | null = providerResult?.decision ?? null;

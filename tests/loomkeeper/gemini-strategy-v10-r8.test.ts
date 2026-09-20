@@ -57,10 +57,10 @@ test('WP-027 Gemini transport sends one bounded structured request and records u
             }), { status: 200, headers: { 'content-type': 'application/json' } });
         });
     const response = await provider.decide({
-        promptVersion: 'v10-r8-strategic-prompt-r2',
+        promptVersion: 'v10-r8-strategic-prompt-r3',
         brief: fixture.boundary.brief,
         signal: new AbortController().signal,
-        deadlineMs: 6_000
+        deadlineMs: 8_000
     });
 
     assert.equal(provider.modelId, WP027_GEMINI_MODEL_ID);
@@ -74,6 +74,13 @@ test('WP-027 Gemini transport sends one bounded structured request and records u
     assert.equal(body.generationConfig.thinkingConfig.thinkingLevel, 'low');
     assert.equal(body.generationConfig.responseMimeType, 'application/json');
     assert.match(body.systemInstruction.parts[0].text, /no longer than 160 characters/);
+    assert.match(body.systemInstruction.parts[0].text, /identifiers and list positions carry no preference/);
+    assert.match(body.systemInstruction.parts[0].text, /y:xStart-xEnd:before>after/);
+    const providerInput = JSON.parse(body.contents[0].parts[0].text);
+    assert.equal(providerInput.brief.legalCandidates.some((candidate: Record<string, unknown>) =>
+        'deterministicFallback' in candidate), false);
+    assert.ok(providerInput.brief.legalCandidates.every((candidate: Record<string, unknown>) =>
+        typeof candidate.worldDelta === 'object'));
     assert.match(body.generationConfig.responseJsonSchema.anyOf[0].properties.reason.description, /1 to 160/);
     assert.match(body.generationConfig.responseJsonSchema.anyOf[0].properties.watchFor.description, /1 to 160/);
     assert.match(body.generationConfig.responseJsonSchema.anyOf[1].properties.reason.description, /1 to 160/);
@@ -92,10 +99,10 @@ test('WP-027 Gemini transport sends one bounded structured request and records u
 test('WP-027 Gemini transport exposes only bounded operational failure categories', async () => {
     const brief = createWp027ProbeFixturesV10R8()[0].boundary.brief;
     const request = {
-        promptVersion: 'v10-r8-strategic-prompt-r2' as const,
+        promptVersion: 'v10-r8-strategic-prompt-r3' as const,
         brief,
         signal: new AbortController().signal,
-        deadlineMs: 6_000
+        deadlineMs: 8_000
     };
     const cases = [
         [429, 'provider_http_rate_limited'],
@@ -169,6 +176,10 @@ test('WP-027 fixed probes enforce shadow authority and prospective release thres
     const temporaryCost = fixtures.find(fixture => fixture.id === 'temporary-cost-preparation')!;
     assert.match(temporaryCost.currentStrategy.acceptedTemporaryCost ?? '', /only future route/);
     assert.match(temporaryCost.recentChanges.observedResult ?? '', /temporary distance loss/);
+    assert.ok(temporaryCost.boundary.brief.legalCandidates.every(candidate =>
+        candidate.worldDelta.committedTargetAfter?.id === temporaryCost.currentStrategy.targetId));
+    assert.ok(temporaryCost.boundary.brief.legalCandidates.some(candidate =>
+        candidate.worldDelta.asciiRuns.length > 0 && candidate.worldDelta.actorsAfter.length > 0));
     const rebuiltTemporaryCost = prepareWp027ProbeFixtureV10R8(
         createWp027ProbeScenarioV10R8('temporary-cost-preparation'));
     assert.equal(rebuiltTemporaryCost.boundary.evidence().briefHash,
@@ -287,8 +298,7 @@ test('WP-027 shadow replay retains the unexecuted proposal and reconstructs prov
     let calls = 0;
     const adapter = new StrategicDecisionAdapterV10R8(shadowProvider(request => {
         calls += 1;
-        const candidate = request.brief.legalCandidates.find(item => !item.deterministicFallback) ??
-            request.brief.legalCandidates[0];
+        const candidate = request.brief.legalCandidates[0];
         return {
             candidateId: candidate.candidateId,
             strategy: 'switch',

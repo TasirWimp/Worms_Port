@@ -28,7 +28,7 @@ import {
 } from '../../shared/simulation-v10-r8';
 import { setTerrainSolid, terrainSolid } from '../../shared/simulation';
 
-test('WP-027 prepares one deterministic decision boundary inside its six-second ceiling', context => {
+test('WP-027 prepares one deterministic decision boundary inside its eight-second ceiling', context => {
     const state = loomkeeperState('collect');
     const started = performance.now();
     const fixture = createFixture(state);
@@ -42,7 +42,7 @@ test('WP-027 prepares one deterministic decision boundary inside its six-second 
     const elapsed = boundaryReady - started;
     context.diagnostic(`fallback=${Math.round(fallbackMs)}ms atlas=${Math.round(boundaryMs)}ms total=${Math.round(elapsed)}ms`);
     assert.ok(boundary.brief.legalCandidates.length >= V10_R8_CANDIDATE_CAPS.atlasMinimum);
-    assert.ok(elapsed < 6_000,
+    assert.ok(elapsed < 8_000,
         `decision preparation took ${Math.round(elapsed)}ms (fallback ${Math.round(fallbackMs)}ms, atlas ${Math.round(boundaryMs)}ms)`);
 });
 
@@ -72,7 +72,7 @@ test('WP-027 brief is compact, deterministic and objective-aware across R8 modes
         assert.ok(Object.values(left.evidence()).every(value => /^[a-f0-9]{64}$/.test(value)));
         assert.ok(left.brief.legalCandidates.length >= V10_R8_CANDIDATE_CAPS.atlasMinimum);
         assert.ok(left.brief.legalCandidates.length <= V10_R8_CANDIDATE_CAPS.atlasMaximum);
-        assert.deepEqual(left.brief.legalCandidates.map(candidate => candidate.candidateId),
+        assert.deepEqual([...left.brief.legalCandidates.map(candidate => candidate.candidateId)].sort(),
             left.brief.legalCandidates.map((_, index) => `c${String(index + 1).padStart(2, '0')}`));
         const families = new Set(left.brief.legalCandidates.flatMap(candidate => candidate.families));
         for (const family of ['objective_progress', 'defence', 'terrain', 'survival', 'combat']) {
@@ -80,7 +80,10 @@ test('WP-027 brief is compact, deterministic and objective-aware across R8 modes
         }
         assert.ok(left.brief.legalCandidates.every(candidate =>
             candidate.uncertainty.length > 0 && candidate.opportunities.length > 0 && candidate.risks.length > 0));
-        assert.equal(left.brief.legalCandidates.filter(candidate => candidate.deterministicFallback).length, 1);
+        assert.ok(left.brief.legalCandidates.every(candidate =>
+            !('deterministicFallback' in candidate) && candidate.worldDelta.asciiRuns.length > 0));
+        assert.ok(left.brief.legalCandidates.some(candidate => candidate.worldDelta.actorsAfter.length > 0));
+        assert.ok(left.brief.legalCandidates.includes(left.deterministicFallbackCandidate()));
         basisIds.add(left.brief.basisId);
     }
     assert.equal(basisIds.size, 3);
@@ -105,6 +108,25 @@ test('WP-027 capability resolution rejects unknown, forged, cross-basis and repe
     const resolved = rebuilt.consume(collectCapability);
     assert.ok(resolved.candidate.ordinal >= 0 && resolved.candidate.ordinal < V10_R8_CANDIDATE_CAPS.sourcePlans);
     assert.throws(() => collect.consume(collectCapability), /already consumed/);
+});
+
+test('WP-027 keeps fallback identity private and neutralizes candidate identity and position', () => {
+    const fixture = loomkeeperFixture('collect');
+    const fallbackIds = new Set<string>();
+    const firstIds = new Set<string>();
+    for (let index = 1; index <= 4; index += 1) {
+        const boundary = buildStrategicDecisionBoundaryV10R8({
+            challengeId: `wp027_bias_probe_${String(index).padStart(2, '0')}`,
+            state: fixture.state,
+            deterministicFallback: fixture.fallback
+        });
+        fallbackIds.add(boundary.deterministicFallbackCandidate().candidateId);
+        firstIds.add(boundary.brief.legalCandidates[0].candidateId);
+        assert.equal(boundary.brief.legalCandidates.some(candidate =>
+            'deterministicFallback' in candidate), false);
+    }
+    assert.ok(fallbackIds.size > 1, 'private fallback identity must vary with the decision basis');
+    assert.ok(firstIds.size > 1, 'first-listed candidate identity must vary with the decision basis');
 });
 
 test('WP-027 response schema freezes selected and abstention variants', () => {
@@ -286,6 +308,23 @@ test('WP-027 detached candidate consequences match one authoritative R8 complete
         terminalWinner: state.winner
     });
     assert.equal(projected.action.shotFired, fired);
+    const beforeSurface = projectWorldSurfaceV10R8(fixture.state);
+    const afterSurface = projectWorldSurfaceV10R8(state);
+    assert.ok(projected.worldDelta.asciiRuns.length > 0);
+    for (const run of projected.worldDelta.asciiRuns) {
+        const match = /^(\d+):(\d+)-(\d+):([^>]*)>(.*)$/.exec(run);
+        assert.ok(match, `invalid ASCII delta run ${run}`);
+        const [, yText, firstText, lastText, beforeText, afterText] = match;
+        const y = Number(yText);
+        const first = Number(firstText);
+        const last = Number(lastText);
+        assert.equal(beforeText, beforeSurface.ascii.split('\n')[y].slice(first, last + 1));
+        assert.equal(afterText, afterSurface.ascii.split('\n')[y].slice(first, last + 1));
+    }
+    assert.deepEqual(projected.worldDelta.actorsAfter, afterSurface.actors.filter(actor =>
+        JSON.stringify(beforeSurface.actors.find(item => item.id === actor.id)) !== JSON.stringify(actor)));
+    assert.deepEqual(projected.worldDelta.objectsAfter, afterSurface.objects.filter(object =>
+        JSON.stringify(beforeSurface.objects.find(item => item.id === object.id)) !== JSON.stringify(object)));
 });
 
 test('WP-027 basis changes with match, state and committed voyage while inputs stay immutable', () => {
