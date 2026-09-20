@@ -212,6 +212,14 @@ test('WP-027 turn records cannot commit unwitnessed strategy or mismatch a provi
             estimatedCostUsdMicros: 100 }
     }).success, false);
     assert.equal(StrategicTurnRecordV10R8Schema.safeParse({
+        ...pending,
+        providerMode: 'mistral_shadow',
+        modelId: 'mistral-small-2603',
+        decisionSource: 'local_fake',
+        usage: { inputTokens: 10, outputTokens: 5, thinkingTokens: 0, totalTokens: 15,
+            estimatedCostUsdMicros: 5 }
+    }).success, false);
+    assert.equal(StrategicTurnRecordV10R8Schema.safeParse({
         ...pending, timingMs: { ...pending.timingMs, total: 100 }
     }).success, false);
     assert.equal(StrategicTurnRecordV10R8Schema.safeParse({

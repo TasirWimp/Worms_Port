@@ -26,7 +26,9 @@
     "Correct deployed shadow measurement so total time covers preparation, provider and validation, and expose only allowlisted provider failure categories without retaining provider bodies, raw exceptions or credentials.",
     "After the first Gemini 3.6 gate, retain sanitized diagnostics in the probe artifact, measure live-equivalent planner and boundary preparation, state the 160-character output limit through supported schema descriptions, advance the changed instruction to exact prompt r2, and make the temporary-cost fixture expose an explicit committed route and delayed benefit without changing thresholds or authority.",
     "After the corrected r2 gate, add bounded deterministic ASCII and structured after-state deltas to every candidate, remove fallback identity from the model-facing brief, independently neutralize candidate identity and presentation order while retaining private server fallback authority, advance to prompt r3 and brief r2, and apply the owner-authorized eight-second whole-window deadline.",
-    "Advance to prompt r4 with a compact shared turn-based destructible-world gameplay contract and exactly one active-mode clause derived from the selected Collect, Defend or Claim objective."
+    "Advance to prompt r4 with a compact shared turn-based destructible-world gameplay contract and exactly one active-mode clause derived from the selected Collect, Defend or Claim objective.",
+    "After the failed r4 Gemini reliability gate, add exact stable mistral-small-2603 as a distinct server-only mistral-shadow provider using direct Chat Completions REST, low reasoning, strict structured output, exact usage and current cost measurement.",
+    "Reuse the same r4 prompt, brief, eight-second envelope, fixed five probes and deterministic execution authority; retain explicit provider identity in replay and probe artifacts while preserving Gemini history."
   ],
   "non_goals": [
     "No Gemini SDK, API key, network call, provider adapter, prompt execution, shadow mode or live model selection in Waypoint 1.",
@@ -36,7 +38,8 @@
     "No Gemini SDK, API key, network call, live model selection, environment variable, deployment mutation or provider expense in Waypoint 2.",
     "Local Waypoint 3 implementation verification does not perform a real Gemini call, mutate Render, activate live Gemini selection, promote R8 to standard Practice/Daily or change PEI/reward behavior.",
     "Candidate deltas report simulated after-state facts and must not invent route reachability classifications that the deterministic server has not established.",
-    "The gameplay contract must not include rules for the two objective modes the player did not select."
+    "The gameplay contract must not include rules for the two objective modes the player did not select.",
+    "Local Mistral verification performs no real provider request, does not add live Mistral execution authority, mutate Render, promote R8 or change Practice, Daily, PEI or rewards."
   ],
   "planned_checks": [
     "npm.cmd run check:types and focused WP-027 strategic-voyage/provider/R8 protocol tests",
@@ -200,6 +203,36 @@
       "command": "npm.cmd run check:work-packages and npm.cmd run audit:housekeeping after the r4 dynamic gameplay contract",
       "status": "pass",
       "details": "Delegated sequential zero-retry closure passed. The evidence validator accepted all 74 work-package records in 6.201 seconds. Housekeeping passed in 0.419 seconds and confirmed matching local/upstream codex/wp-027-gemini-loomkeeper branches, the expected dirty WP-027 worktree, WP-027 as the sole in-progress package, no gone tracking branches, no active failed reviews and no manual reconciliation requirement. Historical merged/superseded records remain report-only. Logs .cache/wp027-r4-dynamic-closure-work-packages.log and .cache/wp027-r4-dynamic-closure-housekeeping.log."
+    },
+    {
+      "command": "node --import tsx scripts/run-wp027-shadow-probes.ts on the deployed r4 gemini-3.6-flash Render service",
+      "status": "fail",
+      "details": "The exact five-call gate ran once with zero retries on 2026-09-20. It returned 2/5 valid responses, 1/5 useful choices, three provider fallbacks, 5/5 on-time results, zero authority violations, 7,358 ms p95 and USD 0.010722 estimated cost. Minimum validity, minimum usefulness and maximum provider fallback thresholds failed; timing, authority and cost passed. All three invalid calls were allowlisted provider_http_unavailable outcomes. Destroyed-route repair was useful. Temporary-cost preparation chose c08, which gained one coin and ended 67 distance units closer rather than accepting the explicit immediate cost. The sanitized artifact is preserved at docs/evidence/wp-027-shadow-gate-gemini-3.6-v3/result.json. The failed gate will not be rerun unchanged."
+    },
+    {
+      "command": "npm.cmd run verify:changes after preserving the deployed r4 Gemini 3.6 gate",
+      "status": "pass",
+      "details": "The delegated zero-retry evidence-only selector passed all 74 work-package records in 7.456 seconds at fingerprint 25710c75fafc28a82f180b0ac111ee7c0991edd89749b49121deedcfa1357e9d. Its dry run selected only check:work-packages with an empty fallback list. Build, browser, PostgreSQL, performance, visual, retired legacy, daily and release checks were not selected. Log .cache/wp027-r4-gate-evidence-selector.log; dry-run log .cache/wp027-r4-gate-evidence-dry-run.log."
+    },
+    {
+      "command": "npm.cmd run check:types plus focused Mistral/Gemini/provider/voyage and reward-security tests",
+      "status": "pass",
+      "details": "Delegated zero-retry execution by worms_port_test_runner on GPT-5.6 Terra/medium passed types, 29/29 focused Loomkeeper cases and 1/1 focused reward-security tooling case. Coverage proves exact mistral-small-2603 request shape and Bearer boundary, dynamic active-mode prompt reuse, strict selected-or-abstain schema, string and bounded content-chunk parsing, token/cost measurement, allowlisted failures, fail-closed environment setup, deterministic Mistral shadow authority, Gemini compatibility and client-bundle key rejection. No real provider call ran."
+    },
+    {
+      "command": "initial npm.cmd run verify:changes for the Mistral shadow replacement",
+      "status": "fail",
+      "details": "The zero-retry selector stopped at test:tooling after preflight, all 74 work-package records, import boundary and types passed. Tooling passed 138/139; the supported Loomkeeper inventory assertion correctly found the new tests/loomkeeper/mistral-strategy-v10-r8.test.ts outside its frozen expected list. This was classified as a product test-inventory defect, not infrastructure. No build proof or later selector phase ran. The first failure remains preserved in .cache/wp027-mistral-selector.log."
+    },
+    {
+      "command": "node --test --test-concurrency=1 tests/tooling/verification-cadence.test.js and npm.cmd run verify:changes after the supported-test inventory correction",
+      "status": "pass",
+      "details": "The smallest failed tooling file passed 32/32 once. worms_port_test_runner then completed one zero-retry selector on changed fingerprint e05ee4a256aca29085fce90ad04b0bf661c2e56d0939f86ba0e83b617907e748 in 621.295 seconds. Tooling passed 139/139; supported units passed Loomkeeper 45/45, protocol 25/25, simulation 85/85, relics 10/10, combat 53/53, Practice 6/6, identity 22/22, reward 28/28 and PEI 25/25. Fresh build proof 447b9e6fd740 / 3062c6e6d9b1 passed built smoke and identity/reward security. Bundle limits passed at 1,435,401/1,500,000 initial JavaScript bytes and 419,087/430,000 gzip bytes. The canonical Chromium 390x844 phone journeys passed 19/19 in 6.0 minutes. PostgreSQL used its expected missing-WP014_TEST_DATABASE_URL prerequisite skip and remains a CI gate. Visual, performance, retired legacy, daily and release coverage were not selected. No real provider call ran. Logs .cache/wp027-mistral-tooling-recovery.log and .cache/wp027-mistral-selector-recovery.log."
+    },
+    {
+      "command": "npm.cmd run check:work-packages and npm.cmd run audit:housekeeping after the Mistral shadow implementation",
+      "status": "pass",
+      "details": "Delegated sequential zero-retry closure passed. The evidence validator accepted all 74 work-package records in 6.447 seconds. Housekeeping passed in 0.435 seconds and confirmed the branch tracks its matching origin branch, WP-027 remains the sole in-progress package, no tracking branch is gone, no active failed review exists and no manual reconciliation is required. The dirty worktree is the expected uncommitted implementation and historical merged/superseded entries remain report-only. Logs .cache/wp027-mistral-closure-work-packages.log and .cache/wp027-mistral-closure-housekeeping.log."
     }
   ],
   "reviews": [
@@ -252,21 +285,34 @@
       "reviewer": "primary assistant direct r4 dynamic gameplay-contract review",
       "status": "pass",
       "details": "The request now explains the shared world needed to interpret the brief: alternating complete turns, destructible support/routes/landings, stitching and fall elimination, physical indestructible objective objects, before-state versus candidate after-state and the strategic role of a temporary local cost. One mode clause is selected directly from the server-owned objective enum. Its rules match the canonical WP-026 contract, including both actors' capture, score, elimination and 16-turn outcomes; the other two clauses are absent. The live objective mode and winning condition remain structured brief facts. Prompt r4 supersedes undeployed r3 without changing brief revision, candidate generation, fallback authority, timing, thresholds or response validation."
+    },
+    {
+      "reviewer": "primary assistant direct deployed r4 Gemini 3.6 gate review",
+      "status": "pass",
+      "details": "Review accepts the captured artifact as evidence of a failed gate. Deterministic execution authority, cost and the eight-second window remained safe, while validity, usefulness and provider-fallback thresholds failed. Three provider_http_unavailable outcomes leave only two model decisions and do not identify whether upstream capacity, account tier or another provider-side condition caused the failures. The useful repair candidate moved adjacent to the active chest with low terrain removal. The temporary-cost candidate instead gained one coin and moved closer, so it did not embody the accepted temporary cost; its route-preservation prose is not established by the bounded after-state. The sample is too incomplete to assess the r4 gameplay contract globally. Live selection remains blocked and an unchanged rerun is not accepted evidence."
+    },
+    {
+      "reviewer": "primary assistant direct Mistral Small 4 shadow integration review",
+      "status": "pass",
+      "details": "The exact stable mistral-small-2603 transport is isolated behind the existing data-only adapter and sends only the same bounded r4 brief and active-mode game contract. It uses direct server-only Chat Completions REST, low reasoning and strict JSON-schema output, parses one complete answer and exact usage, and discards raw failures through the existing allowlist. Its explicit mistral_shadow replay identity is subject to the generalized shadow invariant: a validated proposal is retained but can never replace the private deterministic capability or voyage. The probe runner derives model identity from the configured adapter, and client security rejects the Mistral key name and endpoint. Gemini behavior and historical artifacts remain replayable. No live Mistral authority, R8 promotion, reward change or external request is included."
     }
   ],
   "skipped_checks": [
-    "Automated r4 implementation verification uses local fakes. The corrected deployed r2 Gemini 3.6 artifact ran exactly once and failed usefulness; it will not be rerun unchanged.",
+    "Automated r4 and Mistral transport verification uses local fakes. The deployed r4 Gemini 3.6 artifact ran exactly once and failed validity, usefulness and provider-fallback thresholds; it will not be rerun unchanged.",
+    "No real Mistral request runs during local verification. Its deployed five-probe shadow gate remains a separate zero-retry operational gate after Render configuration.",
     "The r3 boundary was superseded before deployment, so no r3 Gemini request or replacement five-probe artifact exists; the next deployed artifact must use r4.",
     "Physical phone testing starts at live Gemini Practice Gate A after shadow acceptance.",
     "Visual, performance, daily/release and retired legacy coverage are not selected for this server-only slice."
   ],
   "residual_risks": [
-    "The r4 deployment must pass exactly one new five-probe shadow gate with at least four valid, useful and on-time choices, no more than one provider fallback, zero authority violations, p95 at or below eight seconds and total estimated cost at or below USD 0.05 before live selection is considered.",
-    "Candidate deltas expose deterministic resulting terrain, actor, object and committed-target facts but do not establish route reachability. Whether Gemini can infer strategically useful continuity from those bounded facts remains unproven until the deployed r4 gate.",
-    "The 16.2-18.7 KB local briefs and roughly 1.1-1.3 second local preparation remain within their caps, but their deployed token and latency effect is not yet measured.",
+    "The deployed r4 gate failed at 2/5 valid, 1/5 useful and three provider fallbacks. Live Gemini selection remains blocked until a later explicitly authorized gate demonstrates at least four valid, useful and on-time choices, no more than one provider fallback, zero authority violations, p95 at or below eight seconds and total estimated cost at or below USD 0.05.",
+    "Three provider_http_unavailable outcomes do not distinguish upstream capacity, account tier or another provider-side cause. Provider reliability must be resolved before another strategy comparison; do not attribute the failures to the free tier without additional evidence.",
+    "Candidate deltas expose deterministic resulting terrain, actor, object and committed-target facts but do not establish route reachability. The temporary-cost response claimed route preservation while selecting immediate score and distance improvement, so strategically useful continuity remains unproven.",
+    "The two valid r4 calls used 5,341 and 5,708 input tokens; one exceeds the provisional 5,500-token profiling target. Deployed preparation ranged from 1,954 to 3,374 ms and p95 remained within the eight-second ceiling, but reliability prevents acceptance.",
     "The preserved r1 artifact remains incomplete historical evidence because it omitted diagnostics and recorded preparation as zero; the corrected r2 artifact supersedes it for current operational measurement.",
     "The corrected r2 artifact remains failed historical evidence at 1/5 usefulness and 5,999 ms p95; it does not qualify r4 and will not be rerun unchanged.",
     "The frozen cost estimate uses Gemini 3.6 Flash standard paid rates of USD 0.75 input and USD 3.75 output per million tokens through 2026-12-31; the free tier is free of charge, and the estimate must be reviewed if shadow operation continues under later pricing.",
-    "Local fake and transport tests prove the authority and measurement harness, not deployed Gemini latency or multi-turn strategy quality."
+    "Local fake and transport tests prove the authority and measurement harness, not deployed Gemini or Mistral latency or multi-turn strategy quality.",
+    "Mistral Small 4 remains shadow-only. It cannot receive execution authority unless a later explicit live-mode slice follows a passing fixed five-probe gate."
   ]
 }

@@ -94,7 +94,7 @@ export const StrategicTurnRecordV10R8Schema = z.object({
     revision: z.literal(V10_R8_BRIEF_REVISION),
     policyId: z.literal(V10_R8_STRATEGY_POLICY_ID),
     promptVersion: z.literal(V10_R8_PROMPT_VERSION),
-    providerMode: z.enum(['deterministic', 'local_fake', 'gemini_shadow', 'gemini']),
+    providerMode: z.enum(['deterministic', 'local_fake', 'gemini_shadow', 'gemini', 'mistral_shadow']),
     modelId: z.string().min(1).max(96).nullable(),
     operationalOutcome: z.enum([
         'selected', 'abstained', 'invalid_response', 'timeout', 'provider_error',
@@ -160,9 +160,10 @@ export const StrategicTurnRecordV10R8Schema = z.object({
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['decisionSource'],
             message: 'Gemini mode cannot claim a local-fake decision.' });
     }
-    if (record.providerMode === 'gemini_shadow' && record.decisionSource !== 'deterministic_fallback') {
+    if ((record.providerMode === 'gemini_shadow' || record.providerMode === 'mistral_shadow') &&
+        record.decisionSource !== 'deterministic_fallback') {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['decisionSource'],
-            message: 'Gemini shadow proposals never receive execution authority.' });
+            message: 'Shadow proposals never receive execution authority.' });
     }
     if (record.providerMode === 'local_fake' && record.usage !== null) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['usage'],

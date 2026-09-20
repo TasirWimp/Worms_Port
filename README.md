@@ -93,10 +93,19 @@ exact replay and destroyed-WebView resume are implemented. Unknown
 Restart creates the selected mode from a fresh layout. Standard Practice and
 PEI-gated Daily remain R7 until a later explicitly accepted promotion.
 
-WP-027 Waypoint 3 adds an optional server-only Gemini shadow to these private
-R8 routes. Safe startup remains deterministic when `LOOMKEEPER_PROVIDER` is
-absent or set to `deterministic`. To collect the bounded shadow evidence on the
-game service, set all three values and redeploy:
+WP-027 Waypoint 3 adds optional server-only model shadows to these private R8
+routes. Safe startup remains deterministic when `LOOMKEEPER_PROVIDER` is absent
+or set to `deterministic`. The current replacement trial uses Mistral Small 4.
+Set all three values on the game service and redeploy:
+
+```text
+LOOMKEEPER_PROVIDER=mistral-shadow
+MISTRAL_MODEL=mistral-small-2603
+MISTRAL_API_KEY=<Render secret>
+```
+
+The preserved Gemini transport can still reproduce its historical evidence
+with this separate configuration:
 
 ```text
 LOOMKEEPER_PROVIDER=gemini-shadow
@@ -104,11 +113,12 @@ GEMINI_MODEL=gemini-3.6-flash
 GEMINI_API_KEY=<Render secret>
 ```
 
-Shadow mode records Gemini's proposal, latency, usage and estimated cost, while
-the existing deterministic Loomkeeper still acts. It does not affect standard
-R7 Practice, Daily, PEI or rewards. In a controlled server shell with those
-same values, `node --import tsx scripts/run-wp027-shadow-probes.ts` makes exactly
-five no-retry calls and writes the sanitized direct-review artifact to
+Shadow mode records the provider's proposal, exact model, latency, usage and
+estimated cost, while the existing deterministic Loomkeeper still acts. It
+does not affect standard R7 Practice, Daily, PEI or rewards. In a controlled
+server shell with either complete shadow configuration,
+`node --import tsx scripts/run-wp027-shadow-probes.ts` makes exactly five
+no-retry calls and writes the sanitized direct-review artifact to
 `test-results/wp027-shadow-probes.json`. Incomplete external configuration fails
 startup. Set `LOOMKEEPER_PROVIDER=deterministic` after the shadow gate; dormant
 credentials are ignored in deterministic mode.

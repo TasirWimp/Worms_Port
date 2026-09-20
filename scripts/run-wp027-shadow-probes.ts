@@ -3,7 +3,6 @@ import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 
 import { V10_R8_PROMPT_VERSION } from '../shared/strategic-voyage-v10-r8';
-import { WP027_GEMINI_MODEL_ID } from '../server/src/simulation/gemini-strategy-provider-v10-r8';
 import { loomkeeperStrategyRuntimeFromEnvironmentV10R8 } from '../server/src/simulation/loomkeeper-strategy-config-v10-r8';
 import {
     createWp027ProbeScenarioV10R8,
@@ -17,8 +16,8 @@ import {
 
 async function main(): Promise<void> {
     const runtime = loomkeeperStrategyRuntimeFromEnvironmentV10R8(process.env, fetch, () => {});
-    if (runtime.mode !== 'gemini-shadow' || !runtime.strategicAdapter) {
-        throw new Error('WP-027 probes require LOOMKEEPER_PROVIDER=gemini-shadow.');
+    if ((runtime.mode !== 'gemini-shadow' && runtime.mode !== 'mistral-shadow') || !runtime.strategicAdapter) {
+        throw new Error('WP-027 probes require an external shadow Loomkeeper provider.');
     }
     const fixtures: Wp027ProbeFixture[] = [];
     const results: Wp027ProbeResult[] = [];
@@ -38,7 +37,7 @@ async function main(): Promise<void> {
     const report = summarizeWp027ProbesV10R8(results);
     const artifact = Object.freeze({
         generatedAt: new Date().toISOString(),
-        modelId: WP027_GEMINI_MODEL_ID,
+        modelId: runtime.strategicAdapter.provider.modelId,
         promptVersion: V10_R8_PROMPT_VERSION,
         fixtures: fixtures.map(fixture => Object.freeze({
             id: fixture.id,

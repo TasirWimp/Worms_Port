@@ -47,7 +47,8 @@ export function authorizeStrategicTurnV10R8(input: Readonly<{
         const semanticError = validateDecision(input.boundary, input.state, currentStrategy, decision);
         const candidate = input.boundary.brief.legalCandidates.find(item => item.candidateId === decision.candidateId);
         if (!semanticError && candidate) {
-            if (providerResult?.providerMode !== 'gemini_shadow') {
+            if (providerResult?.providerMode !== 'gemini_shadow' &&
+                providerResult?.providerMode !== 'mistral_shadow') {
                 selected = candidate;
                 decisionSource = providerResult?.providerMode === 'gemini' ? 'gemini' : 'local_fake';
             }

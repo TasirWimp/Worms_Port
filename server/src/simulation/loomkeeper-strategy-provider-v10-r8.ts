@@ -52,7 +52,7 @@ export class StrategicProviderOperationalErrorV10R8 extends Error {
 
 /** Data-only provider seam. It receives no executor, replay or persistence authority. */
 export interface StrategicDecisionProviderV10R8 {
-    readonly mode: 'local_fake' | 'gemini_shadow' | 'gemini';
+    readonly mode: 'local_fake' | 'gemini_shadow' | 'gemini' | 'mistral_shadow';
     readonly modelId: string;
     decide(request: StrategicDecisionProviderRequestV10R8): Promise<StrategicDecisionProviderResponseV10R8>;
 }
@@ -80,7 +80,7 @@ export type StrategicDecisionAdapterOptionsV10R8 = Readonly<{
 
 type ActiveRequest = Readonly<{ controller: AbortController }>;
 
-/** One-call operational envelope shared by local fakes now and a later Gemini transport. */
+/** One-call operational envelope shared by local fakes and external strategic transports. */
 export class StrategicDecisionAdapterV10R8 {
     readonly #deadlineMs: number;
     readonly #maxConcurrent: number;

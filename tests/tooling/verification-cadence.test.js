@@ -406,6 +406,7 @@ test('routine unit selectors exclude every explicit legacy diagnostic', () => {
   assert.deepEqual(suiteFiles('loomkeeper'), [
     'tests/loomkeeper/gemini-strategy-v10-r8.test.ts',
     'tests/loomkeeper/loomkeeper.test.ts',
+    'tests/loomkeeper/mistral-strategy-v10-r8.test.ts',
     'tests/loomkeeper/strategic-provider-v10-r8.test.ts',
     'tests/loomkeeper/strategic-voyage-v10-r8.test.ts',
     'tests/loomkeeper/terrain-starts-v10.test.ts'

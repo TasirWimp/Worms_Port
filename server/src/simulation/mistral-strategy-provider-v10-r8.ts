@@ -16,26 +16,25 @@ import {
     strategicUserPromptV10R8
 } from './loomkeeper-strategy-prompt-v10-r8';
 
-export const WP027_GEMINI_MODEL_ID = 'gemini-3.6-flash' as const;
-export const WP027_GEMINI_ENDPOINT =
-    `https://generativelanguage.googleapis.com/v1beta/models/${WP027_GEMINI_MODEL_ID}:generateContent` as const;
+export const WP027_MISTRAL_MODEL_ID = 'mistral-small-2603' as const;
+export const WP027_MISTRAL_ENDPOINT = 'https://api.mistral.ai/v1/chat/completions' as const;
 
 const MAX_PROVIDER_BODY_BYTES = 64 * 1024;
-const INPUT_USD_PER_MILLION = 0.75;
-const OUTPUT_USD_PER_MILLION = 3.75;
+const INPUT_USD_PER_MILLION = 0.15;
+const OUTPUT_USD_PER_MILLION = 0.60;
 
 type FetchLike = typeof fetch;
 
-/** Stateless, server-only Gemini transport. It returns data and usage, never executable authority. */
-export class GeminiStrategicDecisionProviderV10R8 implements StrategicDecisionProviderV10R8 {
-    readonly modelId = WP027_GEMINI_MODEL_ID;
+/** Stateless, server-only Mistral transport. Shadow proposals never receive execution authority. */
+export class MistralStrategicDecisionProviderV10R8 implements StrategicDecisionProviderV10R8 {
+    readonly modelId = WP027_MISTRAL_MODEL_ID;
+    readonly mode = 'mistral_shadow' as const;
 
     public constructor(
-        readonly mode: 'gemini_shadow' | 'gemini',
         private readonly apiKey: string,
         private readonly fetchImpl: FetchLike = fetch
     ) {
-        if (!validApiKey(apiKey)) throw new Error('GEMINI_API_KEY is invalid.');
+        if (!validApiKey(apiKey)) throw new Error('MISTRAL_API_KEY is invalid.');
     }
 
     public async decide(
@@ -43,14 +42,14 @@ export class GeminiStrategicDecisionProviderV10R8 implements StrategicDecisionPr
     ): Promise<StrategicDecisionProviderResponseV10R8> {
         let response: Response;
         try {
-            response = await this.fetchImpl(WP027_GEMINI_ENDPOINT, {
+            response = await this.fetchImpl(WP027_MISTRAL_ENDPOINT, {
                 method: 'POST',
                 signal: request.signal,
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-goog-api-key': this.apiKey
+                    Authorization: `Bearer ${this.apiKey}`
                 },
-                body: JSON.stringify(geminiRequestBody(request.brief))
+                body: JSON.stringify(mistralRequestBody(request.brief))
             });
         } catch (error) {
             throw new StrategicProviderOperationalErrorV10R8(
@@ -80,86 +79,100 @@ export class GeminiStrategicDecisionProviderV10R8 implements StrategicDecisionPr
             throw new StrategicProviderOperationalErrorV10R8('provider_response_too_large');
         }
         try {
-            return parseGeminiResponse(body);
+            return parseMistralResponse(body);
         } catch {
             throw new StrategicProviderOperationalErrorV10R8('provider_response_invalid');
         }
     }
 }
 
-export function geminiRequestBody(brief: StrategicDecisionBriefV10R8): Readonly<Record<string, unknown>> {
+export function mistralRequestBody(brief: StrategicDecisionBriefV10R8): Readonly<Record<string, unknown>> {
     return Object.freeze({
-        systemInstruction: Object.freeze({ parts: Object.freeze([{ text: strategicSystemInstructionV10R8(brief) }]) }),
-        contents: Object.freeze([Object.freeze({
-            role: 'user',
-            parts: Object.freeze([{ text: strategicUserPromptV10R8(brief) }])
-        })]),
-        generationConfig: Object.freeze({
-            thinkingConfig: Object.freeze({ thinkingLevel: 'low' }),
-            maxOutputTokens: 2_048,
-            responseMimeType: 'application/json',
-            responseJsonSchema: strategicResponseSchemaV10R8(brief)
-        })
+        model: WP027_MISTRAL_MODEL_ID,
+        messages: Object.freeze([
+            Object.freeze({ role: 'system', content: strategicSystemInstructionV10R8(brief) }),
+            Object.freeze({ role: 'user', content: strategicUserPromptV10R8(brief) })
+        ]),
+        reasoning_effort: 'low',
+        max_tokens: 2_048,
+        response_format: Object.freeze({
+            type: 'json_schema',
+            json_schema: Object.freeze({
+                name: 'loomkeeper_strategic_decision',
+                schema: strategicResponseSchemaV10R8(brief),
+                strict: true
+            })
+        }),
+        stream: false
     });
 }
 
-function parseGeminiResponse(body: string): StrategicDecisionProviderResponseV10R8 {
+function parseMistralResponse(body: string): StrategicDecisionProviderResponseV10R8 {
     let parsed: unknown;
     try {
         parsed = JSON.parse(body);
     } catch {
-        throw new Error('Gemini returned malformed JSON.');
+        throw new Error('Mistral returned malformed JSON.');
     }
     const root = record(parsed);
-    const candidates = Array.isArray(root.candidates) ? root.candidates : [];
-    if (candidates.length !== 1) throw new Error('Gemini returned an unexpected candidate count.');
-    const candidate = record(candidates[0]);
-    if (candidate.finishReason !== 'STOP') throw new Error('Gemini did not finish a complete response.');
-    const content = record(candidate.content);
-    const parts = Array.isArray(content.parts) ? content.parts : [];
-    const texts = parts.map(part => record(part).text).filter((text): text is string => typeof text === 'string');
-    if (texts.length !== 1) throw new Error('Gemini response text is missing or ambiguous.');
+    const choices = Array.isArray(root.choices) ? root.choices : [];
+    if (choices.length !== 1) throw new Error('Mistral returned an unexpected choice count.');
+    const choice = record(choices[0]);
+    if (choice.finish_reason !== 'stop') throw new Error('Mistral did not finish a complete response.');
+    const message = record(choice.message);
+    const text = responseText(message.content);
     let payload: unknown;
     try {
-        payload = JSON.parse(texts[0]);
+        payload = JSON.parse(text);
     } catch {
-        throw new Error('Gemini structured output is malformed.');
+        throw new Error('Mistral structured output is malformed.');
     }
-    return Object.freeze({ payload, usage: usageFromResponse(root.usageMetadata) });
+    return Object.freeze({ payload, usage: usageFromResponse(root.usage) });
+}
+
+function responseText(content: unknown): string {
+    if (typeof content === 'string' && content.length > 0) return content;
+    if (!Array.isArray(content)) throw new Error('Mistral response text is missing.');
+    const texts: string[] = [];
+    for (const chunkValue of content) {
+        const chunk = record(chunkValue);
+        if (chunk.type === 'text' && typeof chunk.text === 'string') texts.push(chunk.text);
+        else if (chunk.type !== 'thinking') throw new Error('Mistral response content is ambiguous.');
+    }
+    if (texts.length !== 1 || texts[0].length === 0) {
+        throw new Error('Mistral response text is missing or ambiguous.');
+    }
+    return texts[0];
 }
 
 function usageFromResponse(value: unknown): StrategicProviderUsageV10R8 {
     const usage = record(value);
-    const inputTokens = nonNegativeInteger(usage.promptTokenCount, 'prompt token count');
-    const outputTokens = nonNegativeInteger(usage.candidatesTokenCount, 'candidate token count');
-    const thinkingTokens = nonNegativeInteger(usage.thoughtsTokenCount ?? 0, 'thought token count');
-    const totalTokens = nonNegativeInteger(usage.totalTokenCount, 'total token count');
-    if (totalTokens < inputTokens + outputTokens + thinkingTokens) {
-        throw new Error('Gemini usage totals are inconsistent.');
-    }
+    const inputTokens = nonNegativeInteger(usage.prompt_tokens, 'prompt token count');
+    const outputTokens = nonNegativeInteger(usage.completion_tokens, 'completion token count');
+    const totalTokens = nonNegativeInteger(usage.total_tokens, 'total token count');
+    if (totalTokens < inputTokens + outputTokens) throw new Error('Mistral usage totals are inconsistent.');
     return StrategicProviderUsageV10R8Schema.parse({
         inputTokens,
         outputTokens,
-        thinkingTokens,
+        thinkingTokens: 0,
         totalTokens,
         // USD per million tokens converts directly to micro-USD per token.
         estimatedCostUsdMicros: Math.ceil(
-            inputTokens * INPUT_USD_PER_MILLION +
-            (outputTokens + thinkingTokens) * OUTPUT_USD_PER_MILLION
+            inputTokens * INPUT_USD_PER_MILLION + outputTokens * OUTPUT_USD_PER_MILLION
         )
     });
 }
 
 function record(value: unknown): Record<string, unknown> {
     if (!value || typeof value !== 'object' || Array.isArray(value)) {
-        throw new Error('Gemini response shape is invalid.');
+        throw new Error('Mistral response shape is invalid.');
     }
     return value as Record<string, unknown>;
 }
 
 function nonNegativeInteger(value: unknown, name: string): number {
     if (!Number.isSafeInteger(value) || (value as number) < 0) {
-        throw new Error(`Gemini ${name} is invalid.`);
+        throw new Error(`Mistral ${name} is invalid.`);
     }
     return value as number;
 }

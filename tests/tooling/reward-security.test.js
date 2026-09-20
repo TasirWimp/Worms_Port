@@ -28,6 +28,8 @@ test('reward security scan permits one test helper and rejects source, bundle, a
     assert.match(scanRewardSecurity(root).join('\n'), /forbidden payout or server-only marker/);
     write(root, 'client/build/app.js', 'const key = process.env.GEMINI_API_KEY;');
     assert.match(scanRewardSecurity(root).join('\n'), /forbidden payout or server-only marker/);
+    write(root, 'client/build/app.js', 'const key = process.env.MISTRAL_API_KEY;');
+    assert.match(scanRewardSecurity(root).join('\n'), /forbidden payout or server-only marker/);
     write(root, 'client/build/app.js', 'clean client bundle');
 
     write(

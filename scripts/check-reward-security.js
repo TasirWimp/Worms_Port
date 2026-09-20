@@ -51,7 +51,9 @@ function scanRewardSecurity(projectRoot = root, options = {}) {
     'REWARD_PRIVATE_KEY_FILE',
     'PEI_PROXY_PRIVATE_KEY_FILE',
     'GEMINI_API_KEY',
+    'MISTRAL_API_KEY',
     'generativelanguage.googleapis.com',
+    'api.mistral.ai',
     'NIMIQ_RECOVERY_WORDS',
     SYNTHETIC_TEST_PRIVATE_KEY
   ]) {

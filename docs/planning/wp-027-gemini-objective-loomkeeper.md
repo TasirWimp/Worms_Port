@@ -1,17 +1,17 @@
-# WP-027 Strategic-Voyage Gemini Loomkeeper
+# WP-027 Strategic-Voyage Model Loomkeeper
 
-Status: **in progress; Waypoint 3 r4 gameplay-contract refinement implemented locally**
+Status: **in progress; Mistral Small 4 shadow replacement locally verified, deployed gate pending**
 Required predecessor: completed WP-026 R8 objective-mode canary
 
 ## Product outcome
 
 Give the Loomkeeper a coherent multi-turn strategy across Defend, Collect and
-Claim through one bounded Gemini decision per turn. The practical question is:
+Claim through one bounded external-model decision per turn. The practical question is:
 
 > Given what happened, which legal action best continues or justifiably changes
 > our route toward winning, and what uncertainty remains?
 
-The server prepares legal complete-turn candidates. Gemini sees those concrete
+The server prepares legal complete-turn candidates. The provider sees those concrete
 possibilities together with the battlefield, current strategy and recent
 changes, then selects a candidate and proposes strategic continuation in one
 response. Target decision latency is 3–8 seconds, with an eight-second whole-window
@@ -20,7 +20,7 @@ immediately; there is no artificial minimum wait.
 
 This contract supersedes the earlier separate narrator/choice passes and large
 model-facing calibration schema. CRPM alignment is expressed through observed
-change, continuity, future possibilities and retained uncertainty. Gemini does
+change, continuity, future possibilities and retained uncertainty. The model does
 not have to reproduce CRPM terminology or operate a governance framework.
 
 ## Authority and mutable world
@@ -29,9 +29,9 @@ not have to reproduce CRPM terminology or operate a governance framework.
 legal operations, execution, replay, rewards and operational budgets. Each match
 binds its kernel and policy revisions at creation. `WorldSurface` is the mutable
 authoritative terrain, actors, objects, score, resources and turn state.
-`WorldSurfaceProjection` is a bounded, data-only view supplied to Gemini.
+`WorldSurfaceProjection` is a bounded, data-only view supplied to the provider.
 
-Gemini can return a current candidate ID; a server-owned resolver converts it
+The provider can return a current candidate ID; a server-owned resolver converts it
 into an internal `CandidateCapability`. Only trusted code can construct that
 capability and submit it to the Loomkeeper executor. Model-facing modules cannot
 import executor capabilities, operation constructors, persistence mutation or
@@ -58,7 +58,7 @@ The ASCII map is a server-derived strategic overview of the live destructible
 terrain. It reuses the existing terrain serialization/compiler lineage, but the
 model-facing resolution may be coarser than exact replay state. Its legend and
 relationship summary must preserve routes and support facts needed for choice.
-Gemini does not simulate collision or infer exact landing legality from ASCII.
+The model does not simulate collision or infer exact landing legality from ASCII.
 
 The server can retain detailed `WorldTransition`, pressure-envelope and
 `CycleCalibration` evidence, but the request compresses it into concrete facts.
@@ -68,7 +68,7 @@ player-authored prompt text enter the brief.
 
 ## Candidates connect local actions to global possibilities
 
-Generate and simulate candidates before calling Gemini, using the previous
+Generate and simulate candidates before calling the provider, using the previous
 committed strategy while retaining alternatives from these applicable families:
 
 - objective progress, collection and capture;
@@ -102,7 +102,7 @@ The model sees causal summaries rather than operation lists or every evidence ID
 
 ## One decision and a small response
 
-One Gemini call combines strategic continuation and candidate selection:
+One provider call combines strategic continuation and candidate selection:
 
 ```json
 {
@@ -153,11 +153,11 @@ response schema:
 
 Immediate execution mismatch is an integrity fault. A player destroying a route
 on the subsequent turn is a new strategic fact. A setback or missed milestone
-alone never disables Gemini. Operational failures, invalid output, unusable
+alone never disables external reasoning. Operational failures, invalid output, unusable
 inputs, circuit state and spend limits govern fallback.
 
 Record the actual decision source. Deterministic fallback outcomes do not count
-as failures of an unexecuted Gemini proposal. Resume external reasoning when
+as failures of an unexecuted provider proposal. Resume external reasoning when
 operational conditions permit; fallback need not improve the score first.
 The first turn has explicit empty prior history and current world facts.
 
@@ -170,7 +170,7 @@ patience controller or governance-health subsystem is required for this slice.
 1. Snapshot current surface, committed voyage and match policy.
 2. Derive recent changes, compact feedback and the decision brief.
 3. Generate/simulate the diverse atlas within the total planning budget.
-4. Make one Gemini request, or bypass it when operational policy requires.
+4. Make one provider request, or bypass it when operational policy requires.
 5. Validate the response and resolve its ID into a current internal capability;
    otherwise resolve the deterministic fallback capability.
 6. Execute the capability and derive the observed world transition.
@@ -193,7 +193,7 @@ smooth; atomic turn completion does not imply hiding the entire turn until it
 finishes. Waypoint 1 binds this to the existing session persistence model.
 
 Replay reconstructs the brief, candidate atlas, validated selection, immediate
-predicted/observed transition and committed voyage without Gemini. Evidence
+predicted/observed transition and committed voyage without the provider. Evidence
 retains actual selected source, policy/model/prompt versions, basis and record
 identities, operational outcome, latency, and bounded response diagnostics.
 Replayed legality and results govern Daily eligibility; explanation quality
@@ -236,13 +236,16 @@ circuit breaker and spend limit. Match policy stays fixed across reconnect.
 
 ```text
 LOOMKEEPER_PROVIDER=deterministic
-GEMINI_API_KEY=<server-side secret; required only for shadow or live Gemini>
-GEMINI_MODEL=gemini-3.6-flash
+LOOMKEEPER_PROVIDER=mistral-shadow
+MISTRAL_MODEL=mistral-small-2603
+MISTRAL_API_KEY=<server-side secret; required only for Mistral shadow>
 ```
 
-Providers remain `deterministic`, `gemini-shadow` and `gemini`. Incomplete
-external-mode configuration fails startup. The small server adapter owns the
-transport; any SDK addition requires dependency/license/audit review.
+Provider modes are `deterministic`, `mistral-shadow`, `gemini-shadow` and the
+pre-existing `gemini`. Mistral is shadow-only until its fixed gate passes;
+Gemini remains for historical replay and evidence continuity. Incomplete
+external-mode configuration fails startup. The small server adapter owns each
+direct REST transport; any SDK addition requires dependency/license/audit review.
 
 ## Waypoints and gates
 
@@ -306,7 +309,7 @@ in this waypoint. Waypoint 3 is the next implementation slice.
 ### Waypoint 3 - deployed shadow and bounded strategy probes
 
 In shadow, the deterministic Loomkeeper acts. Measure schema/factual validity,
-candidate plausibility, brief sufficiency, latency and cost. Gemini's proposed
+candidate plausibility, brief sufficiency, latency and cost. The provider's proposed
 but unexecuted action cannot claim the ensuing player's response as evidence of
 its effectiveness. Trace selected-source attribution explicitly.
 
@@ -330,8 +333,8 @@ matched deterministic baselines. If results miss the target, simplify the brief,
 fix candidate coverage or adjust supported model settings and retest the affected
 probes. Do not respond by adding another conceptual layer by default.
 
-Implementation status, 2026-09-19: the server-only Waypoint 3 path is
-implemented and awaits deployed shadow collection. It uses the exact stable
+Original provider implementation status, 2026-09-19: the server-only Waypoint 3
+path was implemented for the exact stable
 `gemini-3.6-flash` model through direct `generateContent` REST, structured JSON
 output and `low` thinking. It adds no SDK dependency. The API key exists only in
 the server process; quality runs reject external-provider activation and the
@@ -385,7 +388,7 @@ The five fixtures and acceptance thresholds are frozen in
 
 - exactly five one-call probes, with no retry;
 - at least four schema- and fact-valid responses and four useful choices;
-- at least four responses inside six seconds, p95 no greater than six seconds,
+- at least four responses inside eight seconds, p95 no greater than eight seconds,
   and at most one operational provider fallback;
 - zero shadow authority violations; every executed choice remains the matched
   deterministic baseline; and
@@ -394,7 +397,7 @@ The five fixtures and acceptance thresholds are frozen in
 The report includes the fixed basis/brief/atlas hashes, matched deterministic
 candidate, proposed candidate, bounded reason/watch text, strategy, source,
 timings and usage for direct review. It does not score explanation style. Run it
-only with the shadow configuration through
+only with one complete shadow configuration through
 `node --import tsx scripts/run-wp027-shadow-probes.ts`; the sanitized artifact is
 written to `test-results/wp027-shadow-probes.json`. Passing local-fake coverage
 proves the harness, while only this real deployed run can establish latency,
@@ -516,10 +519,55 @@ fallback authority, timing, thresholds and response validation are unchanged.
 The next deployed five-probe artifact must therefore use exact prompt r4; r3
 must not be deployed or measured as the current prompt.
 
-### Phone Gate A - live Gemini Practice
+Deployed r4 gate result, 2026-09-20: exact prompt r4 ran once with zero retries.
+The [sanitized result](../evidence/wp-027-shadow-gate-gemini-3.6-v3/result.json)
+records 2/5 valid responses, 1/5 useful choices, three provider fallbacks, 5/5
+on-time results, zero authority violations, 7,358 ms p95 and USD 0.010722
+estimated cost. It fails the minimum-valid, minimum-useful and
+maximum-provider-fallback thresholds. All three invalid calls are classified
+`provider_http_unavailable`; the bounded diagnostic identifies an unavailable
+HTTP response but cannot distinguish upstream capacity, account tier or another
+provider-side cause. Do not infer a free-tier cause from this artifact alone.
 
-Enable live Gemini only in the R8 Practice canary. Across Defend, Collect and
-Claim, verify:
+The two returned decisions show mixed strategy evidence. Destroyed-route repair
+selected a low-destruction jump that ends adjacent to the active chest and meets
+the repair rubric. Temporary-cost preparation continued the named strategy but
+selected `c08`, which gains one coin and ends 67 distance units closer to the
+objective; it therefore does not accept the fixture's explicit immediate cost.
+Its prose claims route preservation, but the supplied facts do not establish
+that route claim. Because three fixtures produced no model decision, this gate
+cannot measure the gameplay contract's overall strategy effect. Preserve the
+failed artifact and do not rerun the unchanged gate. Resolve the provider
+reliability decision before another strategy or prompt change.
+
+Mistral replacement implementation, 2026-09-20: the next provider comparison
+uses exact stable `mistral-small-2603` as `mistral-shadow`. Its server-only
+direct Chat Completions REST transport sends the same prompt-r4 dynamic game
+contract, bounded brief and strict selected-or-abstain JSON schema with `low`
+reasoning. The adapter parses one complete structured answer, Mistral token
+usage and the current USD 0.15 input/USD 0.60 output per million-token cost
+estimate. It keeps the shared eight-second deadline, no retry, cancellation,
+two-request concurrency limit, request budget and circuit breaker. The Bearer
+credential and `api.mistral.ai` endpoint are rejected by the client-bundle
+security scan.
+
+`mistral-shadow` has its own explicit replay/provider identity and cannot receive
+execution authority. The five-probe runner now takes the exact model identity
+from the configured shadow adapter, so Gemini and Mistral artifacts cannot be
+mislabelled. Gemini remains available for historical evidence continuity. No
+live Mistral mode is implemented; one zero-retry deployed Mistral five-probe
+gate must meet the existing frozen thresholds before live authority is added.
+Focused transport/authority/security coverage and the full change-selected gate
+passed with no real provider call. The first selector attempt correctly stopped
+at a supported-test inventory assertion after discovering the new Mistral test;
+the inventory was corrected and only that failed tooling case was rerun before
+one full selector pass on the changed fingerprint.
+
+### Phone Gate A - live accepted-provider Practice
+
+After a shadow provider passes and its live authority mode is explicitly added,
+enable it only in the R8 Practice canary. Across Defend, Collect and Claim,
+verify:
 
 1. coherent pursuit of the objective over several turns;
 2. preparation and continuation through a reasonable temporary cost;
@@ -528,7 +576,7 @@ Claim, verify:
 5. decision waits within the eight-second bound, with smooth controls/presentation;
 6. close/reopen preserves the same match, selected action and committed strategy;
 7. controlled provider failure falls back and finishes the match; and
-8. operational recovery permits Gemini to resume without requiring fallback to
+8. operational recovery permits external reasoning to resume without requiring fallback to
    improve the score.
 
 Live Practice establishes realized multi-turn behavior. Shadow evidence cannot
@@ -555,7 +603,7 @@ fixtures, strict response handling, deadline and circuit behavior, source-correc
 feedback, atomic recovery, replay, server-only secrets, current R8 Practice/Daily
 journeys and reward settlement. Runtime work retains change-selected types,
 build, smoke, browser, security and bundle checks. Routine CI uses local fakes;
-PostgreSQL, deployed Gemini, phone and Ubuntu visual gates remain separate.
+PostgreSQL, deployed-provider, phone and Ubuntu visual gates remain separate.
 
 Defer model-requested observation/search refinement, a separate narrator pass,
 large model-authored commitment/pressure schemas, scalar strategy scores,
@@ -569,7 +617,7 @@ No model-authored commands, maps, objects or player-facing prose are introduced.
 WP-027 closes when the three waypoints, live Practice Gate A and final
 Practice/Daily Gate B pass; the five behavioral probes show local-to-global
 reasoning through choices and consequences; measured latency and fallback meet
-the prospectively declared criteria; replay and reconnect work without Gemini;
+the prospectively declared criteria; replay and reconnect work without a provider;
 the model cannot reach invariant authority; safe deployment settings are
 restored; selected checks and package evidence pass; and housekeeping agrees
 with the execution pointer.
@@ -597,3 +645,10 @@ Primary CRPM references, pinned at `64f49017976d3fab9225954d141a6866a544ce61`:
 - https://ai.google.dev/gemini-api/docs/models
 - https://ai.google.dev/gemini-api/docs/api-key
 - https://ai.google.dev/gemini-api/docs/rate-limits
+
+## Mistral references
+
+- https://docs.mistral.ai/getting-started/models/models_overview/
+- https://docs.mistral.ai/capabilities/structured_output/structured_output_overview/
+- https://docs.mistral.ai/api/
+- https://mistral.ai/pricing

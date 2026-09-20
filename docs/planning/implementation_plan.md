@@ -59,8 +59,24 @@ Phaser/Socket.IO stack.
   threshold. The current `r4` prompt also supplies a shared turn-based,
   destructible-world gameplay contract plus only the active Collect, Defend or
   Claim rule selected by the player; the two other mode explanations are absent
-  from that request. One new deployed zero-retry five-probe artifact using r4 is
-  the next gate.
+  from that request. The deployed `r4` gate ran exactly once with zero retries
+  and failed: 2/5 valid, 1/5 useful, three provider fallbacks, 5/5 on time,
+  zero authority violations, 7,358 ms p95 and USD 0.010722 cost. All three
+  invalid calls were classified `provider_http_unavailable`, so the artifact
+  cannot establish whether the gameplay contract improves strategy reliably.
+  Of the two valid choices, destroyed-route repair was useful. Temporary-cost
+  preparation again chose immediate coin progress and a closer position rather
+  than the declared immediate cost. Preserve this failed artifact and do not
+  rerun the unchanged gate. The local replacement path now adds exact stable
+  `mistral-small-2603` as `mistral-shadow` through direct server-only Chat
+  Completions REST with low reasoning and strict structured output. It reuses
+  the same dynamic r4 game contract, brief, eight-second envelope, five probes,
+  thresholds and deterministic execution authority. Provider identity is
+  explicit in replay and artifacts; Gemini remains available only to preserve
+  its historical evidence. Mistral has no live execution mode yet. Local
+  focused and change-selected verification passed with zero retries after one
+  supported-test inventory correction. Run the five-probe Mistral shadow gate
+  once with no retry before considering live authority.
   No live Gemini selection, public R8 promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port

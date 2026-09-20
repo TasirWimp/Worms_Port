@@ -222,7 +222,7 @@ export function evaluateWp027ProbeV10R8(
         valid,
         useful: valid && usefulForProbe(fixture, decision, proposed),
         onTime: record.timingMs.total <= WP027_PROBE_THRESHOLDS.maximumP95Ms,
-        authoritySafe: record.providerMode === 'gemini_shadow' &&
+        authoritySafe: (record.providerMode === 'gemini_shadow' || record.providerMode === 'mistral_shadow') &&
             record.decisionSource === 'deterministic_fallback' &&
             record.selectedCandidateId === deterministicFallback(fixture).candidateId,
         operationalOutcome: record.operationalOutcome,
