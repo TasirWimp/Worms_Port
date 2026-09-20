@@ -50,14 +50,17 @@ Phaser/Socket.IO stack.
   the destroyed-route repair was useful. Direct atlas review also found that
   route consequences remain generic rather than strategy-relative, leaving the
   model to infer the global effect from local metrics. Do not rerun the gate.
-  The bundled `r3`/brief-`r2` refinement now adds compact per-candidate ASCII and
+  The bundled `r3`/brief-`r2` refinement adds compact per-candidate ASCII and
   structured after-state deltas, removes fallback identity from the model-facing
   brief, and assigns IDs and presentation positions through separate
   basis-derived deterministic orders. The fallback remains private server
   authority. Because the corrected gate exhausted its six-second window at
   5,999 ms, the owner authorized an eight-second whole-window deadline and p95
-  threshold. Local focused verification passes; one new deployed zero-retry
-  five-probe artifact is the next gate.
+  threshold. The current `r4` prompt also supplies a shared turn-based,
+  destructible-world gameplay contract plus only the active Collect, Defend or
+  Claim rule selected by the player; the two other mode explanations are absent
+  from that request. One new deployed zero-retry five-probe artifact using r4 is
+  the next gate.
   No live Gemini selection, public R8 promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port

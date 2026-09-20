@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const V10_R8_STRATEGY_POLICY_ID = 'nimble-knots-strategy-v1' as const;
 export const V10_R8_BRIEF_REVISION = 'v10-r8-strategic-brief-r2' as const;
-export const V10_R8_PROMPT_VERSION = 'v10-r8-strategic-prompt-r3' as const;
+export const V10_R8_PROMPT_VERSION = 'v10-r8-strategic-prompt-r4' as const;
 export const V10_R8_STRATEGY_MILESTONE_IDS = Object.freeze([
     'approach-objective',
     'create-route',

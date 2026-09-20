@@ -1013,9 +1013,13 @@ function projectWorldSurfacePartsV10R8(
 }
 
 function winningCondition(state: SimulationStateV10R8): string {
-    if (state.objective.objectiveMode === 'collect') return 'Collect more coins than the player before all coins resolve or the turn limit.';
-    if (state.objective.objectiveMode === 'defend') return "Capture the player's chest before elimination or the turn limit.";
-    return 'Prevent the player from capturing the Loomkeeper chest.';
+    if (state.objective.objectiveMode === 'collect') {
+        return 'Gain an unbeatable coin lead or eliminate the player; otherwise have the higher score when all coins resolve or the 16-turn limit is reached.';
+    }
+    if (state.objective.objectiveMode === 'defend') {
+        return "Touch or drop the player's chest out of the arena, or eliminate the player, before the chest survives the 16-turn limit.";
+    }
+    return 'Prevent contact with or loss of the Loomkeeper chest; eliminate the player or keep the chest active through the 16-turn limit.';
 }
 
 function targetFor(

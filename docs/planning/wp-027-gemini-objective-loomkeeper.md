@@ -1,6 +1,6 @@
 # WP-027 Strategic-Voyage Gemini Loomkeeper
 
-Status: **in progress; Waypoint 3 r3 boundary refinement implemented locally**
+Status: **in progress; Waypoint 3 r4 gameplay-contract refinement implemented locally**
 Required predecessor: completed WP-026 R8 objective-mode canary
 
 ## Product outcome
@@ -494,6 +494,27 @@ changes. Local diagnostics across the five probes produced 16.2-18.7 KB briefs,
 and roughly 1.1-1.3 seconds of preparation on the development host. A new real
 five-probe artifact is required before Phone Gate A; no provider call occurs in
 local verification.
+
+Dynamic gameplay-contract refinement, 2026-09-20: prompt identity advances to
+`v10-r8-strategic-prompt-r4`; brief revision remains `v10-r8-strategic-brief-r2`.
+Every request now explains the shared world before asking for a decision:
+NIMble Knots is a turn-based 2D tactics game, the player and Loomkeeper
+alternate turns, each candidate is one complete server-simulated Loomkeeper
+turn, terrain destruction changes support/routes/landings, actors can lose
+stitching or fall out, and physical coins/chests fall with their support but
+cannot be destroyed by weapons. The contract identifies the battlefield as the
+before-state and each `worldDelta` as one candidate's predicted after-state. It
+also tells Gemini that a temporary local cost can support a stronger multi-turn
+route.
+
+The mode clause is derived solely from `brief.objective.mode`. A Collect request
+explains only the coin race, a Defend request only the Loomkeeper attack on the
+player's chest, and a Claim request only the Loomkeeper defence of its chest.
+The two unselected mode descriptions are absent. The brief still carries the
+specific winning condition and live score/state. Candidate generation,
+fallback authority, timing, thresholds and response validation are unchanged.
+The next deployed five-probe artifact must therefore use exact prompt r4; r3
+must not be deployed or measured as the current prompt.
 
 ### Phone Gate A - live Gemini Practice
 

@@ -18,7 +18,22 @@ export const WP027_GEMINI_ENDPOINT =
 const MAX_PROVIDER_BODY_BYTES = 64 * 1024;
 const INPUT_USD_PER_MILLION = 0.75;
 const OUTPUT_USD_PER_MILLION = 3.75;
-const SYSTEM_INSTRUCTION = [
+const SHARED_GAME_CONTRACT = [
+    'NIMble Knots is a turn-based 2D tactics game on destructible terrain.',
+    'A human player and the AI Loomkeeper alternate turns. Each legal candidate is one complete server-simulated Loomkeeper turn, including movement, jumping, weapon use and resulting physics.',
+    'An actor is eliminated when its stitching is exhausted or it falls out of the arena. Destroyed terrain changes support, routes and landings.',
+    'Coins and chests are physical objective objects. Weapons cannot destroy them, but they fall when terrain support disappears and can fall out of the arena.',
+    'The battlefield is the current before-state. Each candidate worldDelta is that candidate predicted after-state relative to the battlefield.',
+    'A locally weaker action can be correct when it preserves or creates a stronger multi-turn route.'
+] as const;
+
+const MODE_GAME_CONTRACT: Readonly<Record<StrategicDecisionBriefV10R8['objective']['mode'], string>> = Object.freeze({
+    collect: 'Mode Collect: both actors compete for scattered coins. Either actor wins immediately by gaining an unbeatable coin lead or eliminating the opponent. When all coins resolve or the 16-turn limit is reached, higher score wins and equal score draws.',
+    defend: "Mode Defend: the player defends the player's chest and the Loomkeeper attacks it. The Loomkeeper wins by touching the chest, dropping it out of the arena or eliminating the player. The player wins by eliminating the Loomkeeper or keeping the chest active through the 16-turn limit.",
+    claim: "Mode Claim: the player attacks the Loomkeeper's chest and the Loomkeeper defends it. The player wins by touching the chest, dropping it out of the arena or eliminating the Loomkeeper. The Loomkeeper wins by eliminating the player or keeping the chest active through the 16-turn limit."
+});
+
+const DECISION_INSTRUCTION = [
     'You choose one strategic candidate for the Loomkeeper in NIMble Knots.',
     'Use only facts and identifiers present in the supplied bounded brief.',
     'Choose exactly one legal candidate or abstain. Never invent an action, object, route, target, or observation.',
@@ -29,7 +44,7 @@ const SYSTEM_INSTRUCTION = [
     'Repair or switch only when current evidence invalidates that strategy or protects a more valuable future option.',
     'Keep reason and watchFor concise, non-empty and no longer than 160 characters each.',
     'Your output is advice only. The server validates it and alone owns execution.'
-].join('\n');
+] as const;
 
 type FetchLike = typeof fetch;
 
@@ -96,7 +111,7 @@ export class GeminiStrategicDecisionProviderV10R8 implements StrategicDecisionPr
 
 export function geminiRequestBody(brief: StrategicDecisionBriefV10R8): Readonly<Record<string, unknown>> {
     return Object.freeze({
-        systemInstruction: Object.freeze({ parts: Object.freeze([{ text: SYSTEM_INSTRUCTION }]) }),
+        systemInstruction: Object.freeze({ parts: Object.freeze([{ text: systemInstructionFor(brief) }]) }),
         contents: Object.freeze([Object.freeze({
             role: 'user',
             parts: Object.freeze([{ text: JSON.stringify({
@@ -111,6 +126,10 @@ export function geminiRequestBody(brief: StrategicDecisionBriefV10R8): Readonly<
             responseJsonSchema: responseSchema(brief)
         })
     });
+}
+
+function systemInstructionFor(brief: StrategicDecisionBriefV10R8): string {
+    return [...SHARED_GAME_CONTRACT, MODE_GAME_CONTRACT[brief.objective.mode], ...DECISION_INSTRUCTION].join('\n');
 }
 
 function responseSchema(brief: StrategicDecisionBriefV10R8): Readonly<Record<string, unknown>> {

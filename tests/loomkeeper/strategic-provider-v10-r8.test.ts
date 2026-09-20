@@ -45,7 +45,7 @@ test('WP-027 adapter accepts one strict selection and records abstention without
     assert.equal(first.outcome, 'selected');
     assert.deepEqual(first.decision, selected);
     assert.equal(first.responseBytes, Buffer.byteLength(JSON.stringify(selected)));
-    assert.equal(requests[0].promptVersion, 'v10-r8-strategic-prompt-r3');
+    assert.equal(requests[0].promptVersion, 'v10-r8-strategic-prompt-r4');
     assert.equal(requests[0].brief, boundary.brief);
     assert.equal(requests[0].deadlineMs, 7_960);
 

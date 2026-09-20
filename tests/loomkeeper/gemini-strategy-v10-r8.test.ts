@@ -4,7 +4,8 @@ import test from 'node:test';
 import {
     GeminiStrategicDecisionProviderV10R8,
     WP027_GEMINI_ENDPOINT,
-    WP027_GEMINI_MODEL_ID
+    WP027_GEMINI_MODEL_ID,
+    geminiRequestBody
 } from '../../server/src/simulation/gemini-strategy-provider-v10-r8';
 import { loomkeeperStrategyRuntimeFromEnvironmentV10R8 } from '../../server/src/simulation/loomkeeper-strategy-config-v10-r8';
 import {
@@ -57,7 +58,7 @@ test('WP-027 Gemini transport sends one bounded structured request and records u
             }), { status: 200, headers: { 'content-type': 'application/json' } });
         });
     const response = await provider.decide({
-        promptVersion: 'v10-r8-strategic-prompt-r3',
+        promptVersion: 'v10-r8-strategic-prompt-r4',
         brief: fixture.boundary.brief,
         signal: new AbortController().signal,
         deadlineMs: 8_000
@@ -76,6 +77,7 @@ test('WP-027 Gemini transport sends one bounded structured request and records u
     assert.match(body.systemInstruction.parts[0].text, /no longer than 160 characters/);
     assert.match(body.systemInstruction.parts[0].text, /identifiers and list positions carry no preference/);
     assert.match(body.systemInstruction.parts[0].text, /y:xStart-xEnd:before>after/);
+    assert.match(body.systemInstruction.parts[0].text, /turn-based 2D tactics game/);
     const providerInput = JSON.parse(body.contents[0].parts[0].text);
     assert.equal(providerInput.brief.legalCandidates.some((candidate: Record<string, unknown>) =>
         'deterministicFallback' in candidate), false);
@@ -96,10 +98,58 @@ test('WP-027 Gemini transport sends one bounded structured request and records u
     });
 });
 
+test('WP-027 Gemini gameplay contract includes only the selected objective mode', () => {
+    const source = createWp027ProbeFixturesV10R8()[0].boundary.brief;
+    const cases = [
+        {
+            mode: 'collect' as const,
+            winningCondition: 'Gain an unbeatable coin lead or eliminate the player; otherwise have the higher score when all coins resolve or the 16-turn limit is reached.',
+            expected: /Mode Collect: both actors compete for scattered coins/,
+            outcome: /higher score wins and equal score draws/,
+            excluded: [/Mode Defend:/, /Mode Claim:/]
+        },
+        {
+            mode: 'defend' as const,
+            winningCondition: "Touch or drop the player's chest out of the arena, or eliminate the player, before the chest survives the 16-turn limit.",
+            expected: /Mode Defend: the player defends the player's chest/,
+            outcome: /keeping the chest active through the 16-turn limit/,
+            excluded: [/Mode Collect:/, /Mode Claim:/]
+        },
+        {
+            mode: 'claim' as const,
+            winningCondition: 'Prevent contact with or loss of the Loomkeeper chest; eliminate the player or keep the chest active through the 16-turn limit.',
+            expected: /Mode Claim: the player attacks the Loomkeeper's chest/,
+            outcome: /keeping the chest active through the 16-turn limit/,
+            excluded: [/Mode Collect:/, /Mode Defend:/]
+        }
+    ];
+    for (const scenario of cases) {
+        const brief = Object.freeze({
+            ...source,
+            objective: Object.freeze({
+                ...source.objective,
+                mode: scenario.mode,
+                winningCondition: scenario.winningCondition
+            })
+        });
+        const body = geminiRequestBody(brief) as {
+            systemInstruction: { parts: Array<{ text: string }> };
+        };
+        const instruction = body.systemInstruction.parts[0].text;
+        assert.match(instruction, /human player and the AI Loomkeeper alternate turns/);
+        assert.match(instruction, /one complete server-simulated Loomkeeper turn/);
+        assert.match(instruction, /Weapons cannot destroy them/);
+        assert.match(instruction, /current before-state/);
+        assert.match(instruction, scenario.expected);
+        assert.match(instruction, scenario.outcome);
+        for (const excluded of scenario.excluded) assert.doesNotMatch(instruction, excluded);
+    }
+});
+
 test('WP-027 Gemini transport exposes only bounded operational failure categories', async () => {
     const brief = createWp027ProbeFixturesV10R8()[0].boundary.brief;
     const request = {
-        promptVersion: 'v10-r8-strategic-prompt-r3' as const,
+        promptVersion: 'v10-r8-strategic-prompt-r4' as const,
         brief,
         signal: new AbortController().signal,
         deadlineMs: 8_000

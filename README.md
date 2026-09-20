@@ -113,10 +113,11 @@ five no-retry calls and writes the sanitized direct-review artifact to
 startup. Set `LOOMKEEPER_PROVIDER=deterministic` after the shadow gate; dormant
 credentials are ignored in deterministic mode.
 
-The current r3 prompt receives the authoritative 64x36 before-state plus bounded
-per-candidate ASCII and structured after-state deltas. Candidate order and IDs
-carry no preference, fallback identity remains private to the server, and the
-whole decision window is eight seconds.
+The current r4 prompt explains the shared turn-based destructible-world rules
+and only the active Collect, Defend or Claim mode. It receives the authoritative
+64x36 before-state plus bounded per-candidate ASCII and structured after-state
+deltas. Candidate order and IDs carry no preference, fallback identity remains
+private to the server, and the whole decision window is eight seconds.
 
 ## Temporary Nimiq Pay Display Workaround
 
