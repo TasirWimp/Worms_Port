@@ -113,6 +113,19 @@ follow-up story-basis pins changed; all eight state and legal-atlas pins stayed
 fixed. The r1 deployed trial and r2 local fake remain historical inputs. R3 is
 a new story input and has not made a provider request or earned live authority.
 
+The provider-independent `chapter-carrier-r1` builder now defines the compact
+post-action record for either action port. It binds the fixed mode, preceding
+carrier hash, replay observation/fact IDs, validated story and intention,
+selected legal candidate/source, questions that could weaken the reading, and
+authoritative outcome deltas. Its constructor recomputes the hidden story brief
+and deterministic match from their source inputs. This is a preparation seam:
+the carrier is not yet written into R8 replay, and the current one-call policy
+still owns every live turn. Replay migration and provider-free reconstruction
+remain part of the eventual private canary implementation after the paired
+shadow comparison selects an action port. Until that integration binds the
+selected candidate to a reconstructed executed turn, this carrier alone is not
+an execution proof.
+
 ## Product outcome
 
 Give the Loomkeeper a coherent multi-turn strategy across Defend, Collect and
