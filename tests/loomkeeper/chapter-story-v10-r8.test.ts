@@ -45,6 +45,9 @@ test('WP-027 story port hides candidates and freezes only mode-correct grounded 
     assert.equal(storyWire.includes('legalCandidates'), false);
     assert.equal(storyWire.includes('candidateId'), false);
     assert.equal(storyWire.includes('deterministicFallback'), false);
+    assert.equal(storyWire.includes('at most 180 characters'), true);
+    assert.equal(storyWire.includes('at most 110 characters'), true);
+    assert.equal(storyWire.includes('State only witnessed effects'), true);
     const redactedLater = buildChapterStoryBriefV10R8({
         decisionBrief: boundary.brief,
         observation: { ...observation, priorLoomkeeper: {
@@ -103,6 +106,7 @@ test('WP-027 story port hides candidates and freezes only mode-correct grounded 
     assert.equal(fitWire.includes('legalCandidates'), false);
     assert.equal(fitWire.includes('deterministicFallback'), false);
     assert.equal(fitWire.includes(frozen.proposal.intention.posture), true);
+    assert.equal(fitWire.includes('at most 110 characters'), true);
     for (const candidateId of comparison.shortlist) assert.equal(fitWire.includes(candidateId), true);
     const chosen = validateCandidateFitV10R8(comparison, {
         candidateId: comparison.shortlist[0], reason: 'Fits the frozen coin contest.', watchFor: 'The player may collect first.'

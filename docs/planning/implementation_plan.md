@@ -19,9 +19,11 @@ Phaser/Socket.IO stack.
   new replay policy; do not reinterpret the failed one-call artifacts. Live
   selection, public R8 and Daily remain blocked until the revised shadow and
   private Practice gates pass.
-  The deployed chapter r1 five-case shadow awaits its provider result; the
-  local eight-case r3 fixture uses authoritative prior-turn result text and is
-  a separate, provider-unrun input.
+  The deployed chapter r1 five-case shadow failed at bounded-text validation:
+  1/5 stories passed, and its one action-fit response also exceeded the reason
+  limit, leaving 0/5 complete pairs. All six calls returned HTTP 200. The `chapter-shadow-r4` prompt
+  correction requests concise prose; the local eight-case r3 fixture also
+  uses authoritative prior-turn result text and remains provider-unrun.
   The provider-independent committed chapter-carrier builder passed its local
   selected gate; it is not yet a live replay or selection policy.
   WP-026 V10 R8 Objective Modes is complete.

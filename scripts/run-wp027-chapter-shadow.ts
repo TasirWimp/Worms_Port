@@ -17,7 +17,7 @@ import { hashCanonicalV10Value } from '../shared/simulation-v10';
 import { createWp027ChapterFixtures, WP027_CHAPTER_FIXTURE_VERSION, type Wp027ChapterFixture } from
     './wp027-chapter-shadow-fixtures';
 
-const VERSION = 'v10-r8-chapter-shadow-r3';
+const VERSION = 'v10-r8-chapter-shadow-r4';
 const DEADLINE_MS = 60_000;
 const OUTPUT = path.resolve('test-results/wp027-chapter-shadow.json');
 type Mode = 'fixture-only' | 'local-fake' | 'mistral';
@@ -35,32 +35,38 @@ const stringEnum = (values: readonly string[]): JsonSchema => ({ type: 'string',
 const objectSchema = (properties: Readonly<Record<string, JsonSchema>>): JsonSchema => ({
     type: 'object', additionalProperties: false, properties, required: Object.keys(properties)
 });
-const textSchema: JsonSchema = { type: 'string' };
+const conciseText = (purpose: string, characters: number): JsonSchema => ({
+    type: 'string', description: `${purpose} Use at most ${characters} characters.`
+});
 
 export function chapterStoryJsonSchema(brief: ChapterStoryBriefV10R8): JsonSchema {
     const evidence = brief.facts.map(fact => fact.id).filter(id =>
         id !== 'prior.committed' && id !== 'world.no_material_change');
     const reading = objectSchema({
-        hypothesis: textSchema,
+        hypothesis: conciseText('A tentative player hypothesis.', 110),
         evidenceIds: { type: 'array', items: stringEnum(evidence), minItems: 1, maxItems: 3 },
-        alternative: textSchema,
-        watchFor: textSchema
+        alternative: conciseText('A plausible alternative reading.', 110),
+        watchFor: conciseText('One observation that would weaken the reading.', 110)
     });
     return objectSchema({
-        chapterClosure: textSchema,
+        chapterClosure: conciseText('Only witnessed events in one short sentence.', 180),
         playerReading: { anyOf: [reading, { type: 'null' }] },
         intention: objectSchema({
             posture: stringEnum(brief.allowedPostures),
             targetId: stringEnum(brief.targetIds),
             horizonOwnTurns: { type: 'integer', minimum: 1, maximum: 3 },
-            reason: textSchema,
-            watchFor: textSchema
+            reason: conciseText('Why this intention fits the fixed mode and observed facts.', 110),
+            watchFor: conciseText('One observation that would change this intention.', 110)
         })
     });
 }
 
 export function candidateFitJsonSchema(ids: readonly string[]): JsonSchema {
-    return objectSchema({ candidateId: stringEnum(ids), reason: textSchema, watchFor: textSchema });
+    return objectSchema({
+        candidateId: stringEnum(ids),
+        reason: conciseText('How this completed turn fits the frozen intention.', 110),
+        watchFor: conciseText('One uncertain future condition to monitor.', 110)
+    });
 }
 
 function requestBody(system: string, user: unknown, schemaName: string, schema: JsonSchema): Readonly<Record<string, unknown>> {

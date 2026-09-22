@@ -126,6 +126,23 @@ shadow comparison selects an action port. Until that integration binds the
 selected candidate to a reconstructed executed turn, this carrier alone is not
 an execution proof.
 
+The pinned five-case chapter r1 deployed comparison ran on commit `cffd30a`
+with no retry. All five Mistral story requests returned HTTP 200. One of five
+stories passed the local validator; the other four exceeded the
+160-character intention-reason limit, and one also exceeded the 240-character
+closure limit. That one valid Defend story reached the action-fit pass, whose
+reason also exceeded 160 characters. Thus 0/5 complete story/fit pairs
+validated. Captured provider time was
+49,987 ms and estimated cost was USD 0.006197. The ignored Render artifact's
+SHA-256 is `f6f9079e8877e7c9845f812a8e9a1c01a9d3e0840d7ae05126532b25ce19daec`;
+a copy was retained on that deployment as
+`test-results/wp027-chapter-shadow-r1-failed.json`. This is a wire-contract
+failure, not evidence that either action port makes better choices. The new
+`chapter-shadow-r4` request asks for substantially shorter prose in both the
+system instruction and field descriptions, while the existing strict server
+limits and failure behavior remain. The next trial uses the eight-case r3
+fixtures and changed story requests; it must keep its own artifact identity.
+
 ## Product outcome
 
 Give the Loomkeeper a coherent multi-turn strategy across Defend, Collect and

@@ -194,6 +194,7 @@ export function chapterStorySystemInstructionV10R8(mode: V10R8ObjectiveMode): st
         'Player psychology is a tentative hypothesis, not a fact or permanent type. Cite only supplied fact IDs; offer an alternative reading and a counter-observation.',
         'A prior reading, if supplied, is tentative history. Reassess it against this chapter; do not treat its old citations as new observations.',
         'If evidence does not support a player reading, return playerReading=null. Never invent a route, future player response, objective result or action.',
+        'Be terse: chapterClosure must be at most 180 characters; every other free-text field must be at most 110 characters. State only witnessed effects, not inferred causal outcomes.',
         'You do not see legal candidates now. Do not request or name a candidate. Your output cannot execute gameplay.'
     ].join('\n');
 }

@@ -45,7 +45,8 @@
     "Version chapter carrier, policy, recovery and replay evidence before any live authority; retain deterministic fallback and private R8 Practice until the revised shadow comparison and owner phone gate pass.",
     "Version the provider-free chapter comparison fixtures from five to eight with an actor-attributed terrain-changing shot, a Defend guard-to-shot follow-up, and a player coin-score counteraction after a pinned Collect opening; bind follow-up readings to their own opening and keep the deployed r1 trial immutable.",
     "Correct the prior Loomkeeper result in the local r3 chapter story to authoritative observed deltas; keep the deployed r1 and local r2 fixture inputs distinct.",
-    "Prepare a provider-independent, versioned committed chapter carrier that binds one legal selection to the replay-derived observation and actual consequence without enabling live model authority or changing the deployed one-call policy."
+    "Prepare a provider-independent, versioned committed chapter carrier that binds one legal selection to the replay-derived observation and actual consequence without enabling live model authority or changing the deployed one-call policy.",
+    "Preserve the failed deployed chapter r1 story artifact and correct its output-length request contract without weakening the server validator or granting model authority."
   ],
   "non_goals": [
     "No Gemini SDK, API key, network call, provider adapter, prompt execution, shadow mode or live model selection in Waypoint 1.",
@@ -448,6 +449,11 @@
       "command": "provider-free chapter carrier focused tests and npm.cmd run verify:changes",
       "status": "pass",
       "details": "Testing-only worms_port_test_runner on GPT-5.6 Terra/medium used frozen fingerprint 438ae746572129eece89390aa2da808a35a3496623c090ae2b1da2cbce97b15d. Focused chapter-story 2/2 and types passed; the zero-retry selected gate passed work packages 74, import boundary, 318 supported units, fresh build proof 8e1dfd6fcfe9 / 23c6b6838495, standard R7 smoke, identity/reward security, bundle limits and maintained Chromium phone journeys 19/19. PostgreSQL retained its expected local prerequisite skip. An earlier selector on changing inputs was stopped during simulation and is not acceptance evidence. No provider, physical phone, visual, performance, retired legacy, daily/release or automatic retry. Logs .cache/wp027-chapter-carrier-r1-{focused,types,selector}.log."
+    },
+    {
+      "command": "chapter r4 bounded-text request change-selected verification and local fake",
+      "status": "pass",
+      "details": "Testing-only worms_port_test_runner on GPT-5.6 Terra/medium ran one zero-retry selector at fingerprint 4c8826c246f05ec1af7cd3b1dfa1c00146766d2e2481a5df883758139f375b0a. Work packages 74, types, import boundary, 318 supported units, fresh build proof bd1f98138719 / 23c6b6838495, standard R7 smoke, identity/reward security, bundle limits and Chromium phone 19/19 passed; PostgreSQL retained its expected local prerequisite skip. During that run, only documentation wording was corrected, so the original fingerprint is stale for the final document input. A fresh dry-run fingerprint ac653f94c38935b6d8fa19b578e83848eed87ed9dc6208ddbc2d21cb95ba4b6f and current-input work-package validation passed without repeating unchanged product phases. Eight local-fake chapter story/fit pairs validated, comparisonReady=true, strategicGatePassed=null, synthetic candidate agreement 1/8, zero provider time/cost. No real provider, physical phone, visual, performance, retired legacy, daily/release or automatic retry. Logs .cache/wp027-chapter-two-pass-{selector,final-dry-run,final-work-packages,local-fake}.log."
     }
   ],
   "reviews": [
@@ -625,6 +631,11 @@
       "reviewer": "primary assistant direct chapter carrier seam review",
       "status": "pass",
       "details": "The provider-independent builder recomputes the story brief from the server observation and prior reading, revalidates the model story, recomputes the deterministic shortlist, accepts only a current legal candidate, and derives result deltas from the R8 before/after states. The versioned record retains mode, prior carrier hash, fact IDs, story/intention, candidate source, counter-observations and observed outcome. Focused tests cover a two-chapter chain, server matcher, shortlist-bound model fit, fallback and invalid predecessor. The module is not wired to replay or live authority; it cannot by itself prove that the selected candidate executed. That binding, reconstruction and phone gate remain necessary."
+    },
+    {
+      "reviewer": "primary assistant direct deployed chapter r1 failure review",
+      "status": "pass",
+      "details": "Commit cffd30a's five-case no-retry Mistral shadow run returned HTTP 200 for all five story requests. One Defend story validated, but its action-fit response exceeded the 160-character reason limit; the other four stories exceeded the intention-reason limit, and Collect follow-up also exceeded its 240-character closure bound. Thus 0/5 complete pairs validated across six successful calls. Captured provider time was 49,987 ms and estimated cost USD 0.006197. The exact ignored Render JSON had SHA-256 f6f9079e8877e7c9845f812a8e9a1c01a9d3e0840d7ae05126532b25ce19daec and was copied there as wp027-chapter-shadow-r1-failed.json. This is a request/validator length mismatch; no action-port comparison or strategic acceptance follows. Chapter-shadow-r4 adds explicit shorter text guidance in schema field descriptions and system instruction while retaining strict validation and deterministic gameplay."
     }
   ],
   "skipped_checks": [
@@ -657,6 +668,7 @@
     "Chapter r1 proves candidate-hidden input, actor-attributed observation, replay reconstruction and comparison plumbing only. Its five source chapters omit setbacks, contrary player evidence and terminal player turns. The server matcher labels geometric route scores as proxies; neither local fake agreement nor a future five-call provider result alone proves multi-turn strategy. Live R8 selection and public Daily remain blocked until a wider fixed shadow comparison, versioned replay/continuity integration, selected checks and owner private-Practice phone gate.",
     "Chapter r2 adds three provider-free fixed cases and terminal-turn rejection, but the player score is a competitive setback rather than proof of a destroyed future route. The r1 deployed provider comparison remains pending user-run Render Shell evidence, and no r2 real provider run or live canary has occurred. The actual strategy fit, wait time and cost of both action ports remain unverified; Daily and rewards retain deterministic R7 behavior.",
     "R3 corrects prior-turn story evidence and has a distinct eight-case story input; it has only fixture and local-fake validation. The committed strategic record still uses the historical one-call policy. A real provider comparison, explicit action-port choice, new replay policy/carrier and private Practice phone gate are required before any live model authority; public R8 and Daily remain unchanged.",
-    "The chapter carrier builder is a pure post-action seam and is not yet in the persisted R8 replay. Its schema and constructor cannot prove the selected candidate actually executed; the private canary policy must bind it to the authoritative committed turn, reject tampering during provider-free reconstruction, and preserve the deterministic fallback through deletion/restart."
+    "The chapter carrier builder is a pure post-action seam and is not yet in the persisted R8 replay. Its schema and constructor cannot prove the selected candidate actually executed; the private canary policy must bind it to the authoritative committed turn, reject tampering during provider-free reconstruction, and preserve the deterministic fallback through deletion/restart.",
+    "The chapter r1 trial cannot compare action ports because 0/5 complete story/fit pairs validated under bounded text, despite six successful transport calls. The concise r4 request has not yet made a real provider call; its effect on validity, grounding, fit quality, latency and cost remains unknown. The failed r1 artifact copy is on the deployed Render instance and must be treated as ephemeral until durably archived."
   ]
 }
