@@ -782,7 +782,10 @@ export class LiveSimulationCoordinatorV10 {
         entry.strategic.lastObserved = structuredClone(entry.state);
         entry.strategic.lastObservedHash = entry.stateHash;
         entry.strategic.lastAction = describeStrategicAction(entry.strategic.executing.candidate);
-        entry.strategic.lastObservedResult = describeStrategicResult(entry.strategic.executing.candidate);
+        if (!entry.strategic.source) throw new Error('Strategic result is missing its authoritative start state.');
+        entry.strategic.lastObservedResult = describeStrategicResult(
+            entry.strategic.executing.candidate.candidateId, entry.strategic.source, entry.state
+        );
         entry.strategic.executing = undefined;
     }
     private recentStrategicChanges(entry: Entry, current: SimulationStateV10R8): RecentStrategicChangesV10R8 {
@@ -898,9 +901,13 @@ function describeStrategicAction(candidate: StrategicCandidateSummaryV10R8): str
     return `${candidate.candidateId}: ${candidate.action.movement}${jump}, then ${candidate.action.relicId}.`;
 }
 
-function describeStrategicResult(candidate: StrategicCandidateSummaryV10R8): string {
-    const immediate = candidate.immediate;
-    return `${candidate.candidateId} removed ${immediate.terrainCellsRemoved} terrain cells, changed player stitching by ${immediate.opponentStitchingDelta}, and objective score by ${immediate.objectiveScoreDelta}.`;
+function describeStrategicResult(candidateId: string, before: SimulationStateV10R8, after: SimulationStateV10R8): string {
+    if (before.objective.objectiveMode !== after.objective.objectiveMode) {
+        throw new Error('Strategic result changed the match frame.');
+    }
+    return `${candidateId} changed terrain revision by ${after.terrainRevision - before.terrainRevision}, ` +
+        `player stitching by ${after.units[0].stitching - before.units[0].stitching}, ` +
+        `and Loomkeeper objective score by ${after.objective.scores.loomkeeper - before.objective.scores.loomkeeper}.`;
 }
 
 function createState(seed: number, calling: PlayerCalling, rulesetId: LiveV10RulesetId,

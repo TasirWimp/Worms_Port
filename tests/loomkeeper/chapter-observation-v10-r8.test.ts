@@ -6,7 +6,7 @@ import { compileChapterObservationV10R8 } from '../../server/src/simulation/loom
 import { ReplayRecordV10Schema, type ReplayRecordV10 } from '../../shared/protocol-v10';
 import { CoordinatorReplayV10R8Schema } from '../../shared/protocol-v10-live';
 import { V10_R6_DYNAMICS } from '../../shared/simulation-v10';
-import { createSimulationV10R8, type SimulationStateV10R8, type V10R8ObjectiveMode } from '../../shared/simulation-v10-r8';
+import { createSimulationV10R8, V10_R8_RULESET_ID, type SimulationStateV10R8, type V10R8ObjectiveMode } from '../../shared/simulation-v10-r8';
 
 const beforeHash = 'a'.repeat(64);
 const afterHash = 'b'.repeat(64);
@@ -104,6 +104,10 @@ test('WP-027 private R8 coordinator emits a source-bound opening chapter without
         assert.equal(observations.length, 1);
         assert.equal(observations[0].mode, 'claim');
         assert.equal(observations[0].opening, true);
+        const beforeLoomkeeper = live.get(challengeId)?.state;
+        if (!beforeLoomkeeper || beforeLoomkeeper.rulesetId !== V10_R8_RULESET_ID) {
+            throw new Error('Expected the first R8 Loomkeeper turn.');
+        }
         const replay = CoordinatorReplayV10R8Schema.parse(live.replay(challengeId));
         assert.ok(replay.records.some(record => record.stateHash === observations[0].basis.afterStateHash),
             'the chapter must bind the player-turn replay state, even when the coordinator advances further');
@@ -113,11 +117,19 @@ test('WP-027 private R8 coordinator emits a source-bound opening chapter without
         }
         const firstCommitted = CoordinatorReplayV10R8Schema.parse(live.replay(challengeId)).strategicTurns[0];
         assert.equal(firstCommitted?.status, 'committed');
+        const afterLoomkeeper = live.get(challengeId)?.state;
+        if (!afterLoomkeeper || afterLoomkeeper.rulesetId !== V10_R8_RULESET_ID) {
+            throw new Error('Expected the observed R8 Loomkeeper outcome.');
+        }
         live.advance(challengeId, V10_R6_DYNAMICS.actionTicks + 60);
         assert.equal(observations.length, 2);
         assert.equal(observations[1].opening, false);
         assert.equal(observations[1].priorLoomkeeper?.selectedCandidateId, firstCommitted.selectedCandidateId);
         assert.equal(observations[1].priorLoomkeeper?.observedStateHash, firstCommitted.observedStateHash);
+        assert.equal(observations[1].priorLoomkeeper?.result,
+            `${firstCommitted.selectedCandidateId} changed terrain revision by ${afterLoomkeeper.terrainRevision - beforeLoomkeeper.terrainRevision}, ` +
+            `player stitching by ${afterLoomkeeper.units[0].stitching - beforeLoomkeeper.units[0].stitching}, ` +
+            `and Loomkeeper objective score by ${afterLoomkeeper.objective.scores.loomkeeper - beforeLoomkeeper.objective.scores.loomkeeper}.`);
         const replayAfterTwoChapters = CoordinatorReplayV10R8Schema.parse(live.replay(challengeId));
         const reconstructed = await verifier.reconstructAndVerifyAsync(replayAfterTwoChapters);
         assert.equal(reconstructed.stateHash, live.get(challengeId)?.stateHash);
