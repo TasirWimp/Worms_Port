@@ -43,7 +43,8 @@
     "Archive the recovery separately, compare the ten fixed compact/crowded arms across their different schedules, retain the original failed transport result and five-probe release failure, and select the simpler next shadow contract without granting live model authority.",
     "Owner-selected match-framed chapter revision: compile actor-attributed opening and exchange observations from the R8 replay and world, freeze a candidate-hidden, mode-correct interpretation and Loomkeeper intention, then compare deterministic and Mistral candidate matching on the same atlas in shadow.",
     "Version chapter carrier, policy, recovery and replay evidence before any live authority; retain deterministic fallback and private R8 Practice until the revised shadow comparison and owner phone gate pass.",
-    "Version the provider-free chapter comparison fixtures from five to eight with an actor-attributed terrain-changing shot, a Defend guard-to-shot follow-up, and a player coin-score counteraction after a pinned Collect opening; bind follow-up readings to their own opening and keep the deployed r1 trial immutable."
+    "Version the provider-free chapter comparison fixtures from five to eight with an actor-attributed terrain-changing shot, a Defend guard-to-shot follow-up, and a player coin-score counteraction after a pinned Collect opening; bind follow-up readings to their own opening and keep the deployed r1 trial immutable.",
+    "Correct the prior Loomkeeper result in the local r3 chapter story to authoritative observed deltas; keep the deployed r1 and local r2 fixture inputs distinct."
   ],
   "non_goals": [
     "No Gemini SDK, API key, network call, provider adapter, prompt execution, shadow mode or live model selection in Waypoint 1.",
@@ -426,6 +427,21 @@
       "command": "Render deploy dep-dapeacrbc2fs73febi70 of chapter r1 commit cffd30a",
       "status": "pass",
       "details": "Manual deployment of the already-pushed shadow-only chapter r1 code succeeded and became Live after the Render build and health check on 2026-09-22. LOOMKEEPER_PROVIDER remained deterministic and rewards remained active. No chapter provider script has been reported as run and no model-controlled gameplay was enabled. The r2 fixture commit a7ca5de was pushed later but auto-deploy remains disabled; the deployed r1 and local r2 trial inputs are distinct."
+    },
+    {
+      "command": "chapter observed-result coordinator gate at fingerprint 70f94a3d",
+      "status": "pass",
+      "details": "Testing-only worms_port_test_runner on GPT-5.6 Terra/medium ran the focused two-chapter replay test 4/4, then the zero-retry change-selected runtime gate on the exact code later committed as 81f772e. Import boundary, types, 317 selected units, fresh build proof 2d487ac8b68f / 23c6b6838495, built smoke, identity/reward security, bundle limits and canonical Chromium phone journeys 19/19 passed. PostgreSQL retained the expected local prerequisite skip; performance, visual, retired legacy, daily/release, physical phone and real provider were not run. Logs .cache/wp027-observed-result-{focused,selector}.log."
+    },
+    {
+      "command": "chapter r3 fixture-only, local-fake and npm.cmd run verify:changes",
+      "status": "pass",
+      "details": "Testing-only worms_port_test_runner on GPT-5.6 Terra/medium used script/docs selector fingerprint 67c34197f8c67a01d1a193293efa2b17e6ed084960832780614bdf93632ebae1 after runtime commit 81f772e. Eight pinned fixtures passed; all 8 local-fake story/fit pairs validated with comparisonReady=true, strategicGatePassed=null, synthetic same-candidate 1/8 and zero provider cost. Work-package evidence 74, types and Loomkeeper 63/63 passed with no retry. No build/browser rerun because those exact runtime inputs passed in the preceding gate; no PostgreSQL, daily/release, physical phone or real Mistral call. Logs .cache/wp027-chapter-r3-{fixture,local-fake,selector}.log."
+    },
+    {
+      "command": "npm.cmd run audit:housekeeping at chapter r3 transition",
+      "status": "pass",
+      "details": "Report-only housekeeping passed on codex/wp-027-gemini-loomkeeper tracking its origin branch. WP-027 is the sole in-progress package; no gone tracking branch, failed current review or manual reconciliation is required. The dirty r3 fixture/evidence worktree was expected before its scoped commit."
     }
   ],
   "reviews": [
@@ -593,6 +609,11 @@
       "reviewer": "primary assistant direct match-framed chapter r2 fixture review",
       "status": "pass",
       "details": "The original five chapter state/story/atlas pins remain unchanged. New fixed cases are generated through the authoritative coordinator: Defend's player shot changes terrain after a guarded opening, Collect's alternate opening shot changes terrain, and a fork from the same pinned Collect opening records four player jumps, collection of coin-5 and a +1 player score after a committed Loomkeeper turn. Fixture lineage uses priorFixtureId, so a follow-up inherits only its own opening reading, and an invalid opening prevents its follow-up provider request. The compiler rejects a finished player turn. Exact future route support remains unknown, and no local fake result qualifies either action port for live play."
+    },
+    {
+      "reviewer": "primary assistant direct match-framed chapter r3 grounding review",
+      "status": "pass",
+      "details": "The prior Loomkeeper result in a later story chapter now derives from the authoritative start and observed end states, not the candidate's predicted immediate summary. Direct two-chapter replay review binds the text to observed terrain revision, player stitching and Loomkeeper objective score deltas and preserves candidate identity redaction at the story port. Only four follow-up story-basis hashes changed; every source-state and legal-atlas pin stayed fixed. R3 remains provider-unrun, so local fake validation proves plumbing and replay, not strategy quality or mobile wait acceptability."
     }
   ],
   "skipped_checks": [
@@ -623,6 +644,7 @@
     "The compact micro-decision diagnostic cannot isolate whether shorter evidence, two alternatives, explicit rules or task decomposition removed v9's premature closure. Its strict citation guard rejected two semantically valid unknown-future answers, and even five of five compact actions give no multi-turn quality or production-latency guarantee. Keep the original failed release gate and deterministic Render authority unchanged.",
     "The first follow-up artifact remains failed with eight unclassified crowded-arm HTTP errors. A separate, once-only paced recovery completed all eight and reported a 100,000-token/minute provider limit, supporting but not proving rate-limit pressure in the original run. Do not erase the failed result or describe the two schedules as a single clean trial. Two unsupported isolated future statuses and one wrong staged choice show decomposition does not reliably prevent early closure on these cases. Full route reachability still lacks a computed future witness, the fixed release gate remains failed, and live model authority remains blocked.",
     "Chapter r1 proves candidate-hidden input, actor-attributed observation, replay reconstruction and comparison plumbing only. Its five source chapters omit setbacks, contrary player evidence and terminal player turns. The server matcher labels geometric route scores as proxies; neither local fake agreement nor a future five-call provider result alone proves multi-turn strategy. Live R8 selection and public Daily remain blocked until a wider fixed shadow comparison, versioned replay/continuity integration, selected checks and owner private-Practice phone gate.",
-    "Chapter r2 adds three provider-free fixed cases and terminal-turn rejection, but the player score is a competitive setback rather than proof of a destroyed future route. The r1 deployed provider comparison remains pending user-run Render Shell evidence, and no r2 real provider run or live canary has occurred. The actual strategy fit, wait time and cost of both action ports remain unverified; Daily and rewards retain deterministic R7 behavior."
+    "Chapter r2 adds three provider-free fixed cases and terminal-turn rejection, but the player score is a competitive setback rather than proof of a destroyed future route. The r1 deployed provider comparison remains pending user-run Render Shell evidence, and no r2 real provider run or live canary has occurred. The actual strategy fit, wait time and cost of both action ports remain unverified; Daily and rewards retain deterministic R7 behavior.",
+    "R3 corrects prior-turn story evidence and has a distinct eight-case story input; it has only fixture and local-fake validation. The committed strategic record still uses the historical one-call policy. A real provider comparison, explicit action-port choice, new replay policy/carrier and private Practice phone gate are required before any live model authority; public R8 and Daily remain unchanged."
   ]
 }
