@@ -963,6 +963,66 @@ If computed facts fail while unknowns pass, information extraction is the
 leading issue. One sample per arm per world is diagnostic, not a stable model
 quality estimate or a new five-probe acceptance gate.
 
+The preregistered follow-up ran once on Render deployment
+`dep-dap711oae00c739a8j30` at commit `8975109` on 2026-09-22. The exact
+[sanitized result](../evidence/wp-027-mistral-factorial-r2/result.json) has
+SHA-256 `3eaa1962960585eccd6d2c425db139775fde158dc50b79003df99124e0cf66b3`.
+Forty-two of fifty no-retry calls completed. Eight returned unclassified HTTP
+errors, all in crowded arms: the repair arm lost its last three calls, and
+the preserve arm lost all five. The runner did not record HTTP status or
+rate-limit headers, so the cause is unresolved. The prior account allowance
+and the 114,667 captured input tokens before the first error make token-rate
+pressure plausible, not proven. Do not automatically retry failed calls or
+treat missing crowded answers as model decisions.
+
+All 25 compact calls completed. Its one-shot actions were 5/5 expected and
+its staged narrow choices 4/5. Among completed crowded calls, one-shot and
+staged actions each matched 3/3 expected; there is no matched evidence of a
+crowding accuracy decline. Every completed computed-turn control was
+classified `supported` (9/9). Every completed one-shot classified the
+uncomputed future claim `unknown` (8/8), but the separate future classifier
+did so only 6/8 times. For the same temporary-cost world, the isolated
+compact call said `refuted` because the candidate's distance increased, while
+the isolated crowded call said `supported` because an event described a
+promised route benefit. Neither current-turn distance nor a past/committed
+route description establishes next-player-turn reachability. The paired
+one-shot replies both said `unknown` and abstained. A second staged error
+occurred in compact setback continuation: its choice picked A while claiming
+B did not advance, contrary to B's exact 500-to-461 committed-target distance.
+
+The versioned assembler accepted three source-certified preferences; the old
+exact-ID assembler accepted none on these new calls because citations differed
+from canonical IDs. V2 also vetoed the two incorrect future statuses and the
+wrong setback choice. Its seven expected final actions include four required
+abstentions, so they are not seven successful model preferences. The run's
+captured estimated cost was USD 0.035259 (compact USD 0.008514, crowded
+USD 0.026745); rejected HTTP calls may have uncaptured cost. Crowded calls
+carried 148,490 captured input tokens versus compact calls' 15,968, although
+fewer crowded calls completed. These observations favor keeping future facts
+server-certified and retaining a compact one-shot preference for now. They do
+not prove that decomposition is harmful in general, that model context alone
+caused the HTTP failures, or that the fixed release gate passes. Before any
+further provider trial, classify HTTP status safely and enforce a bounded
+diagnostic token-rate schedule. R8 and Mistral remain shadow-only with
+deterministic gameplay authority.
+
+### Targeted recovery of the eight transport-missing answers
+
+Preserve the failed 50-call result above. To distinguish model quality from
+transport loss without rerunning 42 completed calls, perform one separately
+versioned recovery for its **eight** `http_error` rows only. Pin their exact
+case, presentation, call kind and request-body SHA-256 to the archived result.
+Keep the same model, claims, card, schema and high-reasoning prompt. Space the
+requests by ten seconds to avoid a burst of crowded-card tokens. Capture only
+HTTP status and numeric allowlisted rate-limit headers on any failure; never
+retain provider bodies, credentials or raw exceptions. Stop after one attempt
+per row with no automatic retry. The recovery artifact must link to the
+original artifact hash and stay separate. It is infrastructure diagnosis, not
+a replacement release gate or a rewrite of the first run's scores. If it
+returns usable answers, compare them with the matched compact answers while
+reporting the changed request schedule and incomplete original run. Otherwise
+preserve the new failure and stop this diagnostic line.
+
 ### Phone Gate A - live accepted-provider Practice
 
 After a shadow provider passes and its live authority mode is explicitly added,

@@ -201,10 +201,23 @@ Phaser/Socket.IO stack.
   A versioned diagnostic correction now lets server-certified status and the
   frozen action rule gate the choice while treating citation identity as audit
   evidence; the first artifact and scorer stay unchanged. The preregistered
-  follow-up pairs compact/crowded evidence with one-shot/staged decisions over
+  follow-up paired compact/crowded evidence with one-shot/staged decisions over
   the same A/B turns, plus exact computed-turn versus uncomputed-future claim
-  controls. After local verification, deploy and run its 50 no-retry shadow
-  calls once. It is not a replacement release gate.
+  controls. Deployed commit `8975109` ran 50 no-retry calls once; its
+  [result](../evidence/wp-027-mistral-factorial-r2/result.json) records 42
+  complete replies and eight unclassified HTTP errors, all crowded. Compact
+  one-shot choices were 5/5 expected, staged choices 4/5; every completed
+  computed fact was recognized, but two isolated future claims asserted
+  unsupported certainty while all completed one-shot replies kept future
+  status unknown. V2 vetoed these errors and accepted three certified
+  preferences. Crowded accuracy remains unresolved because two arms lack
+  decisions. The original five-probe gate remains failed; no live authority
+  or public R8 promotion follows. Render stayed deterministic.
+  To recover only the eight transport-missing answers, a separately versioned
+  diagnostic now pins their request hashes to the archived artifact, spaces
+  one attempt per unanswered call by ten seconds and records safe HTTP status
+  and numeric rate-limit headers. The 42 completed calls and failed original
+  result stay untouched; this recovery is not a release-gate rerun.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.

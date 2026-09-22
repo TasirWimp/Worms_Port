@@ -19,6 +19,9 @@ import {
 const VERSION = 'v10-r8-micro-factorial-r2';
 const DEADLINE_MS = 60_000;
 const OUTPUT = path.resolve('test-results/wp027-factorial-experiment.json');
+const RECOVERY_INPUT = path.resolve('docs/evidence/wp-027-mistral-factorial-r2/result.json');
+const RECOVERY_OUTPUT = path.resolve('test-results/wp027-factorial-recovery.json');
+const RECOVERY_SPACING_MS = 10_000;
 const STATUSES = ['supported', 'refuted', 'unknown'];
 const ACTIONS = ['A', 'B', 'abstain'];
 const EVIDENCE_IDS = ['event', 'A', 'B', 'limit'];
@@ -31,6 +34,8 @@ type CallResult = Readonly<{
     inputSha256: string;
     outcome: 'complete' | 'http_error' | 'timeout' | 'network_error' | 'invalid_response';
     durationMs: number;
+    httpStatus?: number;
+    rateLimit?: Readonly<Record<string, number>>;
     usage: Readonly<{
         inputTokens: number;
         outputTokens: number;
@@ -155,15 +160,14 @@ function completionText(content: unknown): string {
     return text[0];
 }
 
-async function callMistral(
-    apiKey: string,
+function requestBodyFor(
     testCase: MicroCase,
     fixture: Wp027ProbeFixture,
     presentation: Presentation,
     kind: Kind
-): Promise<CallResult> {
+): string {
     const request = requestFor(testCase, fixture, presentation, kind);
-    const body = JSON.stringify({
+    return JSON.stringify({
         model: WP027_MISTRAL_MODEL_ID,
         messages: [
             { role: 'system', content: request.system },
@@ -180,11 +184,23 @@ async function callMistral(
         },
         stream: false
     });
+}
+
+async function callMistral(
+    apiKey: string,
+    testCase: MicroCase,
+    fixture: Wp027ProbeFixture,
+    presentation: Presentation,
+    kind: Kind
+): Promise<CallResult> {
+    const body = requestBodyFor(testCase, fixture, presentation, kind);
     const started = performance.now();
     let outcome: CallResult['outcome'] = 'complete';
     let usage: CallResult['usage'] = null;
     let answer: Record<string, string> | null = null;
     let acceptedHttp = false;
+    let httpStatus: number | undefined;
+    let rateLimit: Readonly<Record<string, number>> | undefined;
     try {
         const response = await fetch(WP027_MISTRAL_ENDPOINT, {
             method: 'POST',
@@ -192,6 +208,18 @@ async function callMistral(
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
             body
         });
+        httpStatus = response.status;
+        const rateHeaders = [
+            'x-ratelimit-limit-req-minute',
+            'x-ratelimit-remaining-req-minute',
+            'x-ratelimit-limit-tokens-minute',
+            'x-ratelimit-remaining-tokens-minute',
+            'retry-after'
+        ];
+        rateLimit = Object.fromEntries(rateHeaders.flatMap(name => {
+            const raw = response.headers.get(name);
+            return raw && /^\d+$/.test(raw) ? [[name, Number(raw)]] : [];
+        }));
         if (!response.ok) {
             outcome = 'http_error';
         } else {
@@ -238,6 +266,8 @@ async function callMistral(
         inputSha256: sha256(body),
         outcome,
         durationMs: Math.round(performance.now() - started),
+        httpStatus,
+        rateLimit,
         usage,
         answer
     };
@@ -251,6 +281,91 @@ function claimAnswer(call: CallResult): ClaimAnswer | null {
 function choiceAnswer(call: CallResult): ChoiceAnswer | null {
     if (call.outcome !== 'complete' || !call.answer) return null;
     return call.answer as ChoiceAnswer;
+}
+
+async function recoverFailedCalls(
+    apiKey: string | null,
+    fixtures: readonly Wp027ProbeFixture[],
+    cases: readonly MicroCase[],
+    dryRun = false
+): Promise<void> {
+    const originalBytes = await fs.readFile(RECOVERY_INPUT);
+    const original = JSON.parse(originalBytes.toString('utf8')) as {
+        version: string;
+        sourceCommit: string;
+        rows: Array<{
+            id: string;
+            presentation: Presentation;
+            calls: CallResult[];
+        }>;
+    };
+    if (original.version !== VERSION || original.rows.length !== 10 ||
+        original.sourceCommit !== '89751090f360e8e8f5b8077f4f037c3991fa19be') {
+        throw new Error('Recovery source does not match the frozen factorial artifact.');
+    }
+    const missing = original.rows.flatMap(row => row.calls
+        .filter(call => call.outcome === 'http_error')
+        .map(call => ({ id: row.id, presentation: row.presentation, originalCall: call })));
+    if (missing.length !== 8) throw new Error('Recovery expects exactly eight original HTTP errors.');
+    const plan = missing.map(item => {
+        const fixtureIndex = fixtures.findIndex(fixture => fixture.id === item.id);
+        if (fixtureIndex < 0) throw new Error('Recovery fixture is missing.');
+        const computedHash = sha256(requestBodyFor(cases[fixtureIndex], fixtures[fixtureIndex],
+            item.presentation, item.originalCall.kind));
+        if (computedHash !== item.originalCall.inputSha256) {
+            throw new Error('Recovery request differs from the frozen input.');
+        }
+        return { ...item, fixtureIndex, inputSha256: computedHash };
+    });
+    if (dryRun) {
+        console.log(JSON.stringify({ originalResultSha256: createHash('sha256').update(originalBytes).digest('hex'),
+            missing: plan.map(item => ({ id: item.id, presentation: item.presentation,
+                kind: item.originalCall.kind, inputSha256: item.inputSha256 })) }));
+        return;
+    }
+    const rows: Array<{
+        id: string;
+        presentation: Presentation;
+        originalKind: Kind;
+        originalInputSha256: string;
+        call: CallResult;
+    }> = [];
+    for (const [index, item] of plan.entries()) {
+        if (!apiKey) throw new Error('Recovery API key is missing.');
+        if (index > 0) await new Promise(resolve => setTimeout(resolve, RECOVERY_SPACING_MS));
+        const call = await callMistral(apiKey, cases[item.fixtureIndex], fixtures[item.fixtureIndex],
+            item.presentation, item.originalCall.kind);
+        if (call.inputSha256 !== item.originalCall.inputSha256) {
+            throw new Error('Recovery request differs from the frozen input.');
+        }
+        rows.push({
+            id: item.id,
+            presentation: item.presentation,
+            originalKind: item.originalCall.kind,
+            originalInputSha256: item.originalCall.inputSha256,
+            call
+        });
+        console.log(JSON.stringify({ caseId: item.id, presentation: item.presentation,
+            kind: call.kind, outcome: call.outcome, httpStatus: call.httpStatus ?? null }));
+    }
+    const artifact = {
+        version: 'v10-r8-micro-factorial-recovery-r1',
+        generatedAt: new Date().toISOString(),
+        sourceCommit: process.env.RENDER_GIT_COMMIT ?? null,
+        originalResultSha256: createHash('sha256').update(originalBytes).digest('hex'),
+        spacingMs: RECOVERY_SPACING_MS,
+        rows,
+        totals: {
+            attempted: rows.length,
+            complete: rows.filter(row => row.call.outcome === 'complete').length,
+            estimatedCostUsdMicros: rows.reduce((sum, row) =>
+                sum + (row.call.usage?.estimatedCostUsdMicros ?? 0), 0)
+        }
+    };
+    await fs.mkdir(path.dirname(RECOVERY_OUTPUT), { recursive: true });
+    await fs.writeFile(RECOVERY_OUTPUT, `${JSON.stringify(artifact, null, 2)}\n`, 'utf8');
+    console.log(JSON.stringify({ artifact: path.relative(process.cwd(), RECOVERY_OUTPUT).replace(/\\/g, '/'),
+        totals: artifact.totals }));
 }
 
 async function main(): Promise<void> {
@@ -271,9 +386,17 @@ async function main(): Promise<void> {
         )));
         return;
     }
+    if (process.argv.includes('--recovery-dry-run')) {
+        await recoverFailedCalls(null, fixtures, cases, true);
+        return;
+    }
     const apiKey = process.env.MISTRAL_API_KEY;
     if (!apiKey || apiKey.trim() !== apiKey || apiKey.length < 20) {
         throw new Error('MISTRAL_API_KEY is required in the controlled server shell.');
+    }
+    if (process.argv.includes('--recover-failed')) {
+        await recoverFailedCalls(apiKey, fixtures, cases);
+        return;
     }
     const rows = [];
     for (const [index, fixture] of fixtures.entries()) {
