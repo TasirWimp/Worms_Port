@@ -39,7 +39,8 @@
     "After the v6-v8 cross-gate scoring audit, version the fixed probe rubric: measure temporary distance cost against the committed target, retain proposed target/milestone in new results, and grade future-option preservation against exact completed-terrain cells of a named ledge rather than minimum total terrain removal. Preserve all historical artifacts and shadow authority.",
     "Run a separate preregistered micro-decision diagnostic on the five fixed worlds: explicit two-option evidence cards, one-shot and staged classifications/choices, frozen deterministic assembly and abstention guards, with no change to the failed release gate or gameplay authority.",
     "Version the diagnostic assembler so server-certified claim status and action policy remain guards while model citation identity is audit evidence, preserving the original artifact and scorer; run a no-retry compact-versus-crowded, one-shot-versus-staged follow-up with computed current-turn controls and unknown next-turn claims.",
-    "After eight crowded-arm HTTP errors, preserve the first 50-call artifact and perform one separately versioned, ten-second-spaced recovery of only those eight unanswered exact request bodies, recording safe HTTP status and rate-limit evidence without rerunning completed calls."
+    "After eight crowded-arm HTTP errors, preserve the first 50-call artifact and perform one separately versioned, ten-second-spaced recovery of only those eight unanswered exact request bodies, recording safe HTTP status and rate-limit evidence without rerunning completed calls.",
+    "Archive the recovery separately, compare the ten fixed compact/crowded arms across their different schedules, retain the original failed transport result and five-probe release failure, and select the simpler next shadow contract without granting live model authority."
   ],
   "non_goals": [
     "No Gemini SDK, API key, network call, provider adapter, prompt execution, shadow mode or live model selection in Waypoint 1.",
@@ -377,6 +378,16 @@
       "command": "strict diagnostic-script TypeScript, frozen-recovery dry run and npm.cmd run verify:changes",
       "status": "pass",
       "details": "Delegated zero-retry verification by worms_port_test_runner at fingerprint 7d3ca992bfc0bf0cf213d8b4a1ac3041490e6a68e2a3afe113263867fb366413 passed strict diagnostic script types, checked the exact original artifact SHA-256 and all eight frozen request-body hashes without a provider call, then passed work-package evidence 74 records and Loomkeeper 58/58. No build, browser, PostgreSQL, performance, fallback, visual, daily or release phase was selected. Logs .cache/wp027-transport-recovery-{script-types,dry-run,selector}.log."
+    },
+    {
+      "command": "single deployed eight-call frozen-request recovery at commit 67a914c",
+      "status": "pass",
+      "details": "Render deployment dep-dap7912d0e5s73evaedg succeeded live with LOOMKEEPER_PROVIDER=deterministic. Shell dry run matched all eight archived input hashes. Exactly one ten-second-spaced recovery of the eight original HTTP-error calls completed 8/8 with HTTP 200 and no retry. Sanitized separate docs/evidence/wp-027-mistral-factorial-r2/recovery.json has SHA-256 51d866440a0783e674948baa25623776dcc17e8721a9d5fe3163fbe9d7d7ea48, links the original artifact hash and estimates USD 0.012004 captured cost. The temporary transfer copy was removed from the live server. This passes recovery execution only; the original transport run and five-probe release gate remain failed."
+    },
+    {
+      "command": "npm.cmd run verify:changes for archived recovery evidence",
+      "status": "pass",
+      "details": "Delegated zero-retry documentation selector by worms_port_test_runner passed work-package evidence 74 records at fingerprint da0f065a482344d3df6b80514c7ac1831df4c2e541dc1a6753fe0d5fb248621f. No build, browser, PostgreSQL, performance, fallback, provider, visual, daily or release phase was selected. Log .cache/wp027-transport-recovery-archive-selector.log."
     }
   ],
   "reviews": [
@@ -529,6 +540,11 @@
       "reviewer": "primary assistant direct targeted transport-recovery protocol review",
       "status": "pass",
       "details": "Recovery reads the archived exact r2 result, requires its expected source commit, exactly ten rows and exactly eight original HTTP-error calls, and binds every new request body hash to the corresponding frozen hash. It uses the same card, schema and model with fixed ten-second inter-call spacing, one attempt per missing call, and sanitized HTTP status/numeric allowlisted rate headers. It writes a separate result linked by the original SHA-256, leaving the first failed run and 42 completed calls untouched. Changed pacing is infrastructure diagnosis and must not be represented as one uniform original run or a release-gate pass."
+    },
+    {
+      "reviewer": "primary assistant direct recovered factorial interpretation",
+      "status": "pass",
+      "details": "Across the original and separately paced recovery, one-shot actions match 10/10 fixed expected actions, staged narrow choices 9/10, computed-turn controls 10/10, one-shot unknown-future statuses 10/10 and isolated unknown-future statuses 8/10. The two unsupported isolated certainties are both in the temporary-cost world; the compact setback staged choice is the other error. V2 would accept five non-abstaining preferences, require four abstentions and veto that wrong choice. Crowded cards used 212,463 captured input tokens versus compact 15,968 and USD 0.038749 versus USD 0.008514 in estimated cost, without better one-shot actions. Recovery headers report a 100,000-token/minute limit, making burst pressure plausible for the original eight unclassified errors but not proving their cause. Fixed cases, two request schedules and absent future-route witnesses preclude a general success-rate or live-play claim."
     }
   ],
   "skipped_checks": [
@@ -557,6 +573,6 @@
     "Rubric r2 fixes the committed-target distance mismatch and replaces minimum total terrain damage with an exact named ledge-cell witness. This physical support fact does not prove future route reachability. The Mistral path sheet marks horizontal terrain-removal positions without exact source rows, so a failed preservation choice may expose missing model-facing evidence. Repair and continuation probes still check strategy labels more strongly than tactical consequences. Historical v6-v8 results are immutable under the older rubric and cannot be compared directly with r2.",
     "The deployed v9 rubric-r2 gate remained at 2/5 useful despite 5/5 valid, on-time replies and no fallback or authority violation. The temporary-cost and information-gap decisions still conflict with committed-target facts, while the destroyed-route failure is a strategy-label mismatch for a move that materially approaches the chest. The preservation pass proves only exact upper-ledge cells survive. Neither this five-call probe set nor its 21.957-second p95 establishes mobile live-play acceptability. No live model authority or public R8 promotion follows.",
     "The compact micro-decision diagnostic cannot isolate whether shorter evidence, two alternatives, explicit rules or task decomposition removed v9's premature closure. Its strict citation guard rejected two semantically valid unknown-future answers, and even five of five compact actions give no multi-turn quality or production-latency guarantee. Keep the original failed release gate and deterministic Render authority unchanged.",
-    "The follow-up diagnostic had eight unclassified crowded-arm HTTP errors and no safe HTTP-status or rate-limit-header evidence; do not infer a particular provider rejection cause or rerun unchanged inputs. The two unsupported isolated future statuses and one wrong staged choice show that decomposition does not reliably prevent early closure on these cases. Full route reachability still lacks a computed future witness, and the fixed release gate remains failed. Before another provider trial, add safe transport classification and a bounded diagnostic token-rate schedule; live model authority remains blocked."
+    "The first follow-up artifact remains failed with eight unclassified crowded-arm HTTP errors. A separate, once-only paced recovery completed all eight and reported a 100,000-token/minute provider limit, supporting but not proving rate-limit pressure in the original run. Do not erase the failed result or describe the two schedules as a single clean trial. Two unsupported isolated future statuses and one wrong staged choice show decomposition does not reliably prevent early closure on these cases. Full route reachability still lacks a computed future witness, the fixed release gate remains failed, and live model authority remains blocked."
   ]
 }

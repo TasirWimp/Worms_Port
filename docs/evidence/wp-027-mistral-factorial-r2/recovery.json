@@ -1,0 +1,254 @@
+{
+  "version": "v10-r8-micro-factorial-recovery-r1",
+  "generatedAt": "2026-09-22T12:32:25.066Z",
+  "sourceCommit": "67a914ce3fa987876bb567283ca9888fbb2e5685",
+  "originalResultSha256": "3eaa1962960585eccd6d2c425db139775fde158dc50b79003df99124e0cf66b3",
+  "spacingMs": 10000,
+  "rows": [
+    {
+      "id": "repair-destroyed-route",
+      "presentation": "crowded",
+      "originalKind": "future",
+      "originalInputSha256": "3f1b470395248c2b7e1ea44fa65a6d027c1c063748eade504002f4312d43f0b3",
+      "call": {
+        "kind": "future",
+        "inputSha256": "3f1b470395248c2b7e1ea44fa65a6d027c1c063748eade504002f4312d43f0b3",
+        "outcome": "complete",
+        "durationMs": 3742,
+        "httpStatus": 200,
+        "rateLimit": {
+          "x-ratelimit-limit-req-minute": 100,
+          "x-ratelimit-remaining-req-minute": 99,
+          "x-ratelimit-limit-tokens-minute": 100000,
+          "x-ratelimit-remaining-tokens-minute": 91052
+        },
+        "usage": {
+          "inputTokens": 8468,
+          "outputTokens": 480,
+          "totalTokens": 8948,
+          "estimatedCostUsdMicros": 1559
+        },
+        "answer": {
+          "status": "unknown",
+          "evidenceId": "limit",
+          "reason": "The evidence explicitly states future route reachability depends on player response and is not computed."
+        }
+      }
+    },
+    {
+      "id": "repair-destroyed-route",
+      "presentation": "crowded",
+      "originalKind": "narrow-choice",
+      "originalInputSha256": "11bd15960276ddae4c703cb8c419f182800cdd4ffea8042cd1185045466fc1d0",
+      "call": {
+        "kind": "narrow-choice",
+        "inputSha256": "11bd15960276ddae4c703cb8c419f182800cdd4ffea8042cd1185045466fc1d0",
+        "outcome": "complete",
+        "durationMs": 1931,
+        "httpStatus": 200,
+        "rateLimit": {
+          "x-ratelimit-limit-req-minute": 100,
+          "x-ratelimit-remaining-req-minute": 99,
+          "x-ratelimit-limit-tokens-minute": 100000,
+          "x-ratelimit-remaining-tokens-minute": 82505
+        },
+        "usage": {
+          "inputTokens": 8509,
+          "outputTokens": 232,
+          "totalTokens": 8741,
+          "estimatedCostUsdMicros": 1416
+        },
+        "answer": {
+          "action": "A",
+          "reason": "A and B achieve same distance to objective; A removes far less terrain (2 vs 61) per policy guidance."
+        }
+      }
+    },
+    {
+      "id": "repair-destroyed-route",
+      "presentation": "crowded",
+      "originalKind": "one-shot",
+      "originalInputSha256": "4a388ad9cd2158bd78cbbf25a926e6d685cdd33f4a092ddd9dfeadc970893828",
+      "call": {
+        "kind": "one-shot",
+        "inputSha256": "4a388ad9cd2158bd78cbbf25a926e6d685cdd33f4a092ddd9dfeadc970893828",
+        "outcome": "complete",
+        "durationMs": 5427,
+        "httpStatus": 200,
+        "rateLimit": {
+          "x-ratelimit-limit-req-minute": 100,
+          "x-ratelimit-remaining-req-minute": 98,
+          "x-ratelimit-limit-tokens-minute": 100000,
+          "x-ratelimit-remaining-tokens-minute": 75051
+        },
+        "usage": {
+          "inputTokens": 8483,
+          "outputTokens": 796,
+          "totalTokens": 9279,
+          "estimatedCostUsdMicros": 1751
+        },
+        "answer": {
+          "currentStatus": "supported",
+          "futureStatus": "unknown",
+          "action": "A",
+          "reason": "A preserves same distance to objective while removing far less terrain (2 vs 61) as a provisional repair."
+        }
+      }
+    },
+    {
+      "id": "preserve-future-option",
+      "presentation": "crowded",
+      "originalKind": "computed",
+      "originalInputSha256": "8e0e7aec5716e99cb9788d01d616b6c6acff35b03c283074a452989443e6debc",
+      "call": {
+        "kind": "computed",
+        "inputSha256": "8e0e7aec5716e99cb9788d01d616b6c6acff35b03c283074a452989443e6debc",
+        "outcome": "complete",
+        "durationMs": 3990,
+        "httpStatus": 200,
+        "rateLimit": {
+          "x-ratelimit-limit-req-minute": 100,
+          "x-ratelimit-remaining-req-minute": 97,
+          "x-ratelimit-limit-tokens-minute": 100000,
+          "x-ratelimit-remaining-tokens-minute": 69132
+        },
+        "usage": {
+          "inputTokens": 7689,
+          "outputTokens": 562,
+          "totalTokens": 8251,
+          "estimatedCostUsdMicros": 1491
+        },
+        "answer": {
+          "status": "supported",
+          "evidenceId": "B",
+          "reason": "B's evidence explicitly states namedLedgeCellsRemoved: 0 for the named upper ledge."
+        }
+      }
+    },
+    {
+      "id": "preserve-future-option",
+      "presentation": "crowded",
+      "originalKind": "present",
+      "originalInputSha256": "6d18a455da3a63dfd50a62f3734e452ba02e83b034e82fb27d1f58ac187cf28e",
+      "call": {
+        "kind": "present",
+        "inputSha256": "6d18a455da3a63dfd50a62f3734e452ba02e83b034e82fb27d1f58ac187cf28e",
+        "outcome": "complete",
+        "durationMs": 2882,
+        "httpStatus": 200,
+        "rateLimit": {
+          "x-ratelimit-limit-req-minute": 100,
+          "x-ratelimit-remaining-req-minute": 96,
+          "x-ratelimit-limit-tokens-minute": 100000,
+          "x-ratelimit-remaining-tokens-minute": 63002
+        },
+        "usage": {
+          "inputTokens": 7690,
+          "outputTokens": 450,
+          "totalTokens": 8140,
+          "estimatedCostUsdMicros": 1424
+        },
+        "answer": {
+          "status": "supported",
+          "evidenceId": "B",
+          "reason": "B's immediate result shows 0 named ledge cells removed, preserving all 30 cells of x120-134,y26-27."
+        }
+      }
+    },
+    {
+      "id": "preserve-future-option",
+      "presentation": "crowded",
+      "originalKind": "future",
+      "originalInputSha256": "bdb9f4e8e96fe5649fa5836639bbacfd72d27a610e20a93d886d49f069525f79",
+      "call": {
+        "kind": "future",
+        "inputSha256": "bdb9f4e8e96fe5649fa5836639bbacfd72d27a610e20a93d886d49f069525f79",
+        "outcome": "complete",
+        "durationMs": 3447,
+        "httpStatus": 200,
+        "rateLimit": {
+          "x-ratelimit-limit-req-minute": 100,
+          "x-ratelimit-remaining-req-minute": 95,
+          "x-ratelimit-limit-tokens-minute": 100000,
+          "x-ratelimit-remaining-tokens-minute": 64433
+        },
+        "usage": {
+          "inputTokens": 7688,
+          "outputTokens": 448,
+          "totalTokens": 8136,
+          "estimatedCostUsdMicros": 1422
+        },
+        "answer": {
+          "status": "unknown",
+          "evidenceId": "limit",
+          "reason": "Claim is about future reachability not computed in the evidence; limit states next turn reachability is unknown."
+        }
+      }
+    },
+    {
+      "id": "preserve-future-option",
+      "presentation": "crowded",
+      "originalKind": "narrow-choice",
+      "originalInputSha256": "6192f3d37361296c80f0eb6ec497143bb87a523d3adb020bc573b7e6f00ba4ed",
+      "call": {
+        "kind": "narrow-choice",
+        "inputSha256": "6192f3d37361296c80f0eb6ec497143bb87a523d3adb020bc573b7e6f00ba4ed",
+        "outcome": "complete",
+        "durationMs": 2661,
+        "httpStatus": 200,
+        "rateLimit": {
+          "x-ratelimit-limit-req-minute": 100,
+          "x-ratelimit-remaining-req-minute": 99,
+          "x-ratelimit-limit-tokens-minute": 100000,
+          "x-ratelimit-remaining-tokens-minute": 62155
+        },
+        "usage": {
+          "inputTokens": 7736,
+          "outputTokens": 442,
+          "totalTokens": 8178,
+          "estimatedCostUsdMicros": 1426
+        },
+        "answer": {
+          "action": "B",
+          "reason": "B preserves all 30 named ledge cells and reduces chest distance from 1080 to 1041."
+        }
+      }
+    },
+    {
+      "id": "preserve-future-option",
+      "presentation": "crowded",
+      "originalKind": "one-shot",
+      "originalInputSha256": "e6c95da5d42e227d6599b6a3053e8760728bca71bdd8b56e041a044537493fec",
+      "call": {
+        "kind": "one-shot",
+        "inputSha256": "e6c95da5d42e227d6599b6a3053e8760728bca71bdd8b56e041a044537493fec",
+        "outcome": "complete",
+        "durationMs": 3477,
+        "httpStatus": 200,
+        "rateLimit": {
+          "x-ratelimit-limit-req-minute": 100,
+          "x-ratelimit-remaining-req-minute": 98,
+          "x-ratelimit-limit-tokens-minute": 100000,
+          "x-ratelimit-remaining-tokens-minute": 61218
+        },
+        "usage": {
+          "inputTokens": 7710,
+          "outputTokens": 597,
+          "totalTokens": 8307,
+          "estimatedCostUsdMicros": 1515
+        },
+        "answer": {
+          "currentStatus": "supported",
+          "futureStatus": "unknown",
+          "action": "B",
+          "reason": "B preserves all named ledge cells (0 removed) while moving toward chest; future reachability unknown per policy."
+        }
+      }
+    }
+  ],
+  "totals": {
+    "attempted": 8,
+    "complete": 8,
+    "estimatedCostUsdMicros": 12004
+  }
+}

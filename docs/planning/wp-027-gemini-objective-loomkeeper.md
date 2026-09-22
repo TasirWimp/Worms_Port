@@ -1023,6 +1023,42 @@ returns usable answers, compare them with the matched compact answers while
 reporting the changed request schedule and incomplete original run. Otherwise
 preserve the new failure and stop this diagnostic line.
 
+The targeted recovery ran once on Render deployment
+`dep-dap7912d0e5s73evaedg` at commit `67a914c`, with
+`LOOMKEEPER_PROVIDER=deterministic`. Its separate
+[sanitized result](../evidence/wp-027-mistral-factorial-r2/recovery.json) has
+SHA-256 `51d866440a0783e674948baa25623776dcc17e8721a9d5fe3163fbe9d7d7ea48`
+and links to the original artifact hash. All eight frozen requests completed
+with HTTP 200 under ten-second inter-call spacing; the provider reported a
+100,000-token-per-minute limit and 61,218 to 91,052 remaining tokens on these
+responses. This supports burst token-rate pressure as an explanation for the
+original crowded-arm failures, but their HTTP statuses were not recorded, so
+the cause of those failures remains unproven. The recovery cost estimate is
+USD 0.012004, excluding any uncaptured cost of the original HTTP errors.
+
+Reading the two immutable artifacts together gives ten one-shot decisions
+matching the frozen actions (compact 5/5; crowded 5/5). Staged narrow choices
+matched 9/10 (compact 4/5; crowded 5/5), with the compact setback error
+described above. All ten computed-turn controls were recognized. All ten
+one-shot replies kept the uncomputed next-turn claim `unknown`, while the
+separate future classifiers did so 8/10; both errors concerned the same
+temporary-cost world and asserted opposite unsupported certainties. Under
+V2's certified-fact guard, five non-abstaining preferences would be accepted
+across the ten arms; four other expected actions are required abstentions,
+and the wrong staged setback choice is vetoed. The combined diagnostic
+captures USD 0.047263 in estimated cost, with USD 0.008514 for compact cards
+versus USD 0.038749 for crowded cards. Crowded calls carried 212,463 input
+tokens versus 15,968 for compact calls. These are fixed-case observations
+across two schedules, not a new randomized sample or a passing release gate.
+
+The operational conclusion is to keep the short one-shot evidence card as the
+next shadow candidate and avoid a four-call decomposition for these fixed
+decisions. More context did not improve the observed one-shot choices, while
+it raised token use and transport pressure. A model may express a strategic
+preference only over server-computed current-turn facts; next-turn route
+reachability must stay unknown until a deterministic witness computes it.
+The five-probe gate remains failed and live model authority remains blocked.
+
 ### Phone Gate A - live accepted-provider Practice
 
 After a shadow provider passes and its live authority mode is explicitly added,

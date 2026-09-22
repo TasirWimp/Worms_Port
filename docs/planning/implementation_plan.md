@@ -217,7 +217,17 @@ Phaser/Socket.IO stack.
   diagnostic now pins their request hashes to the archived artifact, spaces
   one attempt per unanswered call by ten seconds and records safe HTTP status
   and numeric rate-limit headers. The 42 completed calls and failed original
-  result stay untouched; this recovery is not a release-gate rerun.
+  result stay untouched. The [recovery](../evidence/wp-027-mistral-factorial-r2/recovery.json)
+  completed all eight with HTTP 200 on live commit `67a914c`; reported token
+  allowance was 100,000/minute, which supports but does not prove a rate-limit
+  explanation for the first run's unrecorded HTTP errors. Across the two
+  schedules, one-shot choices matched all ten fixed actions, staged choices
+  matched nine, and two isolated future classifications still asserted
+  unsupported certainty. Crowded cards consumed over thirteen times the
+  compact input tokens without improving one-shot choices. Keep the compact
+  one-shot contract as the next shadow candidate and compute any claimed
+  future route consequence before the model can use it. This recovery is not
+  a release-gate rerun; live authority and public R8 promotion remain blocked.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.
