@@ -283,6 +283,7 @@ test('WP-027 shadow probe runner selects its typed Loomkeeper owner without broa
 test('WP-027 micro experiment scripts select Loomkeeper checks without a product build', () => {
   const plan = planChanges([
     'scripts/run-wp027-micro-experiment.ts',
+    'scripts/run-wp027-factorial-experiment.ts',
     'scripts/wp027-micro-experiment-cases.ts'
   ]);
   assert.ok(plan.tasks.includes('check:types'));

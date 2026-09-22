@@ -43,6 +43,8 @@ export type MicroCase = Readonly<{
     options: readonly [Option, Option];
     currentClaim: string;
     futureClaim: string;
+    computedClaim: string;
+    computedEvidenceId: 'A' | 'B';
     expectedCurrent: Readonly<{ status: ClaimStatus; evidenceId: EvidenceId }>;
     expectedFuture: Readonly<{ status: ClaimStatus; evidenceId: EvidenceId }>;
     policy: string;
@@ -190,6 +192,20 @@ export function buildMicroCase(fixture: Wp027ProbeFixture): MicroCase {
         B: JSON.stringify(options[1]),
         limit: 'Each option is simulated through this Loomkeeper turn only. The next player response and future route reachability are not computed.'
     });
+    const computed = (() => {
+        switch (fixture.id) {
+            case 'temporary-cost-preparation':
+                return { claim: 'B ends this Loomkeeper turn 100 map units farther from committed coin-1 than it started.', evidenceId: 'B' } as const;
+            case 'continue-through-setback':
+                return { claim: 'B ends this Loomkeeper turn at distance 461 from committed coin-1.', evidenceId: 'B' } as const;
+            case 'repair-destroyed-route':
+                return { claim: 'A removes exactly 2 terrain cells during this Loomkeeper turn.', evidenceId: 'A' } as const;
+            case 'preserve-future-option':
+                return { claim: 'B removes zero cells from the named upper ledge during this Loomkeeper turn.', evidenceId: 'B' } as const;
+            case 'acknowledge-information-gap':
+                return { claim: 'A gains one objective point during this Loomkeeper turn.', evidenceId: 'A' } as const;
+        }
+    })();
     return Object.freeze({
         id: fixture.id,
         objectiveMode: fixture.boundary.brief.objective.mode,
@@ -199,6 +215,8 @@ export function buildMicroCase(fixture: Wp027ProbeFixture): MicroCase {
         options,
         currentClaim,
         futureClaim,
+        computedClaim: computed.claim,
+        computedEvidenceId: computed.evidenceId,
         expectedCurrent,
         expectedFuture: { status: 'unknown', evidenceId: 'limit' } as const,
         policy,
@@ -217,6 +235,30 @@ export function assembleMicroDecision(
         present.evidenceId !== testCase.expectedCurrent.evidenceId ||
         !future || future.status !== testCase.expectedFuture.status ||
         future.evidenceId !== testCase.expectedFuture.evidenceId) {
+        return { action: 'abstain', strategy: 'abstain', source: 'claim_guard' };
+    }
+    if (testCase.expectedAction === 'abstain') {
+        return { action: 'abstain', strategy: 'abstain', source: 'missing_fact_guard' };
+    }
+    if (!choice || choice.action !== testCase.expectedAction) {
+        return { action: 'abstain', strategy: 'abstain', source: 'choice_guard' };
+    }
+    return { action: choice.action, strategy: testCase.acceptedStrategy, source: 'validated_preference' };
+}
+
+// Versioned diagnostic correction. R1 remains unchanged so its captured scores
+// can always be reproduced. Citation choice is audit data; source facts, not
+// model-selected citation strings, certify whether a claim is true or unknown.
+export function assembleMicroDecisionV2(
+    testCase: MicroCase,
+    present: ClaimAnswer | null,
+    future: ClaimAnswer | null,
+    choice: ChoiceAnswer | null
+): Readonly<{ action: MicroAction; strategy: MicroCase['acceptedStrategy']; source: string }> {
+    if (!present || present.status !== testCase.expectedCurrent.status ||
+        !future || future.status !== testCase.expectedFuture.status ||
+        !Object.hasOwn(testCase.evidence, present.evidenceId) ||
+        !Object.hasOwn(testCase.evidence, future.evidenceId)) {
         return { action: 'abstain', strategy: 'abstain', source: 'claim_guard' };
     }
     if (testCase.expectedAction === 'abstain') {

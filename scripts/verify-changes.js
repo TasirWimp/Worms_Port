@@ -111,6 +111,7 @@ function planChanges(paths) {
       add(suites, ['test:tooling', 'smoke:built']);
     } else if (file === 'scripts/run-wp027-shadow-probes.ts' ||
       file === 'scripts/run-wp027-micro-experiment.ts' ||
+      file === 'scripts/run-wp027-factorial-experiment.ts' ||
       file === 'scripts/wp027-micro-experiment-cases.ts') {
       checks.add('check:types');
       suites.add('test:loomkeeper');

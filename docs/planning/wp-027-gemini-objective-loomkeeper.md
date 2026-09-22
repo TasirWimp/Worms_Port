@@ -920,6 +920,49 @@ consequence checks would distinguish presentation from decomposition. Do not
 promote this diagnostic to the failed five-probe release gate or live model
 authority; Render remains on deterministic Loomkeeper selection.
 
+### Follow-up evidence-load and decomposition diagnostic (preregistered)
+
+Keep the first micro-decision artifact and its exact-ID scores immutable. In a
+versioned diagnostic assembler, the server-certified status of each claim and
+the frozen A/B decision rule gate an action. Check that a cited ID is present
+in the supplied evidence and record whether it is the canonical ID, but do
+not let a single citation string override a correct certified status. The
+model still cannot authorize a move when the necessary future fact is unknown.
+No gameplay or release-gate code changes in this slice.
+
+Use the same five fixture worlds, the same A/B completed turns, current and
+uncomputed-future claims, and frozen action rule. Cross two presentations with
+two decision methods. The **compact** presentation is the original evidence
+card. The **crowded** presentation retains that card and adds the complete
+server brief, battlefield ASCII and other legal candidate summaries as
+background, while the selectable actions remain exactly A/B/abstain. Both
+methods receive identical content within each presentation: **one-shot**
+classifies both claims and chooses an action in one response; **staged** asks
+present and future claims separately, then chooses with the independently
+certified statuses. Alternate arm order deterministically across worlds and
+presentations. This is 5 worlds x 2 presentations x (1 + 3 calls) = 40 calls.
+
+Add one independent computed-fact classification for each world and
+presentation (10 more calls). Its claim concerns an exact after-this-turn
+candidate metric from the authoritative rollout, so the expected status is
+`supported`; the existing next-player-turn route claim remains `unknown`.
+This checks whether the model distinguishes known completed-turn consequences
+from genuinely uncomputed future consequences. It does not invent a future
+reachability oracle. Freeze the five computed claims and all expected answers
+in source before the first API request. Use the same exact model, high
+reasoning, strict JSON response, 60-second deadline and zero-retry rule: 50
+calls total, no live authority and no retrospective v9/r1 rescore.
+
+Report action/status accuracy by paired arm, unsupported future certainty,
+computed-fact recognition, canonical versus alternate citations, assembler
+acceptance/veto, provider time, tokens and estimated cost. The primary
+comparison is whether crowding changes one-shot accuracy and whether staging
+recovers any crowded-card misses. If both presentations remain at ceiling,
+candidate-set size and open-ended strategy output remain unresolved causes.
+If computed facts fail while unknowns pass, information extraction is the
+leading issue. One sample per arm per world is diagnostic, not a stable model
+quality estimate or a new five-probe acceptance gate.
+
 ### Phone Gate A - live accepted-provider Practice
 
 After a shadow provider passes and its live authority mode is explicitly added,

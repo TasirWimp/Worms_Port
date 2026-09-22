@@ -37,7 +37,8 @@
     "After the failed v6 strategy gate, add a deterministic 64x36 ASCII-to-PNG current-battlefield rendering to Mistral's shadow input alongside all existing structured facts; keep one image, five fixed probes, server fallback authority and Gemini behavior unchanged. Record a separate visual-input version, verify image pixels and request shape locally, then run one changed-input deployed comparison.",
     "After the failed v7 full-field image gate, replace that image with a sparse one-lane-per-candidate path sheet derived from the same detached legal-turn rollouts. Give Mistral exact ordered actor waypoints, projectile impact, active objectives, terrain-removal marks and structured after-facts while omitting the full ASCII terrain and changed-row spans from its presentation. Keep the shared brief, Gemini, replay and deterministic shadow authority unchanged; verify path fidelity and run the same five deployed probes once under a new visual-input identity.",
     "After the v6-v8 cross-gate scoring audit, version the fixed probe rubric: measure temporary distance cost against the committed target, retain proposed target/milestone in new results, and grade future-option preservation against exact completed-terrain cells of a named ledge rather than minimum total terrain removal. Preserve all historical artifacts and shadow authority.",
-    "Run a separate preregistered micro-decision diagnostic on the five fixed worlds: explicit two-option evidence cards, one-shot and staged classifications/choices, frozen deterministic assembly and abstention guards, with no change to the failed release gate or gameplay authority."
+    "Run a separate preregistered micro-decision diagnostic on the five fixed worlds: explicit two-option evidence cards, one-shot and staged classifications/choices, frozen deterministic assembly and abstention guards, with no change to the failed release gate or gameplay authority.",
+    "Version the diagnostic assembler so server-certified claim status and action policy remain guards while model citation identity is audit evidence, preserving the original artifact and scorer; run a no-retry compact-versus-crowded, one-shot-versus-staged follow-up with computed current-turn controls and unknown next-turn claims."
   ],
   "non_goals": [
     "No Gemini SDK, API key, network call, provider adapter, prompt execution, shadow mode or live model selection in Waypoint 1.",
@@ -355,6 +356,11 @@
       "command": "npm.cmd run verify:changes for micro-decision result evidence",
       "status": "pass",
       "details": "Delegated zero-retry documentation selector by worms_port_test_runner passed all 74 work-package records at fingerprint 8e4e34e8a390d98ea0e31e82a8f569907435e4ddf0998a12bf74733e151c9cdf. Only the four result/evidence/planning paths were selected; no build, browser, PostgreSQL, performance, fallback, provider, visual, daily or release phase ran. Log .cache/wp027-micro-experiment-evidence-selector.log."
+    },
+    {
+      "command": "strict diagnostic TypeScript, focused WP-027 micro tests and npm.cmd run verify:changes for factorial protocol",
+      "status": "pass",
+      "details": "Delegated zero-retry verification by worms_port_test_runner on the pre-evidence input passed strict script TypeScript, 6/6 focused micro cases, the ten-card fixture-only runner, and selector fingerprint e8bfb6a3f16dec71988d85baa63751a0aec4b74ffa34edd0a4d630b51afccba2: types, Loomkeeper 57/57 and tooling 140/140. A subsequent authoritative-metric regression and evidence entry changed the input, so final selected verification follows before deployment. No provider, build, browser, PostgreSQL, performance, visual, daily or release check was selected. Logs .cache/wp027-factorial-{script-types,focused,fixture-only,selector}.log."
     }
   ],
   "reviews": [
@@ -492,6 +498,11 @@
       "reviewer": "primary assistant direct micro-decision diagnostic review",
       "status": "pass",
       "details": "All five compact one-shot and five staged choices match their frozen actions, so the run does not demonstrate that decomposition itself helps. Both designs classify the present facts and unknown future consequences correctly by status. Two separately asked future classifications cite relevant evidence but fail the frozen single-ID citation rule, which forces safe assembler abstention; preserve both strict scores and semantic observation. The card changed evidence explicitness, candidate count and decision vocabulary together relative to v9, so no single fundamental cause is identified. Sequential provider time was 23.649 seconds for 5 one-shot calls versus 42.351 seconds for 15 staged calls, with captured cost USD 0.002892 versus USD 0.005201. A crossed follow-up can isolate presentation, decomposition and genuinely computed future facts. No live authority follows."
+    },
+    {
+      "reviewer": "primary assistant direct follow-up diagnostic protocol review",
+      "status": "pass",
+      "details": "The original r1 assembler and result remain immutable. V2 still requires the exact server-certified present/future statuses and frozen expected action, and validates cited IDs are supplied, but citation identity no longer authorizes or vetoes the move. Compact and crowded cards retain identical A/B legal options and policy; the crowded arm adds the full current brief, ASCII arena and path atlas. The computed controls bind to authoritative after-this-turn metrics, while next-player-turn reachability remains uncomputed. The 50-call no-retry design is diagnostic, not a release gate, and cannot estimate a stable success rate from one sample per arm per world. No product runtime or authority path changes."
     }
   ],
   "skipped_checks": [

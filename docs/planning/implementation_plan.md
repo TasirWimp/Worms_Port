@@ -198,6 +198,13 @@ Phaser/Socket.IO stack.
   which factor fixed the v9 misses. The next bounded comparison must separate
   evidence presentation from call decomposition and missing computed facts.
   Live Mistral and public R8 remain blocked; Render stayed deterministic.
+  A versioned diagnostic correction now lets server-certified status and the
+  frozen action rule gate the choice while treating citation identity as audit
+  evidence; the first artifact and scorer stay unchanged. The preregistered
+  follow-up pairs compact/crowded evidence with one-shot/staged decisions over
+  the same A/B turns, plus exact computed-turn versus uncomputed-future claim
+  controls. After local verification, deploy and run its 50 no-retry shadow
+  calls once. It is not a replacement release gate.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.
