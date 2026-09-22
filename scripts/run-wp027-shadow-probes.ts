@@ -3,6 +3,10 @@ import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 
 import { V10_R8_PROMPT_VERSION } from '../shared/strategic-voyage-v10-r8';
+import {
+    WP027_BATTLEFIELD_IMAGE_CELL_PX,
+    WP027_BATTLEFIELD_IMAGE_VERSION
+} from '../server/src/simulation/loomkeeper-battlefield-image-v10-r8';
 import { loomkeeperStrategyRuntimeFromEnvironmentV10R8 } from '../server/src/simulation/loomkeeper-strategy-config-v10-r8';
 import {
     createWp027ProbeScenarioV10R8,
@@ -43,6 +47,12 @@ async function main(): Promise<void> {
         generatedAt: new Date().toISOString(),
         modelId: runtime.strategicAdapter.provider.modelId,
         promptVersion: V10_R8_PROMPT_VERSION,
+        visualInput: runtime.mode === 'mistral-shadow' ? Object.freeze({
+            version: WP027_BATTLEFIELD_IMAGE_VERSION,
+            source: 'brief.battlefield.ascii',
+            mimeType: 'image/png',
+            cellPixels: WP027_BATTLEFIELD_IMAGE_CELL_PX
+        }) : null,
         fixtures: fixtures.map(fixture => Object.freeze({
             id: fixture.id,
             ...fixture.boundary.evidence(),

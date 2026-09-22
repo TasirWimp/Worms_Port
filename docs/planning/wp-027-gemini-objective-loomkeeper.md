@@ -711,6 +711,21 @@ the conservative fallback. The v6 gate therefore fails the 4/5 usefulness
 requirement despite solving v5's response-completion failure. Do not repeat
 this unchanged gate or promote Mistral to live authority on this evidence.
 
+Owner-authorized visual-grounding comparison: render only the current
+server-owned 64x36 battlefield ASCII as a deterministic high-contrast PNG,
+with one cell per 16x16 pixels and distinct terrain, actor and objective
+markers. Send it as a base64 image part alongside the unchanged structured
+brief and candidate after-state facts in Mistral's shadow request. The short
+image legend explains that the PNG repeats the coarse ASCII view; exact
+positions, support, outcomes and legality still come from the structured
+brief. Record the visual-input version separately from the unchanged shared
+`r4` prompt identity so Gemini and existing private replay remain unaffected.
+Do not render game art or candidate after-state images in this first comparison.
+Run the same five fixed probes once after local image and request validation;
+compare with v6 for validity, actual choice usefulness, explanation/fact
+agreement, latency, cost and fallback. A passing transport alone does not
+authorize live Mistral selection.
+
 ### Phone Gate A - live accepted-provider Practice
 
 After a shadow provider passes and its live authority mode is explicitly added,

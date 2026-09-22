@@ -10,6 +10,7 @@ import type {
     StrategicProviderFailureDiagnosticV10R8
 } from './loomkeeper-strategy-provider-v10-r8';
 import { StrategicProviderOperationalErrorV10R8 } from './loomkeeper-strategy-provider-v10-r8';
+import { renderBattlefieldImageV10R8 } from './loomkeeper-battlefield-image-v10-r8';
 import {
     strategicMistralResponseSchemaV10R8,
     strategicSystemInstructionV10R8,
@@ -79,11 +80,18 @@ export class MistralStrategicDecisionProviderV10R8 implements StrategicDecisionP
 }
 
 export function mistralRequestBody(brief: StrategicDecisionBriefV10R8): Readonly<Record<string, unknown>> {
+    const imageUrl = `data:image/png;base64,${renderBattlefieldImageV10R8(brief.battlefield).toString('base64')}`;
     return Object.freeze({
         model: WP027_MISTRAL_MODEL_ID,
         messages: Object.freeze([
             Object.freeze({ role: 'system', content: strategicSystemInstructionV10R8(brief) }),
-            Object.freeze({ role: 'user', content: strategicUserPromptV10R8(brief) })
+            Object.freeze({ role: 'user', content: Object.freeze([
+                Object.freeze({
+                    type: 'text',
+                    text: `${strategicUserPromptV10R8(brief)}\nThe attached image is an exact colored rendering of the same coarse battlefield ASCII in the brief. Dark cells are solid terrain, brown + cells are partial terrain, blue P is the player, purple L is the Loomkeeper, gold o is a coin, green C is a chest, and red * is an overlap. Use structured positions and candidate after-facts for exact values.`
+                }),
+                Object.freeze({ type: 'image_url', image_url: imageUrl })
+            ]) })
         ]),
         reasoning_effort: 'high',
         response_format: Object.freeze({

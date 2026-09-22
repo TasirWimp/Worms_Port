@@ -134,6 +134,12 @@ Phaser/Socket.IO stack.
   shows correct continuation and route switching, but misses temporary cost,
   terrain preservation and explicit uncertainty. Preserve the failed gate;
   do not repeat unchanged inputs or grant live authority.
+  The next owner-authorized comparison adds one deterministic PNG rendering
+  of the current 64x36 ASCII battlefield to Mistral's shadow request, while
+  retaining the structured brief and candidate consequences. Its separate
+  visual-input identity leaves shared prompt r4, Gemini and replay unchanged.
+  Verify the image and request locally, then run the same five deployed probes
+  once and review both strategy quality and latency before any live promotion.
   No live Gemini selection, public R8 promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { inflateSync } from 'node:zlib';
 
 import {
     MistralStrategicDecisionProviderV10R8,
@@ -7,6 +8,10 @@ import {
     WP027_MISTRAL_MODEL_ID
 } from '../../server/src/simulation/mistral-strategy-provider-v10-r8';
 import { loomkeeperStrategyRuntimeFromEnvironmentV10R8 } from '../../server/src/simulation/loomkeeper-strategy-config-v10-r8';
+import {
+    renderBattlefieldImageV10R8,
+    WP027_BATTLEFIELD_IMAGE_CELL_PX
+} from '../../server/src/simulation/loomkeeper-battlefield-image-v10-r8';
 import {
     createWp027ProbeFixturesV10R8,
     evaluateWp027ProbeV10R8,
@@ -64,9 +69,13 @@ test('WP-027 Mistral transport sends one bounded structured request and records 
     assert.match(body.messages[0].content, /turn-based 2D tactics game/);
     assert.match(body.messages[0].content, /Mode Collect:/);
     assert.doesNotMatch(body.messages[0].content, /Mode Defend:|Mode Claim:/);
-    const providerInput = JSON.parse(body.messages[1].content);
+    assert.deepEqual(body.messages[1].content.map((part: { type: string }) => part.type),
+        ['text', 'image_url']);
+    const providerInput = JSON.parse(body.messages[1].content[0].text.split('\nThe attached image')[0]);
     assert.equal(providerInput.brief.legalCandidates.some((candidate: Record<string, unknown>) =>
         'deterministicFallback' in candidate), false);
+    assert.equal(body.messages[1].content[1].image_url,
+        `data:image/png;base64,${renderBattlefieldImageV10R8(fixture.boundary.brief.battlefield).toString('base64')}`);
     const schema = body.response_format.json_schema.schema;
     assert.equal(schema.type, 'object');
     assert.equal(schema.additionalProperties, false);
@@ -84,6 +93,36 @@ test('WP-027 Mistral transport sends one bounded structured request and records 
         totalTokens: 150,
         estimatedCostUsdMicros: 36
     });
+});
+
+test('WP-027 Mistral battlefield image faithfully renders the fixed ASCII grid', () => {
+    const fixtures = createWp027ProbeFixturesV10R8();
+    const sample = fixtures[0].boundary.brief.battlefield;
+    const synthetic = { ...sample, ascii: sample.ascii.replace('.', '+').replace('#', '*') };
+    const colors = new Map<string, string>();
+    for (const battlefield of [...fixtures.map(fixture => fixture.boundary.brief.battlefield), synthetic]) {
+        const png = renderBattlefieldImageV10R8(battlefield);
+        assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+        assert.equal(png.readUInt32BE(16), 64 * WP027_BATTLEFIELD_IMAGE_CELL_PX);
+        assert.equal(png.readUInt32BE(20), 36 * WP027_BATTLEFIELD_IMAGE_CELL_PX);
+        assert.deepEqual(renderBattlefieldImageV10R8(battlefield), png);
+        const pixels = inflateSync(png.subarray(41, png.length - 16));
+        const imageWidth = 64 * WP027_BATTLEFIELD_IMAGE_CELL_PX;
+        const rows = battlefield.ascii.split('\n');
+        for (let y = 0; y < rows.length; y += 1) {
+            for (let x = 0; x < rows[y].length; x += 1) {
+                const symbol = rows[y][x];
+                const offset = (y * WP027_BATTLEFIELD_IMAGE_CELL_PX) * (imageWidth * 4 + 1) +
+                    1 + x * WP027_BATTLEFIELD_IMAGE_CELL_PX * 4;
+                const color = pixels.subarray(offset, offset + 4).toString('hex');
+                assert.equal(color.slice(6), 'ff');
+                if (colors.has(symbol)) assert.equal(color, colors.get(symbol));
+                else colors.set(symbol, color);
+            }
+        }
+    }
+    assert.deepEqual([...colors.keys()].sort(), ['#', '*', '+', '.', 'C', 'L', 'P', 'o'].sort());
+    assert.equal(new Set(colors.values()).size, colors.size);
 });
 
 test('WP-027 Mistral transport accepts one text block alongside hidden reasoning', async () => {

@@ -33,7 +33,8 @@
     "After the deployed schema correction still failed before inference, preserve the third artifact, diagnose the exact request once, and replace unsupported Mistral low reasoning with the model-supported high setting while retaining the frozen eight-second gate.",
     "After supported high reasoning exhausted the eight-second gate and an exact accepted request consumed its full 2,048-token completion budget without a final answer, move to the only remaining supported none setting and let the unchanged usefulness thresholds determine direct-answer strategy quality.",
     "Owner-authorized 2026-09-22 Mistral trial: restore supported high reasoning, double its completion cap to 4,096 tokens, and double the next five-probe estimated-cost acceptance ceiling to USD 0.10 while preserving the eight-second whole-window deadline and shadow authority.",
-    "After the failed v5 gate, give Mistral high reasoning a full 60-second provider window after preparation; omit explicit completion-token and response-body ceilings; remove Mistral process request, concurrency and circuit limits and five-probe p95/cost acceptance ceilings. Preserve fixed five probes, no automatic retries, strict selection validation and deterministic shadow authority; leave Gemini bounds unchanged."
+    "After the failed v5 gate, give Mistral high reasoning a full 60-second provider window after preparation; omit explicit completion-token and response-body ceilings; remove Mistral process request, concurrency and circuit limits and five-probe p95/cost acceptance ceilings. Preserve fixed five probes, no automatic retries, strict selection validation and deterministic shadow authority; leave Gemini bounds unchanged.",
+    "After the failed v6 strategy gate, add a deterministic 64x36 ASCII-to-PNG current-battlefield rendering to Mistral's shadow input alongside all existing structured facts; keep one image, five fixed probes, server fallback authority and Gemini behavior unchanged. Record a separate visual-input version, verify image pixels and request shape locally, then run one changed-input deployed comparison."
   ],
   "non_goals": [
     "No Gemini SDK, API key, network call, provider adapter, prompt execution, shadow mode or live model selection in Waypoint 1.",
@@ -44,7 +45,8 @@
     "Local Waypoint 3 implementation verification does not perform a real Gemini call, mutate Render, activate live Gemini selection, promote R8 to standard Practice/Daily or change PEI/reward behavior.",
     "Candidate deltas report simulated after-state facts and must not invent route reachability classifications that the deterministic server has not established.",
     "The gameplay contract must not include rules for the two objective modes the player did not select.",
-    "Local Mistral verification performs no real provider request, does not add live Mistral execution authority, mutate Render, promote R8 or change Practice, Daily, PEI or rewards."
+    "Local Mistral verification performs no real provider request, does not add live Mistral execution authority, mutate Render, promote R8 or change Practice, Daily, PEI or rewards.",
+    "The visual-grounding comparison adds no product art asset, client image, candidate after-state images, gameplay mechanic, reward change or provider authority."
   ],
   "planned_checks": [
     "npm.cmd run check:types and focused WP-027 strategic-voyage/provider/R8 protocol tests",
@@ -293,6 +295,11 @@
       "command": "single deployed five-probe Mistral Small 4 gate at commit d59fa54 with high reasoning and a 60-second provider window",
       "status": "fail",
       "details": "Render deployment dep-dap0u2jtqb8s73eu8kj0 succeeded and was live before one fixed five-probe command ran. The sanitized v6 artifact at docs/evidence/wp-027-shadow-gate-mistral-small-4-v6/result.json records 5/5 valid, 2/5 useful, 5/5 completed before the new provider deadline, zero provider fallbacks, zero authority violations, 31,603 ms p95 total decision time and USD 0.013502 captured estimated cost. Setback continuation and destroyed-route switch passed. Temporary-cost preparation selected a candidate improving objective distance by 100 and removing 32 terrain cells despite claiming to accept a cost; future-option preservation selected 32 cells removed when a legal one-cell candidate existed; information-gap acknowledgment neither mentioned the missing fact nor chose the conservative fallback. Shadow execution remained deterministic. This failed unchanged gate will not be repeated."
+    },
+    {
+      "command": "npm.cmd run check:types, focused Mistral tests, npm.cmd run verify:changes and npm.cmd run audit:housekeeping for visual battlefield input",
+      "status": "pass",
+      "details": "worms_port_test_runner on GPT-5.6 Terra/medium completed the zero-retry selected check at fingerprint 3d2ba31d446c2cdd102b29deb0101426cc98b3623343afe56e2f72de9bfdca62. Types and 9/9 focused image/request/transport tests passed. The selector passed 50 Loomkeeper, 25 protocol, 85 simulation, 10 relics, 53 combat, 6 Practice, 22 identity, 28 reward and 25 PEI tests, fresh build proof 92cc877e9701 / fc9288082e77, standard R7 built smoke, identity/reward security, bundle budgets and 19/19 Chromium phone journeys. PostgreSQL used its expected local prerequisite skip because WP014_TEST_DATABASE_URL is absent. Visual, performance, daily, release and retired legacy suites were not selected. Package-transition housekeeping passed with no manual reconciliation. No external Mistral call ran locally. Logs .cache/wp027-mistral-image-{types,focused,selector,housekeeping}.log."
     }
   ],
   "reviews": [
@@ -390,6 +397,11 @@
       "reviewer": "primary assistant direct deployed Mistral v6 strategy review",
       "status": "pass",
       "details": "The 60-second high-reasoning trial solved the prior deadline fallback failure but missed three of five scenario-specific usefulness checks. The deterministic candidate facts disprove the temporary-cost explanation: selected c07 improves objective distance by 100, removes 32 terrain cells and accepts no measured temporary cost. The preserve-option selection removes 32 terrain cells although the legal minimum is one. The information-gap reply does not mention uncertainty and does not select the deterministic fallback. These are strategy-evidence mismatches, not provider transport failures. The failed result blocks live authority and does not justify repeating the identical gate."
+    },
+    {
+      "reviewer": "primary assistant direct Mistral visual-grounding implementation review",
+      "status": "pass",
+      "details": "A deterministic PNG encodes only the existing 64x36 server-produced ASCII projection; the image is presentation context rather than a new state or action surface. Direct review and pixel-level tests confirm stable, distinct terrain, actor and objective cells, correct dimensions and byte-deterministic output; visual inspection confirmed the entire arena is readable. The Mistral request retains the same structured brief, exact candidate after-facts, response schema, high reasoning and private deterministic fallback while adding one image plus a short legend. Gemini, live Practice/Daily, PEI and rewards are unchanged. The separate visual-input version makes the changed deployed comparison identifiable without changing the shared r4 prompt or replay contract."
     }
   ],
   "skipped_checks": [
