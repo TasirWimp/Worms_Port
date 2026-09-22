@@ -123,6 +123,20 @@ no-retry calls and writes the sanitized direct-review artifact to
 startup. Set `LOOMKEEPER_PROVIDER=deterministic` after the shadow gate; dormant
 credentials are ignored in deterministic mode.
 
+The active WP-027 chapter experiment has a separate, candidate-hidden story
+pass followed by a comparison of server and Mistral legal-turn matching. It
+does not activate model-controlled gameplay. On a checkout of this branch,
+`node --import tsx scripts/run-wp027-chapter-shadow.ts --fixture-only` checks
+the five frozen R8 chapters without an API key. With the existing
+`MISTRAL_API_KEY` present on the game service, run
+`node --import tsx scripts/run-wp027-chapter-shadow.ts --provider=mistral`
+in its server shell to make one no-retry, two-call comparison per chapter. The
+sanitized result is written to `test-results/wp027-chapter-shadow.json`; the
+console summary reports whether all responses validated, not whether the model
+improved strategy. Keep `LOOMKEEPER_PROVIDER=deterministic` for this experiment.
+The [active contract](docs/planning/wp-027-gemini-objective-loomkeeper.md#active-revision-match-framed-chapters-2026-09-22)
+defines the evaluation and private Practice gate.
+
 The current r4 prompt explains the shared turn-based destructible-world rules
 and only the active Collect, Defend or Claim mode. It receives the authoritative
 64x36 before-state plus bounded per-candidate ASCII and structured after-state
