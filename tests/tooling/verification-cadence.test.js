@@ -280,6 +280,17 @@ test('WP-027 shadow probe runner selects its typed Loomkeeper owner without broa
   assert.deepEqual(plan.fallback, []);
 });
 
+test('WP-027 micro experiment scripts select Loomkeeper checks without a product build', () => {
+  const plan = planChanges([
+    'scripts/run-wp027-micro-experiment.ts',
+    'scripts/wp027-micro-experiment-cases.ts'
+  ]);
+  assert.ok(plan.tasks.includes('check:types'));
+  assert.ok(plan.tasks.includes('test:loomkeeper'));
+  assert.deepEqual(plan.fallback, []);
+  assert.deepEqual(plan.browser, []);
+});
+
 test('dependency edits retain audit, PostgreSQL and performance checks', () => {
   const plan = planChanges(['package-lock.json']);
   assert.ok(plan.tasks.includes('audit'));
@@ -409,7 +420,8 @@ test('routine unit selectors exclude every explicit legacy diagnostic', () => {
     'tests/loomkeeper/mistral-strategy-v10-r8.test.ts',
     'tests/loomkeeper/strategic-provider-v10-r8.test.ts',
     'tests/loomkeeper/strategic-voyage-v10-r8.test.ts',
-    'tests/loomkeeper/terrain-starts-v10.test.ts'
+    'tests/loomkeeper/terrain-starts-v10.test.ts',
+    'tests/loomkeeper/wp027-micro-experiment.test.ts'
   ]);
   for (const file of legacyFiles) {
     assert.equal(fs.existsSync(path.resolve(__dirname, '../..', file)), true, file);

@@ -830,6 +830,56 @@ not their exact source rows; a failed ledge choice can therefore expose a
 presentation gap as well as a strategy error. Inspect the selected candidate's
 witness count before attributing such a failure to model reasoning.
 
+### Diagnostic micro-decision experiment (not a live-authority gate)
+
+The v9 result suggests three separable causes: a required fact is absent, an
+available fact is lost inside a large decision, or the final strategy label
+does not express the move's consequence. Test these causes on the same five
+frozen probe worlds without changing their physics, provider authority or
+release threshold. This experiment does not retry or rescore v9.
+
+For each world, construct one small evidence card from its authoritative
+recent-change record and two legal completed-turn alternatives. Include exact
+committed-target distances, immediate effects and (where relevant) the 30-cell
+ledge witness. State the evidence boundary explicitly: the simulation ends
+after this Loomkeeper turn and does not compute the next player response or
+future route reachability. Candidate A/B ordering varies by case. Freeze each
+case's present-tense claim, future-tense claim, two alternatives, conservative
+decision rule and expected answer in source before calling Mistral.
+
+Run four independent, no-retry calls per case with `mistral-small-2603`, high
+reasoning and the current 60-second provider window: one compact one-shot
+choice that also classifies both claims; then separate present-fact and
+future-fact classifications; then a narrow choice given the same card and
+the *deterministically certified* claim statuses. Alternate one-shot-first
+and microtasks-first order across cases. Each classification must return
+`supported`, `refuted` or `unknown` plus one cited evidence ID. The choice is
+only `A`, `B` or `abstain`; no model-authored action, map or policy is applied.
+The 20 calls are diagnostic, not a replacement five-probe acceptance gate.
+
+The assembler checks both microclassifications against exact source facts and
+their cited evidence IDs. An error or unavailable response yields abstention.
+Otherwise it accepts a narrow Mistral preference only if it satisfies the
+case's frozen rule. A missing necessary future fact forces abstention even if
+Mistral proposes a locally attractive move. A destroyed route maps to
+`repair` in the assembled strategy, avoiding a free-form `refine` label.
+The experiment reports one-shot versus narrow-choice accuracy, present/future
+claim calibration, premature future certainty, deterministic vetoes, latency,
+usage and cost per call. The predeclared expected actions are: abstain for
+unproved temporary-route benefit; continue the currently feasible commitment
+with the advancing alternative; provisionally repair with the less destructive
+same-distance alternative; preserve the witnessed ledge; and abstain when
+hidden support cannot be distinguished. These are bounded probe rules, not a
+claim that any future route is reachable or a production Loomkeeper policy.
+
+Interpret the result by stage. Wrong classification of an explicit fact points
+to grounding; accurate classifications followed by a bad one-shot choice point
+to decision compression; accurate microclassifications but a bad narrow choice
+point to local policy application; a correct assembled choice with a vetoed
+model answer demonstrates safety, not model competence. Five worlds with one
+sample per condition can identify concrete failure modes but cannot estimate a
+stable win rate or justify live authority.
+
 ### Phone Gate A - live accepted-provider Practice
 
 After a shadow provider passes and its live authority mode is explicitly added,
