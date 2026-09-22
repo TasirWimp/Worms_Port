@@ -703,11 +703,12 @@ records 5/5 valid replies, 2/5 useful choices, 5/5 completed before the new
 provider deadline, zero provider fallbacks, zero authority violations, 31,603
 ms p95 total decision time and USD 0.013502 captured estimated cost. Continuing
 through a feasible setback and switching after route destruction passed. The
-temporary-cost proposal claimed to move away while its selected candidate
-actually improved objective distance by 100 and removed 32 terrain cells; the
+temporary-cost proposal moved 100 units farther from its committed `coin-1`
+(500 to 600), although `objectiveDistanceDelta` increased by 100 toward the
+different, nearer `coin-6`; it also removed 32 terrain cells. The
 preserve-option proposal removed 32 cells when a legal one-cell option existed.
 The information-gap reply neither acknowledged the missing fact nor selected
-the conservative fallback. The v6 gate therefore fails the 4/5 usefulness
+the hidden deterministic fallback. The v6 gate therefore fails the 4/5 usefulness
 requirement despite solving v5's response-completion failure. Do not repeat
 this unchanged gate or promote Mistral to live authority on this evidence.
 
@@ -732,14 +733,15 @@ valid responses, 1/5 useful choices, 5/5 responses before the 60-second
 provider deadline, zero provider fallbacks, zero authority violations,
 20,543 ms p95 total decision time and USD 0.010369 captured estimated cost.
 The only useful choice switched after route destruction. The temporary-cost
-reply again said it moved away, while selected `c01` improved objective
-distance by 100 and removed two terrain cells. The feasible-setback reply
+reply again said it moved away from the committed `coin-1`, which its selected
+`c01` did (500 to 600), while also moving 100 units closer to the different
+nearest coin and removing two terrain cells. The feasible-setback reply
 switched to immediate coin scoring instead of continuing the commitment.
 The future-option reply claimed route preservation but selected `c02`, which
 removed 32 terrain cells where a legal one-cell option existed. The
 information-gap reply selected immediate scoring without acknowledging the
-missing support fact. The image improved neither the fixed usefulness count
-nor explanation/fact agreement. It reduced this sample's p95 by 11,060 ms
+missing support fact. The image did not improve the fixed usefulness count.
+It reduced this sample's p95 by 11,060 ms
 and captured estimated cost by USD 0.003133, but five non-randomized calls
 cannot establish an image-caused latency or cost improvement. Preserve this
 failed gate; do not repeat unchanged inputs or promote live authority.
@@ -772,16 +774,41 @@ matches the deployed SHA-256
 It failed strategic acceptance at 2/5 useful against the prospective 4/5
 threshold, although all five responses were valid and on time with zero
 fallbacks and authority violations. Setback continuation and destroyed-route
-switching passed. The temporary-cost choice claimed a distance loss, but its
-candidate reduced objective distance by 100; future-option preservation again
+switching passed. The temporary-cost choice did move farther from its
+committed `coin-1` (500 to 600); the positive 100-unit `objectiveDistanceDelta`
+refers to the different nearest coin. Future-option preservation again
 selected 32 removed terrain cells while a one-cell alternative existed; and
 the information-gap answer neither acknowledged the missing support fact nor
-abstained or selected the conservative fallback. The same fixture identities
+abstained or selected the hidden deterministic fallback. The same fixture identities
 made v6 2/5 and v7 1/5 useful. These five non-randomized calls do not show a
 causal improvement. Mistral input tokens rose from 34,908 across v7 to 39,449
 across v8, so the visual simplification did not reduce request token use.
 Keep Mistral shadow-only; do not repeat these unchanged inputs or promote live
 authority on this result.
+
+Cross-gate scoring correction, 2026-09-22: the v6, v7 and v8 artifacts share
+exactly the same five fixture identities and thresholds. Their recorded useful
+counts are 2/5, 1/5 and 2/5. The scorer marks temporary-cost preparation false
+in all three, but its `temporaryCost` predicate checks `objectiveDistanceDelta`,
+which `targetFor` computes against the nearest active coin rather than the
+committed target. All three selected turns end 100 units farther from the
+committed `coin-1`, matching the accepted distance cost; the earlier
+interpretation that they moved closer to that coin was wrong. The artifacts
+omit provider target/milestone fields, so this review cannot reconstruct all
+remaining predicates or upgrade a recorded result. Nor does a distance loss
+prove that the future route survives. The preserve-option scorer uses minimum
+terrain removal as a proxy, without computing whether removed cells sever the
+route; its selected `c02` consistently removes 32 cells versus a one-cell
+alternative, gains 39 units toward the chest and reduces player stitching by
+seven. The information-gap responses never acknowledge the missing support
+fact, but the hidden deterministic fallback is not identifiable to the model;
+abstention remains the available conservative response. The two frequently
+passing rules are narrower: repair accepts any `repair`/`switch` label (v8's
+passing choice removed 61 cells while another candidate reached the same chest
+distance with two), and setback continuation checks strategy/target/milestone
+without grading the selected turn's tactical consequences. These scores are
+useful diagnostics, not a measured 40-percent strategic success rate. The
+visual changes have not resolved the route-witness and uncertainty problems.
 
 ### Phone Gate A - live accepted-provider Practice
 

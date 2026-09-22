@@ -131,8 +131,11 @@ Phaser/Socket.IO stack.
   5/5 within the new provider window, zero provider fallbacks, zero authority
   violations, 31,603 ms p95 total time and USD 0.013502 captured estimated
   cost. Its [v6 artifact](../evidence/wp-027-shadow-gate-mistral-small-4-v6/result.json)
-  shows correct continuation and route switching, but misses temporary cost,
-  terrain preservation and explicit uncertainty. Preserve the failed gate;
+  shows scored continuation and route switching, with failed temporary-cost,
+  terrain-preservation and explicit-uncertainty cases. A later cross-gate
+  audit found the temporary-cost scorer uses distance to the nearest coin,
+  rather than its different committed coin; that case's failure label is
+  provisional. Preserve the failed gate;
   do not repeat unchanged inputs or grant live authority.
   The owner-authorized visual comparison added one deterministic PNG rendering
   of the current 64x36 ASCII battlefield to Mistral's shadow request while
@@ -154,8 +157,12 @@ Phaser/Socket.IO stack.
   [v8 gate](../evidence/wp-027-shadow-gate-mistral-small-4-v8/result.json)
   failed at 2/5 useful despite 5/5 valid replies, zero fallbacks and zero
   authority violations. Its p95 was 15.804 seconds. The path sheet recovered
-  setback continuation but still missed temporary cost, terrain preservation
-  and the information gap. Preserve the failed artifact; no live model selection,
+  setback continuation but still failed the recorded temporary-cost, terrain
+  preservation and information-gap checks. Cross-gate review found the
+  temporary-cost failure rests on the wrong target distance; repair and
+  continuation passes check strategic labels more than move quality. Treat
+  the 2/5 score as a probe result, not a calibrated success rate. Preserve the
+  failed artifact; no live model selection,
   public R8 promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
