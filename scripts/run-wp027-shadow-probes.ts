@@ -8,6 +8,8 @@ import {
     createWp027ProbeScenarioV10R8,
     evaluateWp027ProbeV10R8,
     prepareWp027ProbeFixtureV10R8,
+    WP027_MISTRAL_PROBE_THRESHOLDS,
+    WP027_PROBE_THRESHOLDS,
     WP027_PROBE_IDS,
     summarizeWp027ProbesV10R8,
     type Wp027ProbeFixture,
@@ -19,6 +21,8 @@ async function main(): Promise<void> {
     if ((runtime.mode !== 'gemini-shadow' && runtime.mode !== 'mistral-shadow') || !runtime.strategicAdapter) {
         throw new Error('WP-027 probes require an external shadow Loomkeeper provider.');
     }
+    const thresholds = runtime.mode === 'mistral-shadow'
+        ? WP027_MISTRAL_PROBE_THRESHOLDS : WP027_PROBE_THRESHOLDS;
     const fixtures: Wp027ProbeFixture[] = [];
     const results: Wp027ProbeResult[] = [];
     for (let index = 0; index < WP027_PROBE_IDS.length; index += 1) {
@@ -32,9 +36,9 @@ async function main(): Promise<void> {
             fixture.boundary.brief,
             preparationMs
         );
-        results.push(evaluateWp027ProbeV10R8(fixture, providerResult));
+        results.push(evaluateWp027ProbeV10R8(fixture, providerResult, thresholds));
     }
-    const report = summarizeWp027ProbesV10R8(results);
+    const report = summarizeWp027ProbesV10R8(results, thresholds);
     const artifact = Object.freeze({
         generatedAt: new Date().toISOString(),
         modelId: runtime.strategicAdapter.provider.modelId,

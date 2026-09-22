@@ -114,10 +114,10 @@ export const StrategicTurnRecordV10R8Schema = z.object({
     immediatePredictionHash: hash,
     observedStateHash: hash.nullable(),
     timingMs: z.object({
-        preparation: z.number().int().min(0).max(60_000),
-        provider: z.number().int().min(0).max(60_000),
-        validation: z.number().int().min(0).max(60_000),
-        total: z.number().int().min(0).max(60_000)
+        preparation: z.number().int().min(0),
+        provider: z.number().int().min(0),
+        validation: z.number().int().min(0),
+        total: z.number().int().min(0)
     }).strict().readonly(),
     usage: StrategicProviderUsageV10R8Schema.nullable(),
     responseBytes: z.number().int().min(0).max(1_024).nullable(),
@@ -191,8 +191,8 @@ export const StrategicTurnRecordV10R8Schema = z.object({
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['usage', 'totalTokens'],
             message: 'Provider usage total cannot be smaller than its token components.' });
     }
-    const expectedTotalMs = Math.min(60_000,
-        record.timingMs.preparation + record.timingMs.provider + record.timingMs.validation);
+    const expectedTotalMs = record.timingMs.preparation + record.timingMs.provider +
+        record.timingMs.validation;
     if (record.timingMs.total !== expectedTotalMs) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['timingMs', 'total'],
             message: 'Strategic timing total must cover preparation, provider and validation.' });

@@ -101,6 +101,30 @@ test('WP-027 adapter records end-to-end timing as preparation plus provider and 
     });
 });
 
+test('WP-027 Mistral adapter allows the full 60-second provider window after preparation', async () => {
+    const brief = collectBoundary('wp027_mistral_full_window').brief;
+    let grantedDeadlineMs = 0;
+    const provider: StrategicDecisionProviderV10R8 = {
+        mode: 'mistral_shadow',
+        modelId: 'mistral-small-2603',
+        decide: async request => {
+            grantedDeadlineMs = request.deadlineMs;
+            return { payload: validDecision(request.brief), usage: null };
+        }
+    };
+    const adapter = new StrategicDecisionAdapterV10R8(provider, {
+        deadlineMs: 60_000,
+        deadlineIncludesPreparation: false,
+        maxConcurrentRequests: null,
+        maxRequests: null,
+        failureThreshold: null
+    });
+    const result = await adapter.request('wp027_mistral_full_window_match', brief, 59_000);
+    assert.equal(grantedDeadlineMs, 60_000);
+    assert.equal(result.outcome, 'selected');
+    assert.ok(result.timingMs.total >= 59_000);
+});
+
 test('WP-027 adapter enforces circuit, request-budget and concurrency envelopes', async () => {
     const brief = collectBoundary('wp027_adapter_limits').brief;
     let now = 100;

@@ -120,6 +120,14 @@ Phaser/Socket.IO stack.
   The [v5 artifact](../evidence/wp-027-shadow-gate-mistral-small-4-v5/result.json)
   is preserved. Live model selection stays blocked; do not repeat this
   unchanged gate.
+  The owner now authorizes a changed-input Mistral shadow trial with `high`
+  reasoning and a full 60-second provider window after preparation. Omit the
+  explicit completion-token and response-body ceilings; remove Mistral's
+  process-wide request, concurrency and circuit limits and the probe p95/cost
+  acceptance ceilings. Five fixed probes, one call per decision, strict
+  validation and deterministic shadow execution remain. Gemini's envelope is
+  unchanged. Verify locally, then collect and review one new deployed artifact
+  before any live-authority decision.
   No live Gemini selection, public R8 promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port

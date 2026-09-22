@@ -14,6 +14,7 @@ import {
 } from '../../../shared/strategic-voyage-v10-r8';
 
 export const V10_R8_STRATEGIC_DEADLINE_MS = 8_000;
+export const V10_R8_MISTRAL_PROVIDER_DEADLINE_MS = 60_000;
 
 export type StrategicDecisionProviderRequestV10R8 = Readonly<{
     promptVersion: typeof V10_R8_PROMPT_VERSION;
@@ -71,9 +72,10 @@ export type StrategicProviderResultV10R8 = Readonly<{
 
 export type StrategicDecisionAdapterOptionsV10R8 = Readonly<{
     deadlineMs?: number;
-    maxConcurrentRequests?: number;
-    maxRequests?: number;
-    failureThreshold?: number;
+    deadlineIncludesPreparation?: boolean;
+    maxConcurrentRequests?: number | null;
+    maxRequests?: number | null;
+    failureThreshold?: number | null;
     circuitCooldownMs?: number;
     nowMs?: () => number;
 }>;
@@ -83,9 +85,10 @@ type ActiveRequest = Readonly<{ controller: AbortController }>;
 /** One-call operational envelope shared by local fakes and external strategic transports. */
 export class StrategicDecisionAdapterV10R8 {
     readonly #deadlineMs: number;
-    readonly #maxConcurrent: number;
-    readonly #maxRequests: number;
-    readonly #failureThreshold: number;
+    readonly #deadlineIncludesPreparation: boolean;
+    readonly #maxConcurrent: number | null;
+    readonly #maxRequests: number | null;
+    readonly #failureThreshold: number | null;
     readonly #circuitCooldownMs: number;
     readonly #nowMs: () => number;
     readonly #active = new Map<string, ActiveRequest>();
@@ -98,10 +101,15 @@ export class StrategicDecisionAdapterV10R8 {
         options: StrategicDecisionAdapterOptionsV10R8 = {}
     ) {
         if (!/^[A-Za-z0-9._-]{1,96}$/.test(provider.modelId)) throw new Error('Invalid strategic provider model identity.');
-        this.#deadlineMs = boundedInteger(options.deadlineMs ?? V10_R8_STRATEGIC_DEADLINE_MS, 1, V10_R8_STRATEGIC_DEADLINE_MS);
-        this.#maxConcurrent = boundedInteger(options.maxConcurrentRequests ?? 4, 1, 32);
-        this.#maxRequests = boundedInteger(options.maxRequests ?? 10_000, 1, 1_000_000);
-        this.#failureThreshold = boundedInteger(options.failureThreshold ?? 3, 1, 16);
+        this.#deadlineMs = boundedInteger(options.deadlineMs ?? V10_R8_STRATEGIC_DEADLINE_MS, 1,
+            provider.mode === 'mistral_shadow' ? V10_R8_MISTRAL_PROVIDER_DEADLINE_MS : V10_R8_STRATEGIC_DEADLINE_MS);
+        this.#deadlineIncludesPreparation = options.deadlineIncludesPreparation ?? true;
+        this.#maxConcurrent = options.maxConcurrentRequests === null ? null :
+            boundedInteger(options.maxConcurrentRequests ?? 4, 1, 32);
+        this.#maxRequests = options.maxRequests === null ? null :
+            boundedInteger(options.maxRequests ?? 10_000, 1, 1_000_000);
+        this.#failureThreshold = options.failureThreshold === null ? null :
+            boundedInteger(options.failureThreshold ?? 3, 1, 16);
         this.#circuitCooldownMs = boundedInteger(options.circuitCooldownMs ?? 60_000, 1, 3_600_000);
         this.#nowMs = options.nowMs ?? (() => performance.now());
     }
@@ -112,7 +120,7 @@ export class StrategicDecisionAdapterV10R8 {
         preparationMs: number
     ): Promise<StrategicProviderResultV10R8> {
         if (!/^[A-Za-z0-9_-]{16,64}$/.test(matchId)) throw new Error('Invalid strategic match identity.');
-        const preparation = boundedInteger(Math.round(preparationMs), 0, 60_000);
+        const preparation = nonNegativeInteger(Math.round(preparationMs));
         const gated = this.#gate(matchId, preparation);
         if (gated) return gated;
 
@@ -120,7 +128,9 @@ export class StrategicDecisionAdapterV10R8 {
         const active = Object.freeze({ controller });
         this.#active.set(matchId, active);
         this.#requests += 1;
-        const remainingMs = Math.max(1, this.#deadlineMs - preparation);
+        const remainingMs = this.#deadlineIncludesPreparation
+            ? Math.max(1, this.#deadlineMs - preparation)
+            : this.#deadlineMs;
         let timeout: NodeJS.Timeout | undefined;
         const timeoutResult = new Promise<symbol>(resolve => {
             timeout = setTimeout(() => resolve(timeoutMarker), remainingMs);
@@ -205,15 +215,16 @@ export class StrategicDecisionAdapterV10R8 {
     }
 
     #gate(matchId: string, preparation: number): StrategicProviderResultV10R8 | undefined {
-        if (preparation >= this.#deadlineMs) {
+        if (this.#deadlineIncludesPreparation && preparation >= this.#deadlineMs) {
             return this.#result('timeout', null, null, null, 'Preparation exhausted the decision deadline.',
                 preparation, 0, 0);
         }
-        if (this.#active.has(matchId) || this.#active.size >= this.#maxConcurrent) {
+        if (this.#active.has(matchId) ||
+            (this.#maxConcurrent !== null && this.#active.size >= this.#maxConcurrent)) {
             return this.#result('concurrency_limit', null, null, null, 'Provider concurrency limit reached.',
                 preparation, 0, 0);
         }
-        if (this.#requests >= this.#maxRequests) {
+        if (this.#maxRequests !== null && this.#requests >= this.#maxRequests) {
             return this.#result('spend_limit', null, null, null, 'Provider request budget exhausted.',
                 preparation, 0, 0);
         }
@@ -225,6 +236,7 @@ export class StrategicDecisionAdapterV10R8 {
     }
 
     #registerFailure(nowMs: number): void {
+        if (this.#failureThreshold === null) return;
         this.#consecutiveFailures += 1;
         if (this.#consecutiveFailures >= this.#failureThreshold) {
             this.#circuitUntilMs = nowMs + this.#circuitCooldownMs;
@@ -241,8 +253,8 @@ export class StrategicDecisionAdapterV10R8 {
         provider: number,
         validation: number
     ): StrategicProviderResultV10R8 {
-        const providerMs = boundedInteger(Math.round(Math.max(0, provider)), 0, 60_000);
-        const validationMs = boundedInteger(Math.round(Math.max(0, validation)), 0, 60_000);
+        const providerMs = nonNegativeInteger(Math.round(Math.max(0, provider)));
+        const validationMs = nonNegativeInteger(Math.round(Math.max(0, validation)));
         return Object.freeze({
             outcome,
             decision,
@@ -255,7 +267,7 @@ export class StrategicDecisionAdapterV10R8 {
                 preparation,
                 provider: providerMs,
                 validation: validationMs,
-                total: Math.min(60_000, preparation + providerMs + validationMs)
+                total: preparation + providerMs + validationMs
             })
         });
     }
@@ -281,6 +293,13 @@ function serializableBytes(input: unknown): number | null {
 function boundedInteger(value: number, minimum: number, maximum: number): number {
     if (!Number.isInteger(value) || value < minimum || value > maximum) {
         throw new Error(`Value must be an integer from ${minimum} through ${maximum}.`);
+    }
+    return value;
+}
+
+function nonNegativeInteger(value: number): number {
+    if (!Number.isSafeInteger(value) || value < 0) {
+        throw new Error('Strategic timing must be a nonnegative safe integer.');
     }
     return value;
 }

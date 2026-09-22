@@ -19,7 +19,6 @@ import {
 export const WP027_MISTRAL_MODEL_ID = 'mistral-small-2603' as const;
 export const WP027_MISTRAL_ENDPOINT = 'https://api.mistral.ai/v1/chat/completions' as const;
 
-const MAX_PROVIDER_BODY_BYTES = 64 * 1024;
 const INPUT_USD_PER_MILLION = 0.15;
 const OUTPUT_USD_PER_MILLION = 0.60;
 
@@ -61,10 +60,6 @@ export class MistralStrategicDecisionProviderV10R8 implements StrategicDecisionP
         if (!response.ok) {
             throw new StrategicProviderOperationalErrorV10R8(httpFailureDiagnostic(response.status));
         }
-        const declaredLength = Number(response.headers.get('content-length'));
-        if (Number.isFinite(declaredLength) && declaredLength > MAX_PROVIDER_BODY_BYTES) {
-            throw new StrategicProviderOperationalErrorV10R8('provider_response_too_large');
-        }
         let body: string;
         try {
             body = await response.text();
@@ -74,9 +69,6 @@ export class MistralStrategicDecisionProviderV10R8 implements StrategicDecisionP
                     ? 'provider_request_aborted'
                     : 'provider_network_failure'
             );
-        }
-        if (Buffer.byteLength(body, 'utf8') > MAX_PROVIDER_BODY_BYTES) {
-            throw new StrategicProviderOperationalErrorV10R8('provider_response_too_large');
         }
         try {
             return parseMistralResponse(body);
@@ -94,7 +86,6 @@ export function mistralRequestBody(brief: StrategicDecisionBriefV10R8): Readonly
             Object.freeze({ role: 'user', content: strategicUserPromptV10R8(brief) })
         ]),
         reasoning_effort: 'high',
-        max_tokens: 4_096,
         response_format: Object.freeze({
             type: 'json_schema',
             json_schema: Object.freeze({

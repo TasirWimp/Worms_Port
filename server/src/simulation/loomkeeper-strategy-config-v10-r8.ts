@@ -1,5 +1,8 @@
 import { GeminiStrategicDecisionProviderV10R8, WP027_GEMINI_MODEL_ID } from './gemini-strategy-provider-v10-r8';
-import { StrategicDecisionAdapterV10R8 } from './loomkeeper-strategy-provider-v10-r8';
+import {
+    StrategicDecisionAdapterV10R8,
+    V10_R8_MISTRAL_PROVIDER_DEADLINE_MS
+} from './loomkeeper-strategy-provider-v10-r8';
 import { StrategicShadowTelemetryV10R8 } from './loomkeeper-strategy-telemetry-v10-r8';
 import { MistralStrategicDecisionProviderV10R8, WP027_MISTRAL_MODEL_ID } from './mistral-strategy-provider-v10-r8';
 
@@ -39,7 +42,13 @@ export function loomkeeperStrategyRuntimeFromEnvironmentV10R8(
             mode,
             strategicAdapter: new StrategicDecisionAdapterV10R8(
                 new MistralStrategicDecisionProviderV10R8(apiKey, fetchImpl),
-                strategicAdapterOptions()
+                Object.freeze({
+                    deadlineMs: V10_R8_MISTRAL_PROVIDER_DEADLINE_MS,
+                    deadlineIncludesPreparation: false,
+                    maxConcurrentRequests: null,
+                    maxRequests: null,
+                    failureThreshold: null
+                })
             ),
             telemetry
         });

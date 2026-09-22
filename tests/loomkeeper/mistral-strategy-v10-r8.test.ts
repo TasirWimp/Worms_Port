@@ -9,7 +9,8 @@ import {
 import { loomkeeperStrategyRuntimeFromEnvironmentV10R8 } from '../../server/src/simulation/loomkeeper-strategy-config-v10-r8';
 import {
     createWp027ProbeFixturesV10R8,
-    evaluateWp027ProbeV10R8
+    evaluateWp027ProbeV10R8,
+    WP027_MISTRAL_PROBE_THRESHOLDS
 } from '../../server/src/simulation/loomkeeper-strategy-probes-v10-r8';
 import { StrategicProviderOperationalErrorV10R8 } from '../../server/src/simulation/loomkeeper-strategy-provider-v10-r8';
 
@@ -56,7 +57,7 @@ test('WP-027 Mistral transport sends one bounded structured request and records 
     const body = JSON.parse(String(capturedInit?.body));
     assert.equal(body.model, 'mistral-small-2603');
     assert.equal(body.reasoning_effort, 'high');
-    assert.equal(body.max_tokens, 4_096);
+    assert.equal('max_tokens' in body, false);
     assert.equal(body.stream, false);
     assert.equal(body.response_format.type, 'json_schema');
     assert.equal(body.response_format.json_schema.strict, true);
@@ -101,7 +102,7 @@ test('WP-027 Mistral transport accepts one text block alongside hidden reasoning
             choices: [{
                 finish_reason: 'stop',
                 message: { content: [
-                    { type: 'thinking', thinking: Object.freeze([]) },
+                    { type: 'thinking', thinking: [{ type: 'text', text: 'x'.repeat(70_000) }] },
                     { type: 'text', text: JSON.stringify(decision) }
                 ] }
             }],
@@ -172,6 +173,66 @@ test('WP-027 Mistral configuration requires the exact server-side model and key'
     assert.equal(configured.mode, 'mistral-shadow');
     assert.equal(configured.strategicAdapter?.provider.mode, 'mistral_shadow');
     assert.equal(configured.strategicAdapter?.provider.modelId, 'mistral-small-2603');
+});
+
+test('WP-027 Mistral gets a full provider minute after preparation and accepts parallel matches', async () => {
+    const fixture = createWp027ProbeFixturesV10R8()[0];
+    const decision = {
+        candidateId: null, strategy: null, targetId: null, milestoneId: null,
+        horizonOwnTurns: null, reason: 'Insufficient evidence for a strategic selection.', watchFor: null
+    };
+    const requests: RequestInit[] = [];
+    const releases: Array<() => void> = [];
+    const runtime = loomkeeperStrategyRuntimeFromEnvironmentV10R8({
+        LOOMKEEPER_PROVIDER: 'mistral-shadow',
+        MISTRAL_MODEL: 'mistral-small-2603',
+        MISTRAL_API_KEY: TEST_API_KEY
+    }, async (_input, init) => {
+        requests.push(init!);
+        await new Promise<void>(resolve => { releases.push(resolve); });
+        return new Response(JSON.stringify({
+            choices: [{ finish_reason: 'stop', message: { content: JSON.stringify(decision) } }],
+            usage: { prompt_tokens: 10, completion_tokens: 10, total_tokens: 20 }
+        }), { status: 200 });
+    }, () => {});
+    const adapter = runtime.strategicAdapter!;
+    const active = Array.from({ length: 3 }, (_, index) =>
+        adapter.request(`wp027_mistral_parallel_${index}`, fixture.boundary.brief,
+            index === 0 ? 59_000 : 0));
+    for (let attempt = 0; attempt < 10 && requests.length < 3; attempt += 1) await Promise.resolve();
+    assert.equal(requests.length, 3);
+    assert.equal(adapter.diagnostics().active, 3);
+    for (const request of requests) assert.equal((request.signal as AbortSignal).aborted, false);
+    releases.forEach(release => release());
+    const results = await Promise.all(active);
+    assert.deepEqual(results.map(result => result.outcome), ['abstained', 'abstained', 'abstained']);
+    assert.ok(results[0].timingMs.total >= 59_000);
+});
+
+test('WP-027 Mistral shadow has no process request budget or failure circuit', async () => {
+    const fixture = createWp027ProbeFixturesV10R8()[0];
+    let calls = 0;
+    const runtime = loomkeeperStrategyRuntimeFromEnvironmentV10R8({
+        LOOMKEEPER_PROVIDER: 'mistral-shadow',
+        MISTRAL_MODEL: 'mistral-small-2603',
+        MISTRAL_API_KEY: TEST_API_KEY
+    }, async () => {
+        calls += 1;
+        return new Response('', { status: 503 });
+    }, () => {});
+    const adapter = runtime.strategicAdapter!;
+    for (let index = 0; index < 251; index += 1) {
+        const result = await adapter.request(`wp027_mistral_uncapped_${index}`, fixture.boundary.brief,
+            index === 0 ? 59_000 : 0);
+        assert.equal(result.outcome, 'provider_error');
+    }
+    assert.equal(calls, 251);
+    assert.equal(adapter.diagnostics().circuitOpen, false);
+});
+
+test('WP-027 Mistral probe gate retains quality checks without latency or cost ceiling', () => {
+    assert.equal(WP027_MISTRAL_PROBE_THRESHOLDS.maximumP95Ms, null);
+    assert.equal(WP027_MISTRAL_PROBE_THRESHOLDS.maximumCostUsdMicros, null);
 });
 
 test('WP-027 Mistral shadow proposals retain deterministic execution authority', () => {

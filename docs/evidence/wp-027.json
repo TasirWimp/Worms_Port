@@ -32,7 +32,8 @@
     "After the two failed deployed Mistral operational attempts, preserve both artifacts and replace only Mistral's root-union response schema with a strict top-level object whose nullable wire fields remain subject to the existing exact selected-or-abstained server validator.",
     "After the deployed schema correction still failed before inference, preserve the third artifact, diagnose the exact request once, and replace unsupported Mistral low reasoning with the model-supported high setting while retaining the frozen eight-second gate.",
     "After supported high reasoning exhausted the eight-second gate and an exact accepted request consumed its full 2,048-token completion budget without a final answer, move to the only remaining supported none setting and let the unchanged usefulness thresholds determine direct-answer strategy quality.",
-    "Owner-authorized 2026-09-22 Mistral trial: restore supported high reasoning, double its completion cap to 4,096 tokens, and double the next five-probe estimated-cost acceptance ceiling to USD 0.10 while preserving the eight-second whole-window deadline and shadow authority."
+    "Owner-authorized 2026-09-22 Mistral trial: restore supported high reasoning, double its completion cap to 4,096 tokens, and double the next five-probe estimated-cost acceptance ceiling to USD 0.10 while preserving the eight-second whole-window deadline and shadow authority.",
+    "After the failed v5 gate, give Mistral high reasoning a full 60-second provider window after preparation; omit explicit completion-token and response-body ceilings; remove Mistral process request, concurrency and circuit limits and five-probe p95/cost acceptance ceilings. Preserve fixed five probes, no automatic retries, strict selection validation and deterministic shadow authority; leave Gemini bounds unchanged."
   ],
   "non_goals": [
     "No Gemini SDK, API key, network call, provider adapter, prompt execution, shadow mode or live model selection in Waypoint 1.",
@@ -282,6 +283,11 @@
       "command": "single deployed five-probe Mistral Small 4 gate at commit 45a5c47 with high reasoning and 4,096 completion tokens",
       "status": "fail",
       "details": "Render deployment dep-dap0bep42hec738ed5rg succeeded and was live before the command ran once. The sanitized v5 artifact at docs/evidence/wp-027-shadow-gate-mistral-small-4-v5/result.json records 2/5 valid, 0/5 useful, 5/5 counted on time, three deadline fallbacks, zero authority violations, 8,000 ms p95 and USD 0.002732 captured estimated cost against a USD 0.10 ceiling. Temporary-cost preparation, continuation-through-setback and information-gap acknowledgment reached the provider deadline with no answer. Repair returned a valid `refine` proposal when the declared destroyed route required repair or switch; preserve-future-option selected a legal candidate that removed more terrain than the minimum. The two completed responses used 861 and 817 output tokens. Timed-out calls returned no usage, so captured estimated cost is not a hard billing total. The unchanged gate will not be rerun."
+    },
+    {
+      "command": "npm.cmd run verify:changes for Mistral 60-second provider window and removed operational ceilings",
+      "status": "pass",
+      "details": "Delegated zero-retry execution by worms_port_test_runner at selector fingerprint 90db006ef5e22cdd557556a2e317bf8df3c7ef9e80d449d506242735cbab6545 passed types, 26/26 focused strategy cases, all 303 selected supported units, fresh build proof 11b24e83b365 / da0e8d19f4b5, built smoke, identity/reward security, bundle budgets and 19/19 canonical Chromium phone journeys. No external Mistral call ran. PostgreSQL used its expected local prerequisite skip because WP014_TEST_DATABASE_URL is absent. Visual, performance, daily, release and retired legacy suites were not selected. Package-transition housekeeping passed with no manual reconciliation. Logs .cache/wp027-mistral-60s-{types,loomkeeper,selector,housekeeping}.log."
     }
   ],
   "reviews": [
@@ -369,6 +375,11 @@
       "reviewer": "primary assistant direct deployed expanded-budget Mistral gate review",
       "status": "pass",
       "details": "The one deployed high-reasoning gate failed operational and strategic acceptance despite the larger completion and cost allowances. Three of five calls timed out, while the two valid proposals both missed the scenario-specific usefulness check. The timeout rows count as on time at exactly the eight-second boundary, so the 5/5 on-time statistic does not establish usable latency. Shadow execution stayed on the deterministic fallback for all probes, and no authority violation occurred. This failed artifact does not authorize live Mistral selection or an unchanged retry."
+    },
+    {
+      "reviewer": "primary assistant direct Mistral 60-second uncapped shadow trial review",
+      "status": "pass",
+      "details": "The owner authorized a full minute for Mistral reasoning and removal of completion, probe spending and operational request ceilings. Direct review confirms only the Mistral runtime receives a 60-second provider window after deterministic preparation; Gemini keeps its prior bounds. The Mistral request omits max_tokens, accepts a larger reasoning-bearing HTTP body, and has no process-wide request budget, global concurrency ceiling or circuit breaker. Same-match deduplication, one call per decision, abort, exact response and replay validation, fixed five probes and deterministic execution authority remain. The probe runner still records latency and estimated cost but does not reject Mistral solely for either metric. The timeout probe accounting now excludes timed-out calls from on-time counts."
     }
   ],
   "skipped_checks": [

@@ -32,6 +32,12 @@ export const WP027_PROBE_THRESHOLDS = Object.freeze({
     maximumP95Ms: 8_000,
     maximumCostUsdMicros: 100_000
 });
+export const WP027_MISTRAL_PROBE_THRESHOLDS = Object.freeze({
+    ...WP027_PROBE_THRESHOLDS,
+    maximumP95Ms: null,
+    maximumCostUsdMicros: null
+});
+type Wp027ProbeThresholds = typeof WP027_PROBE_THRESHOLDS | typeof WP027_MISTRAL_PROBE_THRESHOLDS;
 
 export const WP027_PROBE_IDS = Object.freeze([
     'temporary-cost-preparation',
@@ -72,7 +78,7 @@ export type Wp027ProbeResult = Readonly<{
 }>;
 
 export type Wp027ProbeReport = Readonly<{
-    thresholds: typeof WP027_PROBE_THRESHOLDS;
+    thresholds: Wp027ProbeThresholds;
     results: readonly Wp027ProbeResult[];
     totals: Readonly<{
         calls: number;
@@ -203,7 +209,8 @@ function probeDefinition(id: Wp027ProbeId): Readonly<{
 
 export function evaluateWp027ProbeV10R8(
     fixture: Wp027ProbeFixture,
-    providerResult: StrategicProviderResultV10R8
+    providerResult: StrategicProviderResultV10R8,
+    thresholds: Wp027ProbeThresholds = WP027_PROBE_THRESHOLDS
 ): Wp027ProbeResult {
     const pending = authorizeStrategicTurnV10R8({
         boundary: fixture.boundary,
@@ -221,7 +228,8 @@ export function evaluateWp027ProbeV10R8(
         id: fixture.id,
         valid,
         useful: valid && usefulForProbe(fixture, decision, proposed),
-        onTime: record.timingMs.total <= WP027_PROBE_THRESHOLDS.maximumP95Ms,
+        onTime: record.operationalOutcome !== 'timeout' &&
+            (thresholds.maximumP95Ms === null || record.timingMs.total <= thresholds.maximumP95Ms),
         authoritySafe: (record.providerMode === 'gemini_shadow' || record.providerMode === 'mistral_shadow') &&
             record.decisionSource === 'deterministic_fallback' &&
             record.selectedCandidateId === deterministicFallback(fixture).candidateId,
@@ -238,7 +246,10 @@ export function evaluateWp027ProbeV10R8(
     });
 }
 
-export function summarizeWp027ProbesV10R8(results: readonly Wp027ProbeResult[]): Wp027ProbeReport {
+export function summarizeWp027ProbesV10R8(
+    results: readonly Wp027ProbeResult[],
+    threshold: Wp027ProbeThresholds = WP027_PROBE_THRESHOLDS
+): Wp027ProbeReport {
     const totals = Object.freeze({
         calls: results.length,
         valid: results.filter(result => result.valid).length,
@@ -250,7 +261,6 @@ export function summarizeWp027ProbesV10R8(results: readonly Wp027ProbeResult[]):
         estimatedCostUsdMicros: results.reduce((sum, result) =>
             sum + (result.usage?.estimatedCostUsdMicros ?? 0), 0)
     });
-    const threshold = WP027_PROBE_THRESHOLDS;
     return Object.freeze({
         thresholds: threshold,
         results: Object.freeze([...results]),
@@ -261,8 +271,9 @@ export function summarizeWp027ProbesV10R8(results: readonly Wp027ProbeResult[]):
             totals.onTime >= threshold.minimumOnTime &&
             totals.providerFallbacks <= threshold.maximumProviderFallbacks &&
             totals.authorityViolations <= threshold.maximumAuthorityViolations &&
-            totals.p95Ms <= threshold.maximumP95Ms &&
-            totals.estimatedCostUsdMicros <= threshold.maximumCostUsdMicros
+            (threshold.maximumP95Ms === null || totals.p95Ms <= threshold.maximumP95Ms) &&
+            (threshold.maximumCostUsdMicros === null ||
+                totals.estimatedCostUsdMicros <= threshold.maximumCostUsdMicros)
     });
 }
 

@@ -681,6 +681,21 @@ time at the inclusive eight-second bound, so the 5/5 on-time field does not
 mean five usable replies. Do not repeat this unchanged gate or promote Mistral
 to live authority on this evidence.
 
+Owner-authorized expanded Mistral trial, 2026-09-22: give the provider a full
+60 seconds after deterministic preparation, retain supported `high` reasoning,
+and omit the explicit completion-token field. Remove the Mistral process-wide
+request budget, concurrency ceiling and failure circuit, plus the Mistral
+five-probe p95 and estimated-cost acceptance ceilings. The transport no longer
+rejects a response solely because its reasoning payload exceeds the previous
+64 KB body limit. Keep the fixed five distinct probes, strict selected-or-
+abstained validation, one request per decision without automatic retry,
+same-match deduplication, cancellation and deterministic shadow authority.
+Record actual preparation and provider time, including totals beyond one
+minute. This is a changed-input Mistral-only experiment; Gemini retains its
+existing envelope. The provider and hosting platform may still impose their
+own context, rate and connection limits. Review the new five-probe result
+before considering live authority or a player-facing wait this long.
+
 ### Phone Gate A - live accepted-provider Practice
 
 After a shadow provider passes and its live authority mode is explicitly added,

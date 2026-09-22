@@ -223,6 +223,9 @@ test('WP-027 turn records cannot commit unwitnessed strategy or mismatch a provi
         ...pending, timingMs: { ...pending.timingMs, total: 100 }
     }).success, false);
     assert.equal(StrategicTurnRecordV10R8Schema.safeParse({
+        ...pending, timingMs: { preparation: 3_500, provider: 60_000, validation: 1, total: 63_501 }
+    }).success, true);
+    assert.equal(StrategicTurnRecordV10R8Schema.safeParse({
         ...pending, status: 'committed', committedVoyage: voyage, observedStateHash: 'b'.repeat(64)
     }).success, true);
 });
