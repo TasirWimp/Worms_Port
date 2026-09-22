@@ -17,7 +17,7 @@ import { hashCanonicalV10Value } from '../shared/simulation-v10';
 import { createWp027ChapterFixtures, WP027_CHAPTER_FIXTURE_VERSION, type Wp027ChapterFixture } from
     './wp027-chapter-shadow-fixtures';
 
-const VERSION = 'v10-r8-chapter-shadow-r2';
+const VERSION = 'v10-r8-chapter-shadow-r3';
 const DEADLINE_MS = 60_000;
 const OUTPUT = path.resolve('test-results/wp027-chapter-shadow.json');
 type Mode = 'fixture-only' | 'local-fake' | 'mistral';

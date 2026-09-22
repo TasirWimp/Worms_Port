@@ -127,14 +127,16 @@ The active WP-027 chapter experiment has a separate, candidate-hidden story
 pass followed by a comparison of server and Mistral legal-turn matching. It
 does not activate model-controlled gameplay. On a checkout of this branch,
 `node --import tsx scripts/run-wp027-chapter-shadow.ts --fixture-only` checks
-the eight pinned R8 chapters in the current r2 fixture set without an API key.
+the eight pinned R8 chapters in the current r3 fixture set without an API key.
 The r1 five-case run stays pinned to deployed commit `cffd30a`. With the existing
 `MISTRAL_API_KEY` present on the game service, run
 `node --import tsx scripts/run-wp027-chapter-shadow.ts --provider=mistral`
 in its server shell to make one no-retry, two-call comparison per chapter. The
 sanitized result is written to `test-results/wp027-chapter-shadow.json`; the
 console summary reports whether all responses validated, not whether the model
-improved strategy. Keep `LOOMKEEPER_PROVIDER=deterministic` for this experiment.
+improved strategy. A run on the current branch uses the distinct eight-case r3
+inputs; archive the deployed r1 result before a later deployment. Keep
+`LOOMKEEPER_PROVIDER=deterministic` for this experiment.
 The [active contract](docs/planning/wp-027-gemini-objective-loomkeeper.md#active-revision-match-framed-chapters-2026-09-22)
 defines the evaluation and private Practice gate.
 

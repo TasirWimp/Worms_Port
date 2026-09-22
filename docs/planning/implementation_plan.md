@@ -19,6 +19,9 @@ Phaser/Socket.IO stack.
   new replay policy; do not reinterpret the failed one-call artifacts. Live
   selection, public R8 and Daily remain blocked until the revised shadow and
   private Practice gates pass.
+  The deployed chapter r1 five-case shadow awaits its provider result; the
+  local eight-case r3 fixture uses authoritative prior-turn result text and is
+  a separate, provider-unrun input.
   WP-026 V10 R8 Objective Modes is complete.
   Standard Practice and PEI-gated Daily remain R7; the server-backed R8
   objective canary remains private. **WP-027 Waypoints 1 and 2 are implemented**:

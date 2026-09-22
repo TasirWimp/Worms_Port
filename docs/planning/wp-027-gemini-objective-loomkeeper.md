@@ -105,6 +105,14 @@ because a finished match has no next Loomkeeper decision. These cases broaden
 the shadow comparison; they do not establish strategy quality until real
 provider output and exact candidate consequences are reviewed.
 
+The subsequent local r3 fixture revision corrects the preceding Loomkeeper
+result carried into each follow-up: it now reports authoritative terrain
+revision, player-stitching and Loomkeeper-score changes observed after the
+committed turn, instead of the candidate's projected immediate summary. Four
+follow-up story-basis pins changed; all eight state and legal-atlas pins stayed
+fixed. The r1 deployed trial and r2 local fake remain historical inputs. R3 is
+a new story input and has not made a provider request or earned live authority.
+
 ## Product outcome
 
 Give the Loomkeeper a coherent multi-turn strategy across Defend, Collect and
