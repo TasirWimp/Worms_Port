@@ -91,6 +91,20 @@ strategy. Before canary promotion, extend the fixed cases to include setbacks,
 counterevidence and terminal player turns, inspect exact action consequences and
 latency/cost, and decide whether the second model call adds practical value.
 
+The r1 five-case provider trial remains pinned to deployed commit `cffd30a` and
+must be archived under its own identity. Local fixture revision r2 retains those
+five source cases and adds `defend-followup` (the player shifts from Threadguard
+to a terrain-changing Spoolburst), `collect-shot-opening` (an observed shot and
+terrain change without a claimed future route), and
+`collect-player-score-followup` (a player coin score after the same pinned
+Collect opening and committed Loomkeeper turn). Follow-up cases explicitly
+inherit only their own opening's player reading, including the forked Collect
+counteraction; a separate opening cannot inherit another match's reading. The
+terminal-player-turn guard has focused coverage and produces no story fixture
+because a finished match has no next Loomkeeper decision. These cases broaden
+the shadow comparison; they do not establish strategy quality until real
+provider output and exact candidate consequences are reviewed.
+
 ## Product outcome
 
 Give the Loomkeeper a coherent multi-turn strategy across Defend, Collect and

@@ -84,6 +84,14 @@ test('WP-027 later chapter binds prior Loomkeeper outcome and objective resoluti
     }), /does not match/);
 });
 
+test('WP-027 terminal player turns cannot become a Loomkeeper story chapter', () => {
+    const { before, after } = chapterStates('claim');
+    after.phase = 'finished';
+    assert.throws(() => compileChapterObservationV10R8({
+        before, after, beforeStateHash: beforeHash, afterStateHash: afterHash, replayRecords: []
+    }), /must span one player turn/);
+});
+
 test('WP-027 private R8 coordinator emits a source-bound opening chapter without changing replay authority', async () => {
     const observations: ReturnType<typeof compileChapterObservationV10R8>[] = [];
     const live = new LiveSimulationCoordinatorV10({ nowUs: () => 0,

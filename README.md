@@ -127,7 +127,8 @@ The active WP-027 chapter experiment has a separate, candidate-hidden story
 pass followed by a comparison of server and Mistral legal-turn matching. It
 does not activate model-controlled gameplay. On a checkout of this branch,
 `node --import tsx scripts/run-wp027-chapter-shadow.ts --fixture-only` checks
-the five frozen R8 chapters without an API key. With the existing
+the eight pinned R8 chapters in the current r2 fixture set without an API key.
+The r1 five-case run stays pinned to deployed commit `cffd30a`. With the existing
 `MISTRAL_API_KEY` present on the game service, run
 `node --import tsx scripts/run-wp027-chapter-shadow.ts --provider=mistral`
 in its server shell to make one no-retry, two-call comparison per chapter. The

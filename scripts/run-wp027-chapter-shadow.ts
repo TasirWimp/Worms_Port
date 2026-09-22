@@ -17,7 +17,7 @@ import { hashCanonicalV10Value } from '../shared/simulation-v10';
 import { createWp027ChapterFixtures, WP027_CHAPTER_FIXTURE_VERSION, type Wp027ChapterFixture } from
     './wp027-chapter-shadow-fixtures';
 
-const VERSION = 'v10-r8-chapter-shadow-r1';
+const VERSION = 'v10-r8-chapter-shadow-r2';
 const DEADLINE_MS = 60_000;
 const OUTPUT = path.resolve('test-results/wp027-chapter-shadow.json');
 type Mode = 'fixture-only' | 'local-fake' | 'mistral';
@@ -186,17 +186,23 @@ export async function runWp027ChapterShadow(mode: Mode): Promise<Readonly<Record
     for (const fixture of fixtures) {
         const brief = buildChapterStoryBriefV10R8({
             decisionBrief: fixture.boundary.brief, observation: fixture.observation,
-            priorReading: priorReadings.get(fixture.mode) ?? null
+            priorReading: fixture.priorFixtureId ? priorReadings.get(fixture.priorFixtureId) ?? null : null
         });
         const row: Record<string, unknown> = {
             id: fixture.id, mode: fixture.mode, chapterIndex: fixture.chapterIndex,
+            priorFixtureId: fixture.priorFixtureId,
             stateHash: brief.stateHash, observationBasis: brief.basisId,
             atlasBasis: fixture.boundary.brief.basisId,
+            observedFacts: brief.facts,
             storyRequestHash: hashCanonicalV10Value(chapterStoryRequestBody(brief)),
             fallbackCandidateId: fixture.boundary.deterministicFallbackCandidate().candidateId
         };
         rows.push(row);
         if (mode === 'fixture-only') continue;
+        if (fixture.priorFixtureId && !priorReadings.has(fixture.priorFixtureId)) {
+            row.skipped = 'prior_story_unavailable';
+            continue;
+        }
         const storyCall = mode === 'mistral'
             ? await callMistral(apiKey!, chapterStoryRequestBody(brief))
             : { outcome: 'complete', durationMs: 0, requestHash: row.storyRequestHash,
@@ -206,7 +212,7 @@ export async function runWp027ChapterShadow(mode: Mode): Promise<Readonly<Record
         try {
             const frozen = validateChapterStoryV10R8(brief, storyCall.payload);
             row.story = frozen;
-            priorReadings.set(fixture.mode, frozen.proposal.playerReading);
+            priorReadings.set(fixture.id, frozen.proposal.playerReading);
             const comparison = matchChapterIntentionV10R8({
                 storyBrief: brief, frozenStory: frozen, decisionBrief: fixture.boundary.brief,
                 fallbackCandidateId: row.fallbackCandidateId as string
