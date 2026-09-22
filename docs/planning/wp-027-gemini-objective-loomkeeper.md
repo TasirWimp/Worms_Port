@@ -810,6 +810,26 @@ without grading the selected turn's tactical consequences. These scores are
 useful diagnostics, not a measured 40-percent strategic success rate. The
 visual changes have not resolved the route-witness and uncertainty problems.
 
+Probe rubric `v10-r8-probe-r2` corrects the local harness before any further
+shadow comparison. Temporary-cost preparation now measures before/after
+distance to the *committed* target and retains the required target and
+milestone match. Each new probe row records the proposed target and milestone
+for review. The preserve-option fixture names a witnessed upper ledge
+(terrain cells x120-134, y26-27); the scorer reads those exact cells from each
+candidate's authoritative completed terrain and accepts only a selection that
+keeps all 30 cells. This is a bounded physical support witness, not proof that
+the whole future route is reachable or that the selected strategy is globally
+best. Its own before/after cell counts appear in each new probe row. The old
+v6-v8 artifacts and their 2/5, 1/5 and 2/5 scores retain their original rubric;
+they are not retrospectively rescored or directly comparable to a new rubric
+result. The remaining repair, continuation and information-gap probes keep
+their existing checks; a passing five-probe gate remains necessary but cannot
+alone establish multi-turn live quality.
+Mistral's current path sheet shows removed-terrain horizontal positions but
+not their exact source rows; a failed ledge choice can therefore expose a
+presentation gap as well as a strategy error. Inspect the selected candidate's
+witness count before attributing such a failure to model reasoning.
+
 ### Phone Gate A - live accepted-provider Practice
 
 After a shadow provider passes and its live authority mode is explicitly added,

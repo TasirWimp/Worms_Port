@@ -323,6 +323,17 @@ export class StrategicDecisionBoundaryV10R8 {
         });
     }
 
+    /** Exact projected terrain cell for a legal turn; a cell alone does not prove route reachability. */
+    candidateTerrainSolid(candidateId: string, x: number, y: number): boolean {
+        const terrain = this.#candidates.get(candidateId)?.completed.combat.terrain;
+        if (!terrain) throw new Error('Strategic candidate is missing from the current atlas.');
+        if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || y < 0 ||
+            x >= terrain.width || y >= terrain.height) {
+            throw new Error('Strategic terrain cell is outside the current arena.');
+        }
+        return terrainSolid(terrain, x, y);
+    }
+
     resolve(candidateId: string): CandidateCapabilityV10R8 {
         if (!this.#candidates.has(candidateId)) throw new Error('Unknown candidate for this decision basis.');
         return new CandidateCapabilityV10R8(capabilityToken, this.brief.basisId, candidateId);

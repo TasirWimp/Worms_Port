@@ -13,7 +13,9 @@ import {
     createWp027ProbeScenarioV10R8,
     evaluateWp027ProbeV10R8,
     prepareWp027ProbeFixtureV10R8,
-    summarizeWp027ProbesV10R8
+    summarizeWp027ProbesV10R8,
+    WP027_PROBE_RUBRIC_VERSION,
+    type Wp027ProbeFixture
 } from '../../server/src/simulation/loomkeeper-strategy-probes-v10-r8';
 import {
     StrategicDecisionAdapterV10R8,
@@ -222,6 +224,7 @@ test('WP-027 provider configuration is deterministic by default and fails closed
 });
 
 test('WP-027 fixed probes enforce shadow authority and prospective release thresholds', () => {
+    assert.equal(WP027_PROBE_RUBRIC_VERSION, 'v10-r8-probe-r2');
     const fixtures = createWp027ProbeFixturesV10R8();
     const temporaryCost = fixtures.find(fixture => fixture.id === 'temporary-cost-preparation')!;
     assert.match(temporaryCost.currentStrategy.acceptedTemporaryCost ?? '', /only future route/);
@@ -237,11 +240,14 @@ test('WP-027 fixed probes enforce shadow authority and prospective release thres
     const results = fixtures.map(fixture => {
         let decision: StrategicDecisionV10R8;
         if (fixture.id === 'temporary-cost-preparation') {
+            const actor = fixture.boundary.brief.battlefield.actors.find(item => item.id === 'loomkeeper')!;
+            const target = fixture.boundary.brief.battlefield.objects.find(item =>
+                item.id === fixture.currentStrategy.targetId)!;
+            const beforeDistance = Math.abs(target.x - actor.x) + Math.abs(target.y - actor.y);
             const candidate = fixture.boundary.brief.legalCandidates.find(item =>
                 (item.immediate.objectiveScoreDelta < 0 ||
-                    (item.immediate.objectiveDistanceDelta ?? 0) < 0 ||
-                    item.immediate.ownStitchingDelta < 0) &&
-                item.opportunities.some(opportunity => /objective|future route|closer/i.test(opportunity)));
+                    (item.worldDelta.committedTargetAfter?.distanceFromLoomkeeper ?? 0) > beforeDistance ||
+                    item.immediate.ownStitchingDelta < 0));
             assert.ok(candidate);
             decision = decisionFor(fixture, 'continue', candidate.candidateId,
                 fixture.currentStrategy.targetId!, fixture.currentStrategy.milestoneId!);
@@ -251,10 +257,8 @@ test('WP-027 fixed probes enforce shadow authority and prospective release thres
         } else if (fixture.id === 'repair-destroyed-route') {
             decision = decisionFor(fixture, 'repair');
         } else if (fixture.id === 'preserve-future-option') {
-            const minimum = Math.min(...fixture.boundary.brief.legalCandidates.map(item =>
-                item.immediate.terrainCellsRemoved));
             const candidate = fixture.boundary.brief.legalCandidates.find(item =>
-                item.immediate.terrainCellsRemoved === minimum)!;
+                preservedShelfCells(fixture, item.candidateId) === 30)!;
             decision = decisionFor(fixture, 'refine', candidate.candidateId);
         } else {
             decision = {
@@ -298,6 +302,56 @@ test('WP-027 fixed probes enforce shadow authority and prospective release thres
     assert.equal(failed.diagnostic, 'provider_http_unavailable');
     assert.equal(failed.timingMs.preparation, 1_250);
 });
+
+test('WP-027 cost and preservation probes grade the committed target and exact landing support', () => {
+    const fixtures = createWp027ProbeFixturesV10R8();
+    const cost = fixtures.find(fixture => fixture.id === 'temporary-cost-preparation')!;
+    const costDecision = (candidateId: string) => decisionFor(cost, 'continue', candidateId,
+        cost.currentStrategy.targetId!, cost.currentStrategy.milestoneId!);
+    const acceptedCost = evaluateWp027ProbeV10R8(cost, providerResult(costDecision('c01')));
+    assert.equal(acceptedCost.useful, true);
+    assert.deepEqual(acceptedCost.committedTargetDistance,
+        { targetId: 'coin-1', before: 500, after: 600 });
+    assert.equal(acceptedCost.proposalTargetId, 'coin-1');
+    assert.equal(acceptedCost.proposalMilestoneId, 'preserve-route');
+    assert.equal(cost.boundary.brief.legalCandidates.find(item => item.candidateId === 'c01')!
+        .immediate.objectiveDistanceDelta, 100);
+    const oppositeCost = evaluateWp027ProbeV10R8(cost, providerResult(costDecision('c02')));
+    assert.equal(oppositeCost.useful, false);
+    assert.deepEqual(oppositeCost.committedTargetDistance,
+        { targetId: 'coin-1', before: 500, after: 479 });
+
+    const preservation = fixtures.find(fixture => fixture.id === 'preserve-future-option')!;
+    const destroyer = preservation.boundary.brief.legalCandidates.find(item =>
+        preservedShelfCells(preservation, item.candidateId) === 0);
+    assert.ok(destroyer);
+    const preserver = preservation.boundary.brief.legalCandidates.find(item =>
+        preservedShelfCells(preservation, item.candidateId) === 30 &&
+        item.immediate.terrainCellsRemoved > destroyer.immediate.terrainCellsRemoved);
+    assert.ok(preserver);
+    const destroyed = evaluateWp027ProbeV10R8(preservation,
+        providerResult(decisionFor(preservation, 'refine', destroyer.candidateId)));
+    assert.equal(destroyed.useful, false);
+    assert.deepEqual(destroyed.routeSupportWitness, {
+        id: 'witnessed-upper-ledge', xMin: 120, xMax: 134, yMin: 26, yMax: 27,
+        beforeSolidCells: 30, afterSolidCells: 0, removedCells: 30
+    });
+    const preserved = evaluateWp027ProbeV10R8(preservation,
+        providerResult(decisionFor(preservation, 'refine', preserver.candidateId)));
+    assert.equal(preserved.useful, true);
+    assert.equal(preserved.routeSupportWitness?.removedCells, 0);
+    assert.ok(preserver.immediate.terrainCellsRemoved > destroyer.immediate.terrainCellsRemoved);
+});
+
+function preservedShelfCells(fixture: Wp027ProbeFixture, candidateId: string): number {
+    let solid = 0;
+    for (let y = 26; y <= 27; y += 1) {
+        for (let x = 120; x <= 134; x += 1) {
+            if (fixture.boundary.candidateTerrainSolid(candidateId, x, y)) solid += 1;
+        }
+    }
+    return solid;
+}
 
 test('WP-027 telemetry emits source-correct operational facts without model prose', () => {
     const fixture = createWp027ProbeFixturesV10R8()[0];

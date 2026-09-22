@@ -14,6 +14,7 @@ import {
     WP027_MISTRAL_PROBE_THRESHOLDS,
     WP027_PROBE_THRESHOLDS,
     WP027_PROBE_IDS,
+    WP027_PROBE_RUBRIC_VERSION,
     summarizeWp027ProbesV10R8,
     type Wp027ProbeFixture,
     type Wp027ProbeResult
@@ -47,6 +48,7 @@ async function main(): Promise<void> {
         generatedAt: new Date().toISOString(),
         modelId: runtime.strategicAdapter.provider.modelId,
         promptVersion: V10_R8_PROMPT_VERSION,
+        probeRubricVersion: WP027_PROBE_RUBRIC_VERSION,
         visualInput: runtime.mode === 'mistral-shadow' ? Object.freeze({
             version: WP027_CANDIDATE_PATH_IMAGE_VERSION,
             source: 'boundary.pathAtlas',

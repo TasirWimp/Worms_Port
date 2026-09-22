@@ -164,6 +164,13 @@ Phaser/Socket.IO stack.
   the 2/5 score as a probe result, not a calibrated success rate. Preserve the
   failed artifact; no live model selection,
   public R8 promotion or reward-path change is authorized.
+  The local refinement now versions the five-probe usefulness rubric as
+  `v10-r8-probe-r2`: temporary cost is measured against the committed target,
+  proposal target/milestone are retained, and future-option preservation checks
+  the exact witnessed upper ledge in completed candidate terrain instead of
+  minimum crater size. This is a support witness, not full route reachability.
+  Existing v6-v8 artifact scores remain frozen under their old rubric; any
+  new gate must identify the changed rubric and be reviewed separately.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.
