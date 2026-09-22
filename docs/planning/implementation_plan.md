@@ -144,14 +144,19 @@ Phaser/Socket.IO stack.
   Its p95 was 20.543 seconds; the image did not resolve the observed strategy
   misses. Shared prompt r4, Gemini and replay remain unchanged. Preserve the
   failed artifact and do not repeat identical inputs.
-  The current owner-authorized changed-input slice replaces the full-field
+  The owner-authorized changed-input slice replaced the full-field
   Mistral image with a candidate-path sheet derived from the already simulated
   complete-turn alternatives. Ordered actor waypoints, shot impact and sparse
   objective/terrain-change marks pair with a compact Mistral-only path brief;
   the shared Gemini brief and private deterministic authority stay unchanged.
-  Verify path points against authoritative execution, inspect the sheet, then
-  run the same five shadow probes once and record their strategy quality.
-  No live Gemini selection, public R8 promotion or reward-path change is authorized.
+  Local authoritative-turn, image, provider and supported browser checks passed.
+  Render commit `4aa1976` then ran the same five fixture identities once. The
+  [v8 gate](../evidence/wp-027-shadow-gate-mistral-small-4-v8/result.json)
+  failed at 2/5 useful despite 5/5 valid replies, zero fallbacks and zero
+  authority violations. Its p95 was 15.804 seconds. The path sheet recovered
+  setback continuation but still missed temporary cost, terrain preservation
+  and the information gap. Preserve the failed artifact; no live model selection,
+  public R8 promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.

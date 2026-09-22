@@ -761,6 +761,28 @@ input version. Gemini's original brief/prompt and all server execution/replay
 authority remain unchanged. A passing gate would still require a separate
 live Practice authorization.
 
+The candidate-path implementation passed local types, focused authoritative
+turn/request tests, change-selected build and smoke, and all 19 supported
+Chromium phone journeys. A deterministic [path-sheet preview](../evidence/wp-027-shadow-gate-mistral-small-4-v8/candidate-path-preview.png)
+was visually inspected. Render deployed `4aa1976` as
+`dep-dap4v0f40ujc73bj8lig`, then the unchanged five scenarios ran once.
+The [v8 artifact](../evidence/wp-027-shadow-gate-mistral-small-4-v8/result.json)
+matches the deployed SHA-256
+`F46AE2F56AE2A090C2066F564F8B1279F3C51B333B0D9C67CD22A4AE90029AF0`.
+It failed strategic acceptance at 2/5 useful against the prospective 4/5
+threshold, although all five responses were valid and on time with zero
+fallbacks and authority violations. Setback continuation and destroyed-route
+switching passed. The temporary-cost choice claimed a distance loss, but its
+candidate reduced objective distance by 100; future-option preservation again
+selected 32 removed terrain cells while a one-cell alternative existed; and
+the information-gap answer neither acknowledged the missing support fact nor
+abstained or selected the conservative fallback. The same fixture identities
+made v6 2/5 and v7 1/5 useful. These five non-randomized calls do not show a
+causal improvement. Mistral input tokens rose from 34,908 across v7 to 39,449
+across v8, so the visual simplification did not reduce request token use.
+Keep Mistral shadow-only; do not repeat these unchanged inputs or promote live
+authority on this result.
+
 ### Phone Gate A - live accepted-provider Practice
 
 After a shadow provider passes and its live authority mode is explicitly added,
