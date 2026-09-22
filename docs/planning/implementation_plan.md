@@ -22,8 +22,8 @@ Phaser/Socket.IO stack.
   The deployed chapter r1 five-case shadow awaits its provider result; the
   local eight-case r3 fixture uses authoritative prior-turn result text and is
   a separate, provider-unrun input.
-  A provider-independent committed chapter-carrier builder is being verified;
-  it is not yet a live replay or selection policy.
+  The provider-independent committed chapter-carrier builder passed its local
+  selected gate; it is not yet a live replay or selection policy.
   WP-026 V10 R8 Objective Modes is complete.
   Standard Practice and PEI-gated Daily remain R7; the server-backed R8
   objective canary remains private. **WP-027 Waypoints 1 and 2 are implemented**:
