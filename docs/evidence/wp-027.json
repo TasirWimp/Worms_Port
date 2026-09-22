@@ -471,6 +471,11 @@
       "command": "post-selector documentation validation and exact Render private-canary deployment",
       "status": "pass",
       "details": "The testing-only worker passed a documentation-only selector dry run at fingerprint bdbbab1b2cdf925001c51604d6c2ff435fb2cf55c12eb4b924310af5771e2deb, diff check and work-package evidence (74 records) after the product selector; unchanged product phases were not rerun. The primary committed/pushed b7c7c6a21e717ad6603956fbbbc61c230c83bdaa and manually deployed that exact commit as dep-dapgbl5bedkc738p9s70. Render build/compliance/health passed and reported Live. The only environment edit set LOOMKEEPER_PROVIDER from deterministic to mistral-chapter-practice; environment deploy dep-dapgcdoae00c73d1c32g also reported Live on the same commit, and the private entry responded HTTP 200. No phone match or real live chapter request has run yet."
+    },
+    {
+      "command": "one real private Collect chapter after the environment deploy",
+      "status": "pass",
+      "details": "The primary opened the wallet-free private Collect route in an isolated browser tab, let its first player turn expire and observed the Loomkeeper complete a turn before control returned to the player. The sanitized Render line [wp027-chapter-canary] reported prompt v10-r8-chapter-story-r4, model mistral-small-2603, operationalOutcome selected, authorizedCandidateId c04, decisionSource server_matcher and no diagnostic. Whole-window timing was preparation 2,357 ms, provider 4,090 ms, validation 1 ms, total 6,448 ms; usage was 1,496 input and 649 output tokens with estimated USD 0.000614. The test tab was closed after one exchange. This is a single deployed smoke, not multi-turn strategic or physical-phone acceptance."
     }
   ],
   "reviews": [
