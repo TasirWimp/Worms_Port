@@ -186,6 +186,18 @@ Phaser/Socket.IO stack.
   not be repeated unchanged. Live Mistral authority and public R8 promotion
   remain blocked. Render was returned to `LOOMKEEPER_PROVIDER=deterministic`
   after the gate, per the shadow-run instructions in `README.md`.
+  A separate preregistered micro-decision diagnostic at `05c2642` then made
+  20 no-retry Mistral calls over the same five worlds, each reduced to two
+  legal completed-turn alternatives. Both compact one-shot and staged choices
+  matched all five frozen actions; both recognized every missing future fact
+  as unknown. The strict staged citation guard rejected two relevant but
+  noncanonical evidence IDs, leaving three accepted preferences and two safe
+  abstentions. The exact [result](../evidence/wp-027-mistral-micro-decisions-r1/result.json)
+  is diagnostic, not a new release-gate pass: explicit short cards and small
+  candidate sets changed alongside decomposition, so they do not establish
+  which factor fixed the v9 misses. The next bounded comparison must separate
+  evidence presentation from call decomposition and missing computed facts.
+  Live Mistral and public R8 remain blocked; Render stayed deterministic.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.

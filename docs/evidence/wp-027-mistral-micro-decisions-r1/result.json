@@ -1,0 +1,569 @@
+{
+  "version": "v10-r8-micro-decisions-r1",
+  "generatedAt": "2026-09-22T11:44:31.127Z",
+  "modelId": "mistral-small-2603",
+  "providerDeadlineMs": 60000,
+  "releaseGate": false,
+  "sourceCommit": "05c26424aede1b4d2c4b89c25de3ce182e15f84f",
+  "cases": [
+    {
+      "id": "temporary-cost-preparation",
+      "evidenceSha256": "4868bc295e92b7702d509ef74172a91984a572c63e75667ffcb7a4cc7b3ca3db",
+      "optionCandidateIds": [
+        "c09",
+        "c01"
+      ],
+      "expected": {
+        "present": {
+          "status": "supported",
+          "evidenceId": "B"
+        },
+        "future": {
+          "status": "unknown",
+          "evidenceId": "limit"
+        },
+        "action": "abstain",
+        "strategy": "abstain"
+      },
+      "order": [
+        "one-shot",
+        "present",
+        "future",
+        "narrow-choice"
+      ],
+      "calls": [
+        {
+          "kind": "one-shot",
+          "inputSha256": "60cf97a880fa5ac02d0b4cda87cb112cd6cc2c034e908e5c6fbed687f93878fc",
+          "outcome": "complete",
+          "durationMs": 9225,
+          "usage": {
+            "inputTokens": 638,
+            "outputTokens": 1624,
+            "totalTokens": 2262,
+            "estimatedCostUsdMicros": 1071
+          },
+          "answer": {
+            "currentStatus": "supported",
+            "futureStatus": "unknown",
+            "action": "abstain",
+            "reason": "B increases distance (600>500) but future route preservation is unproven; policy requires established benefit for distance loss."
+          }
+        },
+        {
+          "kind": "present",
+          "inputSha256": "02f2fcc5d1e01e43070ea14356b3c8a9ca7ca341acbf79f7567c7a7ca33df5e2",
+          "outcome": "complete",
+          "durationMs": 2180,
+          "usage": {
+            "inputTokens": 616,
+            "outputTokens": 331,
+            "totalTokens": 947,
+            "estimatedCostUsdMicros": 291
+          },
+          "answer": {
+            "status": "supported",
+            "evidenceId": "B",
+            "reason": "Option B's committedTargetDistanceAfter (600) exceeds its before value (500), confirming it ends farther from coin-1."
+          }
+        },
+        {
+          "kind": "future",
+          "inputSha256": "1db8846959680118bf969bb1824ef24ff4c7b18b6e526413a0b53680df355c8a",
+          "outcome": "complete",
+          "durationMs": 3238,
+          "usage": {
+            "inputTokens": 621,
+            "outputTokens": 479,
+            "totalTokens": 1100,
+            "estimatedCostUsdMicros": 381
+          },
+          "answer": {
+            "status": "unknown",
+            "evidenceId": "B",
+            "reason": "B's distance increase (500→600) is shown but future route reachability to coin-1 is not computed per limit."
+          }
+        },
+        {
+          "kind": "narrow-choice",
+          "inputSha256": "9d4cfb89b3f69c8195f7de2701893f208585995d4f8449a948371d8cc093788d",
+          "outcome": "complete",
+          "durationMs": 3403,
+          "usage": {
+            "inputTokens": 664,
+            "outputTokens": 563,
+            "totalTokens": 1227,
+            "estimatedCostUsdMicros": 438
+          },
+          "answer": {
+            "action": "abstain",
+            "reason": "B’s future route benefit to coin-1 is not established; only current-turn facts are certified."
+          }
+        }
+      ],
+      "scores": {
+        "oneShotPresent": true,
+        "oneShotFuture": true,
+        "oneShotAction": true,
+        "microPresent": true,
+        "microFuture": false,
+        "narrowAction": true
+      },
+      "assembled": {
+        "action": "abstain",
+        "strategy": "abstain",
+        "source": "claim_guard"
+      }
+    },
+    {
+      "id": "continue-through-setback",
+      "evidenceSha256": "b1d5eacfe7c5b3463b98e6ecd1e4bcc899154126e8d8983c74499bc118b03351",
+      "optionCandidateIds": [
+        "c05",
+        "c04"
+      ],
+      "expected": {
+        "present": {
+          "status": "supported",
+          "evidenceId": "event"
+        },
+        "future": {
+          "status": "unknown",
+          "evidenceId": "limit"
+        },
+        "action": "B",
+        "strategy": "continue"
+      },
+      "order": [
+        "present",
+        "future",
+        "narrow-choice",
+        "one-shot"
+      ],
+      "calls": [
+        {
+          "kind": "present",
+          "inputSha256": "8d92aca0575a3cc508af229baa748f34cdc124e1d164292acf74c2773ae219a9",
+          "outcome": "complete",
+          "durationMs": 1930,
+          "usage": {
+            "inputTokens": 602,
+            "outputTokens": 278,
+            "totalTokens": 880,
+            "estimatedCostUsdMicros": 258
+          },
+          "answer": {
+            "status": "supported",
+            "evidenceId": "event",
+            "reason": "Event explicitly states the lower route remains feasible after accepted distance loss."
+          }
+        },
+        {
+          "kind": "future",
+          "inputSha256": "b5c089f7903bf56e2d1b6aed3936003e48c9f29be6da8fc1592f3188fc694a77",
+          "outcome": "complete",
+          "durationMs": 2693,
+          "usage": {
+            "inputTokens": 603,
+            "outputTokens": 436,
+            "totalTokens": 1039,
+            "estimatedCostUsdMicros": 353
+          },
+          "answer": {
+            "status": "unknown",
+            "evidenceId": "limit",
+            "reason": "The limit states future route reachability after the player's next turn is not computed."
+          }
+        },
+        {
+          "kind": "narrow-choice",
+          "inputSha256": "57bb57356f3078478660c96a1603c7773b3fd517fa7b3ebd1da9fa3752a78d25",
+          "outcome": "complete",
+          "durationMs": 3148,
+          "usage": {
+            "inputTokens": 647,
+            "outputTokens": 549,
+            "totalTokens": 1196,
+            "estimatedCostUsdMicros": 427
+          },
+          "answer": {
+            "action": "B",
+            "reason": "B approaches objective (distance 461 vs 500) and damages opponent (stitching -7) without own loss, matching policy."
+          }
+        },
+        {
+          "kind": "one-shot",
+          "inputSha256": "cd9d9f0cfac5b74f055be6f739e21b60c13dadc94889f7bd706939d2bb5627c4",
+          "outcome": "complete",
+          "durationMs": 6064,
+          "usage": {
+            "inputTokens": 621,
+            "outputTokens": 1048,
+            "totalTokens": 1669,
+            "estimatedCostUsdMicros": 722
+          },
+          "answer": {
+            "currentStatus": "supported",
+            "futureStatus": "unknown",
+            "action": "B",
+            "reason": "B reduces distance to coin-1 (461 vs 633) and damages opponent (-7) without own stitching loss, aligning with policy."
+          }
+        }
+      ],
+      "scores": {
+        "oneShotPresent": true,
+        "oneShotFuture": true,
+        "oneShotAction": true,
+        "microPresent": true,
+        "microFuture": true,
+        "narrowAction": true
+      },
+      "assembled": {
+        "action": "B",
+        "strategy": "continue",
+        "source": "validated_preference"
+      }
+    },
+    {
+      "id": "repair-destroyed-route",
+      "evidenceSha256": "f0b82952b1040467201227346335dbb46af8f69f70fded45012b81734718a9a1",
+      "optionCandidateIds": [
+        "c03",
+        "c07"
+      ],
+      "expected": {
+        "present": {
+          "status": "supported",
+          "evidenceId": "event"
+        },
+        "future": {
+          "status": "unknown",
+          "evidenceId": "limit"
+        },
+        "action": "A",
+        "strategy": "repair"
+      },
+      "order": [
+        "one-shot",
+        "present",
+        "future",
+        "narrow-choice"
+      ],
+      "calls": [
+        {
+          "kind": "one-shot",
+          "inputSha256": "2bcd376bff8657629a0d1c4e3ad15c43aa0a316c4b340d03fd39f79c39998270",
+          "outcome": "complete",
+          "durationMs": 2647,
+          "usage": {
+            "inputTokens": 636,
+            "outputTokens": 414,
+            "totalTokens": 1050,
+            "estimatedCostUsdMicros": 344
+          },
+          "answer": {
+            "currentStatus": "supported",
+            "futureStatus": "unknown",
+            "action": "A",
+            "reason": "Current claim is supported by event. Policy prefers A (less terrain removed) but future route reachability is uncomputed."
+          }
+        },
+        {
+          "kind": "present",
+          "inputSha256": "c7e32cee52e7e54fabb284b1acfa1231b3788e1db64335d1405f68995d67eb1a",
+          "outcome": "complete",
+          "durationMs": 1915,
+          "usage": {
+            "inputTokens": 617,
+            "outputTokens": 279,
+            "totalTokens": 896,
+            "estimatedCostUsdMicros": 260
+          },
+          "answer": {
+            "status": "supported",
+            "evidenceId": "event",
+            "reason": "Event explicitly states the player destroyed route support before this turn."
+          }
+        },
+        {
+          "kind": "future",
+          "inputSha256": "670ab63f6c3cafaafec1add9248ccce02921282b75f6fdf685aafd0ea3679d2a",
+          "outcome": "complete",
+          "durationMs": 3879,
+          "usage": {
+            "inputTokens": 621,
+            "outputTokens": 534,
+            "totalTokens": 1155,
+            "estimatedCostUsdMicros": 414
+          },
+          "answer": {
+            "status": "unknown",
+            "evidenceId": "limit",
+            "reason": "Future route reachability after this turn is not computed in the evidence."
+          }
+        },
+        {
+          "kind": "narrow-choice",
+          "inputSha256": "280b63b238a434d72d9247db61278394bd60ed2f8b75638f3ebdddc750281799",
+          "outcome": "complete",
+          "durationMs": 3565,
+          "usage": {
+            "inputTokens": 662,
+            "outputTokens": 536,
+            "totalTokens": 1198,
+            "estimatedCostUsdMicros": 421
+          },
+          "answer": {
+            "action": "A",
+            "reason": "A removes 2 terrain cells vs B's 61 while achieving the same distance, matching the policy's preference for minimal terrain removal."
+          }
+        }
+      ],
+      "scores": {
+        "oneShotPresent": true,
+        "oneShotFuture": true,
+        "oneShotAction": true,
+        "microPresent": true,
+        "microFuture": true,
+        "narrowAction": true
+      },
+      "assembled": {
+        "action": "A",
+        "strategy": "repair",
+        "source": "validated_preference"
+      }
+    },
+    {
+      "id": "preserve-future-option",
+      "evidenceSha256": "0c2f5fe4b2c17a39acee7942d8be1046fcb2fdbe111670458a15fbd3286cfdee",
+      "optionCandidateIds": [
+        "c01",
+        "c03"
+      ],
+      "expected": {
+        "present": {
+          "status": "supported",
+          "evidenceId": "B"
+        },
+        "future": {
+          "status": "unknown",
+          "evidenceId": "limit"
+        },
+        "action": "B",
+        "strategy": "preserve"
+      },
+      "order": [
+        "present",
+        "future",
+        "narrow-choice",
+        "one-shot"
+      ],
+      "calls": [
+        {
+          "kind": "present",
+          "inputSha256": "f6d64c4032443f84deb574fa165bda86fc2bea029c700995c4588dc999c8a366",
+          "outcome": "complete",
+          "durationMs": 3593,
+          "usage": {
+            "inputTokens": 613,
+            "outputTokens": 566,
+            "totalTokens": 1179,
+            "estimatedCostUsdMicros": 432
+          },
+          "answer": {
+            "status": "supported",
+            "evidenceId": "B",
+            "reason": "B shows 0 named ledge cells removed, preserving all cells."
+          }
+        },
+        {
+          "kind": "future",
+          "inputSha256": "867887aaec2d9f7637c382da0385a4721c0527308469042ed602305a8df834c7",
+          "outcome": "complete",
+          "durationMs": 3016,
+          "usage": {
+            "inputTokens": 611,
+            "outputTokens": 469,
+            "totalTokens": 1080,
+            "estimatedCostUsdMicros": 374
+          },
+          "answer": {
+            "status": "unknown",
+            "evidenceId": "limit",
+            "reason": "Future reachability of the chest after B is not computed in the evidence."
+          }
+        },
+        {
+          "kind": "narrow-choice",
+          "inputSha256": "f462469f3ae870460a8218909376abe1c844e2c0c0f533fe889a90ce350ee5b0",
+          "outcome": "complete",
+          "durationMs": 3107,
+          "usage": {
+            "inputTokens": 659,
+            "outputTokens": 357,
+            "totalTokens": 1016,
+            "estimatedCostUsdMicros": 314
+          },
+          "answer": {
+            "action": "B",
+            "reason": "B preserves all named ledge cells (0 removed vs A’s 14) and reduces distance to the chest, matching the preservation policy."
+          }
+        },
+        {
+          "kind": "one-shot",
+          "inputSha256": "322aca58cfe3504c455a2434972def4249192c00834992021aa5ee8eb3bc5cec",
+          "outcome": "complete",
+          "durationMs": 3612,
+          "usage": {
+            "inputTokens": 633,
+            "outputTokens": 596,
+            "totalTokens": 1229,
+            "estimatedCostUsdMicros": 453
+          },
+          "answer": {
+            "currentStatus": "supported",
+            "futureStatus": "unknown",
+            "action": "B",
+            "reason": "B preserves all named ledge cells (0 removed) and approaches the chest; future reachability is uncomputed."
+          }
+        }
+      ],
+      "scores": {
+        "oneShotPresent": true,
+        "oneShotFuture": true,
+        "oneShotAction": true,
+        "microPresent": true,
+        "microFuture": true,
+        "narrowAction": true
+      },
+      "assembled": {
+        "action": "B",
+        "strategy": "preserve",
+        "source": "validated_preference"
+      }
+    },
+    {
+      "id": "acknowledge-information-gap",
+      "evidenceSha256": "a009f9c627ac08f05d4fa062126c82fa16fcd969d477364517ffc2ca140a9188",
+      "optionCandidateIds": [
+        "c01",
+        "c02"
+      ],
+      "expected": {
+        "present": {
+          "status": "refuted",
+          "evidenceId": "event"
+        },
+        "future": {
+          "status": "unknown",
+          "evidenceId": "limit"
+        },
+        "action": "abstain",
+        "strategy": "abstain"
+      },
+      "order": [
+        "one-shot",
+        "present",
+        "future",
+        "narrow-choice"
+      ],
+      "calls": [
+        {
+          "kind": "one-shot",
+          "inputSha256": "dee2121679ff74d31f63670db2a491c57d89492998a30c3772f25c3beac47379",
+          "outcome": "complete",
+          "durationMs": 2101,
+          "usage": {
+            "inputTokens": 587,
+            "outputTokens": 356,
+            "totalTokens": 943,
+            "estimatedCostUsdMicros": 302
+          },
+          "answer": {
+            "currentStatus": "refuted",
+            "futureStatus": "unknown",
+            "action": "abstain",
+            "reason": "Current claim refuted by event; future claim unknown due to unidentified support."
+          }
+        },
+        {
+          "kind": "present",
+          "inputSha256": "1ef00e8d5148b1a9fe9846daff796bccce5798c2f6b31dc82224b8f0313a0b39",
+          "outcome": "complete",
+          "durationMs": 1679,
+          "usage": {
+            "inputTokens": 571,
+            "outputTokens": 222,
+            "totalTokens": 793,
+            "estimatedCostUsdMicros": 219
+          },
+          "answer": {
+            "status": "refuted",
+            "evidenceId": "event",
+            "reason": "The event states the projection cannot distinguish which hidden support survives."
+          }
+        },
+        {
+          "kind": "future",
+          "inputSha256": "9e8e4a67257973b206e230d830d4803fc848ff2862707d1599e8598b1cff65ec",
+          "outcome": "complete",
+          "durationMs": 2484,
+          "usage": {
+            "inputTokens": 571,
+            "outputTokens": 346,
+            "totalTokens": 917,
+            "estimatedCostUsdMicros": 294
+          },
+          "answer": {
+            "status": "unknown",
+            "evidenceId": "event",
+            "reason": "Event states the compressed battlefield cannot establish the missing support fact."
+          }
+        },
+        {
+          "kind": "narrow-choice",
+          "inputSha256": "c99e46ae4351c668324ee698b3d7f8f5e2aaff7538565ba06fd4b4bd0dfde721",
+          "outcome": "complete",
+          "durationMs": 2521,
+          "usage": {
+            "inputTokens": 614,
+            "outputTokens": 387,
+            "totalTokens": 1001,
+            "estimatedCostUsdMicros": 325
+          },
+          "answer": {
+            "action": "abstain",
+            "reason": "Current evidence refutes identifying the necessary support; policy requires abstaining when support survival is unknown."
+          }
+        }
+      ],
+      "scores": {
+        "oneShotPresent": true,
+        "oneShotFuture": true,
+        "oneShotAction": true,
+        "microPresent": true,
+        "microFuture": false,
+        "narrowAction": true
+      },
+      "assembled": {
+        "action": "abstain",
+        "strategy": "abstain",
+        "source": "claim_guard"
+      }
+    }
+  ],
+  "totals": {
+    "calls": 20,
+    "complete": 20,
+    "oneShotActions": 5,
+    "oneShotPresentCorrect": 5,
+    "oneShotFutureUnknown": 5,
+    "microPresentCorrect": 5,
+    "microFutureUnknown": 3,
+    "narrowActions": 5,
+    "assembledExpectedActions": 5,
+    "acceptedPreferences": 3,
+    "guardedAbstentions": 2,
+    "estimatedCostUsdMicros": 8093
+  }
+}

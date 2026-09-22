@@ -880,6 +880,46 @@ model answer demonstrates safety, not model competence. Five worlds with one
 sample per condition can identify concrete failure modes but cannot estimate a
 stable win rate or justify live authority.
 
+The preregistered diagnostic ran once on live Render deployment
+`dep-dap6iq6gekts73fvn6bg` at commit `05c2642` on 2026-09-22. The exact
+[sanitized 20-call result](../evidence/wp-027-mistral-micro-decisions-r1/result.json)
+has SHA-256 `cbc6287aae2eab6807ce2eca6903da0e01f7a7ae45e19d0fdbba58274b3f6fa7`.
+All 20 requests returned complete structured answers with no retries; the
+captured estimated cost was USD 0.008093. Both the compact one-shot and the
+three-stage path chose the frozen action in all five worlds. Both paths
+classified the present fact correctly in five of five and the future
+consequence as unknown in five of five by status. There was no premature
+future-certainty answer on these cards.
+
+The frozen exact evidence-ID scorer accepted only three of five separate
+future classifications. In the temporary-cost card Mistral cited option `B`
+instead of `limit`; in the hidden-support card it cited `event` instead of
+`limit`. Each answer explicitly recognized the uncomputed future fact and
+cited relevant supplied evidence. The deterministic assembler consequently
+accepted three preferences and guardedly abstained twice; its final actions
+still matched all five expected actions. Preserve those strict scores rather
+than retroactively widening the guard. They expose a separate implementation
+problem: a single canonical citation ID can reject a semantically correct
+uncertainty judgment. A later contract should certify factual status from
+server facts and allow all deterministically valid provenance IDs, without
+letting prose or the model establish missing reachability.
+
+Sequential provider time summed to 23.649 seconds for the five one-shot calls
+versus 42.351 seconds for the fifteen staged calls; captured estimated costs
+were USD 0.002892 and USD 0.005201 respectively. This is diagnostic call time,
+not production end-to-end latency. Since one-shot was also perfect on these
+small, explicit two-option cards, the run does **not** demonstrate that extra
+model calls improve decisions. It is consistent with the broader v9 failures
+arising from buried evidence, many candidates, open-ended strategy labels or
+missing computed consequences; this design changes those factors together and
+cannot isolate their causal contribution. The next bounded comparison should
+cross card size/evidence explicitness with one-shot versus staged reasoning
+over the same legal alternatives, while independently varying whether a
+future fact is computable. Repeated randomized order and exact server
+consequence checks would distinguish presentation from decomposition. Do not
+promote this diagnostic to the failed five-probe release gate or live model
+authority; Render remains on deterministic Loomkeeper selection.
+
 ### Phone Gate A - live accepted-provider Practice
 
 After a shadow provider passes and its live authority mode is explicitly added,
