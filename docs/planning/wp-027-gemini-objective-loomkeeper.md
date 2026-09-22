@@ -1,6 +1,6 @@
 # WP-027 Strategic-Voyage Model Loomkeeper
 
-Status: **in progress; Mistral Small 4 bounded direct-answer correction locally verified, artifact capture and deployed gate pending**
+Status: **in progress; owner-authorized Mistral high-reasoning trial with expanded completion and cost budgets**
 Required predecessor: completed WP-026 R8 objective-mode canary
 
 ## Product outcome
@@ -392,7 +392,8 @@ The five fixtures and acceptance thresholds are frozen in
   and at most one operational provider fallback;
 - zero shadow authority violations; every executed choice remains the matched
   deterministic baseline; and
-- at most USD 0.05 estimated total cost for the five-call set.
+- at most USD 0.10 estimated total cost for the next five-call set. Earlier
+  artifacts retain their frozen USD 0.05 threshold and are not rescored.
 
 The report includes the fixed basis/brief/atlas hashes, matched deterministic
 candidate, proposed candidate, bounded reason/watch text, strategy, source,
@@ -544,7 +545,7 @@ Mistral replacement implementation, 2026-09-20: the next provider comparison
 uses exact stable `mistral-small-2603` as `mistral-shadow`. Its server-only
 direct Chat Completions REST transport sends the same prompt-r4 dynamic game
 contract, bounded brief and strict selected-or-abstain JSON schema with
-`reasoning_effort=none`. The adapter parses one complete structured answer, Mistral token
+`reasoning_effort=high` and a 4,096-token completion cap. The adapter parses one complete structured answer, Mistral token
 usage and the current USD 0.15 input/USD 0.60 output per million-token cost
 estimate. It keeps the shared eight-second deadline, no retry, cancellation,
 two-request concurrency limit, request budget and circuit breaker. The Bearer
@@ -627,7 +628,9 @@ housekeeping. The broad selector, build, browser and PostgreSQL paths were not
 repeated because the immediately preceding full selector covers the unchanged
 runtime and the correction changes only the asserted request literal.
 
-Deployed high-reasoning result, 2026-09-20: the fixed gate summary records 0/5
+Deployed high-reasoning result, 2026-09-20: the preserved
+[v4 artifact](../evidence/wp-027-shadow-gate-mistral-small-4-v4/result.json)
+records 0/5
 valid and useful calls, 3/5 on time, five fallbacks, zero authority violations,
 8,001 ms p95 and no captured token cost. A separate exact first-probe request
 proved that the schema and request are accepted with HTTP 200. It consumed
@@ -644,15 +647,26 @@ trace while retaining the r4 strategic instructions, full brief, candidate
 after-states, strict validator and deterministic fallback. The same five
 usefulness probes must establish whether those inputs are sufficient for
 multi-turn judgment. Thresholds, model, prompt, schema, no-retry policy and
-authority remain unchanged. Capture the full high-gate artifact before the
-next deployment; then run one changed-input `none` gate after focused local
-verification.
+authority remain unchanged. The full high-gate artifact was recovered before
+the next deployment. The planned `none` gate was superseded by the owner's
+expanded high-reasoning trial below.
 
 Focused local verification passed with zero retries and no external request:
 types, 5/5 exact Mistral transport cases, all 74 work-package records and
 repository housekeeping. Broad product coverage was not repeated because the
 only runtime change is the asserted provider request literal and the preceding
 full selector covers all unchanged paths.
+
+Owner-authorized bounded trial, 2026-09-22: restore supported `high` reasoning
+and double Mistral's completion cap from 2,048 to 4,096 tokens. Double the
+five-probe estimated-cost acceptance ceiling from USD 0.05 to USD 0.10. This
+supersedes the preceding direct-answer recommendation for the next gate; the
+earlier high result remains a failed historical observation. The eight-second
+whole-window deadline, five fixtures, validity/usefulness thresholds, one-call
+no-retry rule, strict server validator and deterministic shadow authority are
+unchanged. The cost figure is a post-run acceptance ceiling, not a billing
+stop; a timed-out provider request may incur tokens without returning usage.
+Only one changed-input deployed gate is planned after local verification.
 
 ### Phone Gate A - live accepted-provider Practice
 

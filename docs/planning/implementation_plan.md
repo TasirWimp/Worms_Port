@@ -69,8 +69,7 @@ Phaser/Socket.IO stack.
   than the declared immediate cost. Preserve this failed artifact and do not
   rerun the unchanged gate. The local replacement path now adds exact stable
   `mistral-small-2603` as `mistral-shadow` through direct server-only Chat
-  Completions REST with no provider reasoning trace and strict structured
-  output. It reuses
+  Completions REST with strict structured output. It reuses
   the same dynamic r4 game contract, brief, eight-second envelope, five probes,
   thresholds and deterministic execution authority. Provider identity is
   explicit in replay and artifacts; Gemini remains available only to preserve
@@ -105,10 +104,16 @@ Phaser/Socket.IO stack.
   transport therefore moves to the only remaining supported setting, `none`.
   This preserves the prompt, candidate evidence and strict output validation;
   the frozen usefulness and eight-second thresholds now decide whether direct
-  Mistral answers retain enough strategic depth. The full fourth artifact must
-  be captured before the next deployment, and the `high` gate must not be rerun
-  unchanged. Focused types, exact transport, evidence and housekeeping checks
+  Mistral answers retain enough strategic depth. The full
+  [fourth artifact](../evidence/wp-027-shadow-gate-mistral-small-4-v4/result.json)
+  is preserved, and the `high` gate must not be rerun unchanged. Focused types,
+  exact transport, evidence and housekeeping checks
   passed with zero retries; the direct-answer deployed gate remains pending.
+  On 2026-09-22 the owner authorized a new bounded high-reasoning trial:
+  `reasoning_effort=high`, 4,096 completion tokens and USD 0.10 estimated
+  five-probe cost acceptance, with the eight-second whole-window deadline and
+  all other gates unchanged. Previous failed artifacts retain their original
+  contracts. This is a changed-input trial, not an unchanged retry.
   No live Gemini selection, public R8 promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port

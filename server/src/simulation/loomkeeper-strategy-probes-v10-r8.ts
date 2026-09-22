@@ -30,7 +30,7 @@ export const WP027_PROBE_THRESHOLDS = Object.freeze({
     maximumProviderFallbacks: 1,
     maximumAuthorityViolations: 0,
     maximumP95Ms: 8_000,
-    maximumCostUsdMicros: 50_000
+    maximumCostUsdMicros: 100_000
 });
 
 export const WP027_PROBE_IDS = Object.freeze([

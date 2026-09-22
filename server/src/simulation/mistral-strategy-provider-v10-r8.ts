@@ -93,8 +93,8 @@ export function mistralRequestBody(brief: StrategicDecisionBriefV10R8): Readonly
             Object.freeze({ role: 'system', content: strategicSystemInstructionV10R8(brief) }),
             Object.freeze({ role: 'user', content: strategicUserPromptV10R8(brief) })
         ]),
-        reasoning_effort: 'none',
-        max_tokens: 2_048,
+        reasoning_effort: 'high',
+        max_tokens: 4_096,
         response_format: Object.freeze({
             type: 'json_schema',
             json_schema: Object.freeze({

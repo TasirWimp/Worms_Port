@@ -55,8 +55,8 @@ test('WP-027 Mistral transport sends one bounded structured request and records 
     assert.equal((capturedInit?.headers as Record<string, string>).Authorization, `Bearer ${TEST_API_KEY}`);
     const body = JSON.parse(String(capturedInit?.body));
     assert.equal(body.model, 'mistral-small-2603');
-    assert.equal(body.reasoning_effort, 'none');
-    assert.equal(body.max_tokens, 2_048);
+    assert.equal(body.reasoning_effort, 'high');
+    assert.equal(body.max_tokens, 4_096);
     assert.equal(body.stream, false);
     assert.equal(body.response_format.type, 'json_schema');
     assert.equal(body.response_format.json_schema.strict, true);
