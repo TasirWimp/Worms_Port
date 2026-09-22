@@ -1,6 +1,6 @@
 # WP-027 Strategic-Voyage Model Loomkeeper
 
-Status: **in progress; owner-authorized Mistral high-reasoning trial with expanded completion and cost budgets**
+Status: **in progress; expanded Mistral high-reasoning shadow gate failed, live selection blocked**
 Required predecessor: completed WP-026 R8 objective-mode canary
 
 ## Product outcome
@@ -667,6 +667,19 @@ no-retry rule, strict server validator and deterministic shadow authority are
 unchanged. The cost figure is a post-run acceptance ceiling, not a billing
 stop; a timed-out provider request may incur tokens without returning usage.
 Only one changed-input deployed gate is planned after local verification.
+
+That gate ran once on the live Render deployment of commit `45a5c47` on
+2026-09-22. The [sanitized v5 artifact](../evidence/wp-027-shadow-gate-mistral-small-4-v5/result.json)
+failed at 2/5 valid, 0/5 useful and three provider deadline fallbacks. Both
+completed replies fit the expanded token budget and the captured estimated
+cost was USD 0.002732, below USD 0.10; the three timed-out calls returned no
+usage. The repair proposal selected `refine` where the destroyed route called
+for repair or switch. The preserve-option proposal removed more terrain than
+the least destructive legal candidate. All five probes retained deterministic
+shadow execution and zero authority violations. Timed-out calls count as on
+time at the inclusive eight-second bound, so the 5/5 on-time field does not
+mean five usable replies. Do not repeat this unchanged gate or promote Mistral
+to live authority on this evidence.
 
 ### Phone Gate A - live accepted-provider Practice
 

@@ -277,6 +277,11 @@
       "command": "focused verification for the owner-authorized Mistral high-reasoning expanded-budget trial",
       "status": "pass",
       "details": "Delegated zero-retry execution by worms_port_test_runner passed types, 12/12 Mistral and Gemini provider cases, all 74 work-package records and repository housekeeping. The change-selector dry run used fingerprint ac162ad13ae64ff9cb09dfb241189a847f7c3b30748b4d498d4b6581bc554af7. The broad selector, build, browser and PostgreSQL checks were intentionally not repeated because the only runtime changes are Mistral request effort/cap and probe acceptance cost; the immediately preceding full selector covers unchanged game and build paths. No real provider request ran. Logs .cache/wp027-mistral-high-trial-{types,provider,work-packages,housekeeping}.log."
+    },
+    {
+      "command": "single deployed five-probe Mistral Small 4 gate at commit 45a5c47 with high reasoning and 4,096 completion tokens",
+      "status": "fail",
+      "details": "Render deployment dep-dap0bep42hec738ed5rg succeeded and was live before the command ran once. The sanitized v5 artifact at docs/evidence/wp-027-shadow-gate-mistral-small-4-v5/result.json records 2/5 valid, 0/5 useful, 5/5 counted on time, three deadline fallbacks, zero authority violations, 8,000 ms p95 and USD 0.002732 captured estimated cost against a USD 0.10 ceiling. Temporary-cost preparation, continuation-through-setback and information-gap acknowledgment reached the provider deadline with no answer. Repair returned a valid `refine` proposal when the declared destroyed route required repair or switch; preserve-future-option selected a legal candidate that removed more terrain than the minimum. The two completed responses used 861 and 817 output tokens. Timed-out calls returned no usage, so captured estimated cost is not a hard billing total. The unchanged gate will not be rerun."
     }
   ],
   "reviews": [
@@ -359,6 +364,11 @@
       "reviewer": "primary assistant direct owner-authorized expanded Mistral trial review",
       "status": "pass",
       "details": "The user explicitly authorized doubling the Mistral completion cap and the five-probe spending threshold while restoring high reasoning. The implementation sets max_tokens=4096 and reasoning_effort=high only on the Mistral request, and changes the prospective five-probe estimated-cost acceptance ceiling from 50,000 to 100,000 micro-USD. The model, prompt, candidate evidence, eight-second deadline, schema, validity/usefulness thresholds, no-retry rule, circuit breaker and deterministic shadow authority remain unchanged. Earlier artifacts retain their recorded threshold, and the cost threshold is post-run acceptance rather than a hard billing stop."
+    },
+    {
+      "reviewer": "primary assistant direct deployed expanded-budget Mistral gate review",
+      "status": "pass",
+      "details": "The one deployed high-reasoning gate failed operational and strategic acceptance despite the larger completion and cost allowances. Three of five calls timed out, while the two valid proposals both missed the scenario-specific usefulness check. The timeout rows count as on time at exactly the eight-second boundary, so the 5/5 on-time statistic does not establish usable latency. Shadow execution stayed on the deterministic fallback for all probes, and no authority violation occurred. This failed artifact does not authorize live Mistral selection or an unchanged retry."
     }
   ],
   "skipped_checks": [
@@ -378,7 +388,7 @@
     "The corrected r2 artifact remains failed historical evidence at 1/5 usefulness and 5,999 ms p95; it does not qualify r4 and will not be rerun unchanged.",
     "The frozen cost estimate uses Gemini 3.6 Flash standard paid rates of USD 0.75 input and USD 3.75 output per million tokens through 2026-12-31; the free tier is free of charge, and the estimate must be reviewed if shadow operation continues under later pricing.",
     "Local fake and transport tests prove the authority and measurement harness, not deployed Gemini or Mistral latency or multi-turn strategy quality.",
-    "The first three deployed Mistral artifacts did not reach inference. The fourth high-reasoning gate reached the model but returned no final decisions within the 2,048-token completion cap and missed the eight-second timing threshold. The owner-authorized 4,096-token high-reasoning trial may still miss that unchanged timing threshold; its actual billed cost can exceed captured usage when a request times out.",
+    "The first three deployed Mistral artifacts did not reach inference. The fourth high-reasoning gate reached the model but returned no final decisions within the 2,048-token completion cap and missed the eight-second timing threshold. The owner-authorized 4,096-token high-reasoning gate also failed: three provider deadlines, two valid but strategically non-useful proposals, and 0/5 useful. Timed-out calls can incur actual cost without returned usage, so the recorded USD 0.002732 is only captured estimated cost.",
     "Mistral Small 4 remains shadow-only. It cannot receive execution authority unless a later explicit live-mode slice follows a passing fixed five-probe gate."
   ]
 }

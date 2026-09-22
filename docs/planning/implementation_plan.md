@@ -114,6 +114,12 @@ Phaser/Socket.IO stack.
   five-probe cost acceptance, with the eight-second whole-window deadline and
   all other gates unchanged. Previous failed artifacts retain their original
   contracts. This is a changed-input trial, not an unchanged retry.
+  The single deployed trial at commit `45a5c47` failed: 2/5 valid, 0/5
+  useful, three provider deadlines and three fallbacks. Captured estimated
+  cost was USD 0.002732, while deterministic shadow authority remained intact.
+  The [v5 artifact](../evidence/wp-027-shadow-gate-mistral-small-4-v5/result.json)
+  is preserved. Live model selection stays blocked; do not repeat this
+  unchanged gate.
   No live Gemini selection, public R8 promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
