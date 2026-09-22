@@ -120,9 +120,11 @@ async function createNormalRuntime(): Promise<RuntimeServer> {
             : undefined,
         sessionRegistry: {
             practiceV10: !(process.env.NODE_ENV === 'test' && process.env.PRACTICE_TEST_VERSION === 'legacy'),
-            ...(loomkeeperStrategy.strategicAdapter ? { v10Strategy: {
-                strategicAdapter: loomkeeperStrategy.strategicAdapter,
-                onStrategicTurnObserved: record => loomkeeperStrategy.telemetry?.observe(record)
+            ...(loomkeeperStrategy.strategicAdapter || loomkeeperStrategy.chapterAdapter ? { v10Strategy: {
+                ...(loomkeeperStrategy.strategicAdapter ? { strategicAdapter: loomkeeperStrategy.strategicAdapter } : {}),
+                ...(loomkeeperStrategy.chapterAdapter ? { chapterAdapter: loomkeeperStrategy.chapterAdapter } : {}),
+                ...(loomkeeperStrategy.telemetry ? { onStrategicTurnObserved: record =>
+                    loomkeeperStrategy.telemetry?.observe(record) } : {})
             } } : {}),
             ...(peiConfig ? { reconnectGraceMs: (peiConfig.requestTtlSeconds + 30) * 1_000 } : {}),
             ...(deterministicTestSeeds.length > 0 ? {

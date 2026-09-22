@@ -1,7 +1,7 @@
 import {
     advanceOwnedSimulationTickV10, applySimulationBarrierV10, applySimulationIntentV10,
     assertSimulationInvariantsV10, createSimulationV10, forceSimulationLimitV10, hashSimulationStateV10,
-    hashValidatedSimulationStateV10, CURRENT_V10_RULESET_ID,
+    hashValidatedSimulationStateV10, hashCanonicalV10Value, CURRENT_V10_RULESET_ID,
     V10_R6_RULESET_ID, V10_R7_RULESET_ID,
     type SimulationBarrierV10, type SimulationIntentV10, type SimulationStateV10, type SimulationTransitionV10
 } from '../../../shared/simulation-v10';
@@ -33,9 +33,12 @@ import {
     type RecentStrategicChangesV10R8,
     type StrategicTurnRecordV10R8
 } from '../../../shared/strategic-voyage-v10-r8';
+import { V10_R8_CHAPTER_POLICY_ID, type CommittedChapterCarrierV10R8 } from
+    '../../../shared/chapter-v10-r8';
 import {
     buildStrategicDecisionBoundaryV10R8,
-    type StrategicCandidateSummaryV10R8
+    type StrategicCandidateSummaryV10R8,
+    type StrategicDecisionBoundaryV10R8
 } from './loomkeeper-strategy-v10-r8';
 import {
     StrategicDecisionAdapterV10R8,
@@ -43,11 +46,19 @@ import {
 } from './loomkeeper-strategy-provider-v10-r8';
 import {
     authorizeStrategicTurnV10R8,
+    authorizeChapterTurnV10R8,
     committedStrategicTurnV10R8,
     deriveRecentStrategicChangesV10R8,
     executingStrategicTurnV10R8,
     type PendingStrategicTurnV10R8
 } from './loomkeeper-strategic-turn-v10-r8';
+import { MistralChapterStoryAdapterV10R8, chapterStoryRequestBodyV10R8,
+    type ChapterStoryProviderResultV10R8 } from './loomkeeper-chapter-provider-v10-r8';
+import { WP027_MISTRAL_MODEL_ID } from './mistral-strategy-provider-v10-r8';
+import { buildChapterStoryBriefV10R8, validateChapterStoryV10R8,
+    type ChapterStoryBriefV10R8 } from './loomkeeper-chapter-story-v10-r8';
+import { matchChapterIntentionV10R8 } from './loomkeeper-chapter-matcher-v10-r8';
+import { commitChapterCarrierV10R8 } from './loomkeeper-chapter-carrier-v10-r8';
 import {
     compileChapterObservationV10R8,
     type ChapterObservationV10R8
@@ -87,6 +98,8 @@ export type LiveSimulationCoordinatorV10Options = {
     replayIdentity?: LiveV10Identity;
     /** Bounded strategic provider seam. It is consulted only by private R8 objective matches. */
     strategicAdapter?: StrategicDecisionAdapterV10R8;
+    /** Private R8 Practice chapter canary; never consulted by R7 Daily. */
+    chapterAdapter?: MistralChapterStoryAdapterV10R8;
     /** Sanitized provider-result observer; it receives no session or wallet identity. */
     onStrategicTurnObserved?: (record: StrategicTurnRecordV10R8) => void;
     /** Read-only R8 chapter evidence for shadow evaluation; no gameplay authority. */
@@ -110,7 +123,8 @@ type StrategicRuntimeV10R8 = {
     request?: Promise<void>;
     ready?: PendingStrategicTurnV10R8;
     decisionStateHash?: string;
-    executing?: Readonly<{ recordIndex: number; candidate: StrategicCandidateSummaryV10R8 }>;
+    executing?: Readonly<{ recordIndex: number; candidate: StrategicCandidateSummaryV10R8;
+        boundary: StrategicDecisionBoundaryV10R8 }>;
     lastObserved?: SimulationStateV10R8;
     lastObservedHash?: string;
     observedChapter?: ChapterObservationV10R8;
@@ -171,7 +185,9 @@ export class LiveSimulationCoordinatorV10 {
     }
 
     public createAutomated(challengeId: string, sessionId: string, seed: number, calling: PlayerCalling,
-        config?: Readonly<{ objectiveMode: V10R8ObjectiveMode }>): CoordinatorSnapshotV10 & { automationId: V10AutomationId } {
+        config?: Readonly<{ objectiveMode: V10R8ObjectiveMode;
+            strategyPolicyId?: typeof V10_R8_STRATEGY_POLICY_ID | typeof V10_R8_CHAPTER_POLICY_ID }>):
+        CoordinatorSnapshotV10 & { automationId: V10AutomationId } {
         if (this.matches.has(challengeId)) throw new Error('Duplicate V10 challenge.');
         const identity = config ? liveIdentityForRuleset(V10_R8_RULESET_ID) : this.identity;
         const state = createState(seed, calling, identity.rulesetId, config?.objectiveMode), stateHash = hashLiveState(state);
@@ -179,7 +195,8 @@ export class LiveSimulationCoordinatorV10 {
             rulesetId: identity.rulesetId, terrainProfileId: state.terrainProfileId, recipeRevision: state.terrainRecipeRevision, candidateIndex: state.terrainCandidateIndex,
             ...(isR8State(state) ? { objectiveMode: state.objective.objectiveMode,
                 objectiveRecipeRevision: V10_R8_OBJECTIVE_RECIPE_REVISION,
-                strategyPolicyId: V10_R8_STRATEGY_POLICY_ID,
+                strategyPolicyId: config?.strategyPolicyId ?? (this.options.chapterAdapter
+                    ? V10_R8_CHAPTER_POLICY_ID : V10_R8_STRATEGY_POLICY_ID),
                 strategicTurns: [] } : {}),
             automationId: identity.automationId, initialStateHash: stateHash, records: [], chosenPlans: [] });
         const entry: Entry = { replay, state, stateHash, bytes: jsonBytesV10(replay), paused: false, unavailable: false,
@@ -380,7 +397,8 @@ export class LiveSimulationCoordinatorV10 {
         verifier.replayVerificationKernel = true;
         try {
             const initial = verifier.createAutomated(replay.challengeId, replay.sessionId, replay.seed, replay.calling,
-                replay.rulesetId === V10_R8_RULESET_ID ? { objectiveMode: replay.objectiveMode } : undefined);
+                replay.rulesetId === V10_R8_RULESET_ID ? { objectiveMode: replay.objectiveMode,
+                    strategyPolicyId: replay.strategyPolicyId } : undefined);
             if (initial.stateHash !== replay.initialStateHash) throw new Error('V10 initial hash mismatch.');
             let cursor = 0;
             while (cursor < replay.records.length) {
@@ -433,7 +451,8 @@ export class LiveSimulationCoordinatorV10 {
         verifier.replayVerificationKernel = true;
         try {
             const initial = verifier.createAutomated(replay.challengeId, replay.sessionId, replay.seed, replay.calling,
-                replay.rulesetId === V10_R8_RULESET_ID ? { objectiveMode: replay.objectiveMode } : undefined);
+                replay.rulesetId === V10_R8_RULESET_ID ? { objectiveMode: replay.objectiveMode,
+                    strategyPolicyId: replay.strategyPolicyId } : undefined);
             if (initial.stateHash !== replay.initialStateHash) throw new Error('V10 initial hash mismatch.');
             let cursor = 0;
             while (cursor < replay.records.length) {
@@ -489,16 +508,21 @@ export class LiveSimulationCoordinatorV10 {
     }
     public delete(challengeId: string): boolean {
         this.options.strategicAdapter?.cancelMatch(challengeId);
+        this.options.chapterAdapter?.cancelMatch(challengeId);
         return this.matches.delete(challengeId);
     }
     public deleteForSession(sessionId: string): void {
         for (const [id, entry] of this.matches) if (entry.replay.sessionId === sessionId) {
             this.options.strategicAdapter?.cancelMatch(id); this.matches.delete(id);
+            this.options.chapterAdapter?.cancelMatch(id);
         }
     }
     public dispose(): void {
         if (this.timer) clearInterval(this.timer);
-        for (const id of this.matches.keys()) this.options.strategicAdapter?.cancelMatch(id);
+        for (const id of this.matches.keys()) {
+            this.options.strategicAdapter?.cancelMatch(id);
+            this.options.chapterAdapter?.cancelMatch(id);
+        }
         this.matches.clear();
     }
 
@@ -660,6 +684,10 @@ export class LiveSimulationCoordinatorV10 {
         const expected = this.replayVerificationKernel
             ? this.options.replayStrategicTurns?.find(record => record.turn === entry.state.turn)
             : undefined;
+        if ('strategyPolicyId' in entry.replay && entry.replay.strategyPolicyId === V10_R8_CHAPTER_POLICY_ID) {
+            this.beginChapterDecision(entry, boundary, preparationMs, expected);
+            return;
+        }
         if (this.replayVerificationKernel) {
             // A replay may end while its provider request is still uncommitted.
             // Any later policy operation still fails reconstruction because no
@@ -732,6 +760,78 @@ export class LiveSimulationCoordinatorV10 {
         });
         strategic.request = request;
     }
+    private beginChapterDecision(
+        entry: Entry,
+        boundary: ReturnType<typeof buildStrategicDecisionBoundaryV10R8>,
+        preparationMs: number,
+        expected: StrategicTurnRecordV10R8 | undefined
+    ): void {
+        const strategic = entry.strategic;
+        if (!strategic?.source || !strategic.observedChapter || !isR8State(entry.state) ||
+            !('strategicTurns' in entry.replay)) {
+            throw new Error('A chapter turn requires its replay-derived observation.');
+        }
+        const priorCarrier = entry.replay.strategicTurns.at(-1)?.chapter?.carrier;
+        const storyBrief = buildChapterStoryBriefV10R8({
+            decisionBrief: boundary.brief,
+            observation: strategic.observedChapter,
+            priorReading: priorCarrier?.story?.playerReading ?? null
+        });
+        const authorize = (providerResult: ChapterStoryProviderResultV10R8): PendingStrategicTurnV10R8 =>
+            authorizeChapterTurnV10R8({ boundary, state: strategic.source!, storyBrief,
+                currentStrategy: strategic.currentStrategy, providerResult });
+        strategic.decisionStateHash = entry.stateHash;
+        if (this.replayVerificationKernel) {
+            if (!expected) {
+                if (this.options.replayFinalTick === entry.state.tick) return;
+                throw new Error('Chapter replay is missing the current turn record.');
+            }
+            const providerResult = chapterResultFromReplay(expected, storyBrief);
+            const pending = authorize(providerResult);
+            const expectedPending = StrategicTurnRecordV10R8Schema.parse({
+                ...expected,
+                status: 'pending', committedVoyage: null, observedStateHash: null,
+                chapter: { ...expected.chapter, carrier: null }
+            });
+            if (JSON.stringify(pending.record) !== JSON.stringify(expectedPending)) {
+                throw new Error('Chapter replay decision boundary changed.');
+            }
+            strategic.ready = pending;
+            return;
+        }
+        if (!this.options.chapterAdapter) {
+            strategic.ready = authorize(chapterUnavailableResult(storyBrief, preparationMs));
+            return;
+        }
+        const decisionStateHash = entry.stateHash;
+        const decisionTurn = entry.state.turn;
+        let request!: Promise<void>;
+        request = this.options.chapterAdapter.request(entry.replay.challengeId, storyBrief, preparationMs)
+            .then(result => {
+                const current = this.matches.get(entry.replay.challengeId);
+                if (current !== entry || entry.strategic?.request !== request) return;
+                if (entry.stateHash !== decisionStateHash || entry.state.turn !== decisionTurn) {
+                    entry.strategic.request = undefined;
+                    entry.strategic.decisionStateHash = undefined;
+                    entry.aiTurn = undefined;
+                    return;
+                }
+                try {
+                    entry.strategic.ready = authorize(result);
+                } catch {
+                    entry.strategic.ready = authorize({
+                        ...result, outcome: 'invalid_response', frozenStory: null,
+                        diagnostic: 'chapter_authorization_rejected'
+                    });
+                }
+                try { this.options.onStrategicTurnObserved?.(entry.strategic.ready.record); } catch {
+                    // Operational telemetry cannot interrupt the deterministic fallback.
+                }
+                entry.anchorUs = this.clock();
+                entry.credit = 0n;
+            });
+        strategic.request = request;
+    }
     private activateStrategicTurn(entry: Entry): boolean {
         if (!isR8State(entry.state) || !entry.strategic?.ready || !('strategicTurns' in entry.replay)) return false;
         const pending = entry.strategic.ready;
@@ -747,9 +847,13 @@ export class LiveSimulationCoordinatorV10 {
         entry.replay.chosenPlans = [...previousPlans, { turn: entry.state.turn, ...selection }];
         entry.replay.strategicTurns = [...previousTurns, executing];
         const executingBytes = jsonBytesV10(entry.replay);
-        const reserved = committedStrategicTurnV10R8(executing, '0'.repeat(64));
-        entry.replay.strategicTurns[entry.replay.strategicTurns.length - 1] = reserved;
-        const committedBytes = jsonBytesV10(entry.replay);
+        const committedBytes = executing.policyId === V10_R8_CHAPTER_POLICY_ID
+            ? executingBytes + 8_192
+            : (() => {
+                const reserved = committedStrategicTurnV10R8(executing, '0'.repeat(64));
+                entry.replay.strategicTurns[entry.replay.strategicTurns.length - 1] = reserved;
+                return jsonBytesV10(entry.replay);
+            })();
         entry.replay.strategicTurns[entry.replay.strategicTurns.length - 1] = executing;
         if (Math.max(executingBytes, committedBytes) > this.maxBytes - V10_REPLAY_LIMITS.terminalBytes) {
             entry.replay.chosenPlans = previousPlans;
@@ -760,7 +864,8 @@ export class LiveSimulationCoordinatorV10 {
         entry.execution = new LoomkeeperExecutionV10R8(resolved.candidate, resolved.prefix, entry.state);
         entry.strategic.executing = Object.freeze({
             recordIndex: entry.replay.strategicTurns.length - 1,
-            candidate: pending.candidate
+            candidate: pending.candidate,
+            boundary: pending.boundary
         });
         entry.strategic.ready = undefined;
         entry.strategic.request = undefined;
@@ -771,7 +876,42 @@ export class LiveSimulationCoordinatorV10 {
         const executing = entry.replay.strategicTurns[entry.strategic.executing.recordIndex];
         if (!executing || executing.status !== 'executing') throw new Error('Strategic execution record is missing.');
         if (entry.state.phase !== 'finished' && entry.state.turn === executing.turn) return;
-        const committed = committedStrategicTurnV10R8(executing, entry.stateHash);
+        let chapterCarrier: CommittedChapterCarrierV10R8 | undefined;
+        if (executing.policyId === V10_R8_CHAPTER_POLICY_ID) {
+            const observation = entry.strategic.observedChapter;
+            const before = entry.strategic.source;
+            if (!observation || !before || !executing.chapter) {
+                throw new Error('Chapter execution lost its authoritative source.');
+            }
+            const previousRecord = entry.replay.strategicTurns[entry.strategic.executing.recordIndex - 1];
+            const priorCarrier = previousRecord?.chapter?.carrier ?? undefined;
+            const storyBrief = buildChapterStoryBriefV10R8({
+                decisionBrief: entry.strategic.executing.boundary.brief,
+                observation,
+                priorReading: priorCarrier?.story?.playerReading ?? null
+            });
+            const frozenStory = executing.chapter.story
+                ? validateChapterStoryV10R8(storyBrief, executing.chapter.story) : undefined;
+            const comparison = frozenStory ? matchChapterIntentionV10R8({
+                storyBrief, frozenStory,
+                decisionBrief: entry.strategic.executing.boundary.brief,
+                fallbackCandidateId: entry.strategic.executing.boundary.deterministicFallbackCandidate().candidateId
+            }) : undefined;
+            chapterCarrier = commitChapterCarrierV10R8({
+                observation, storyBrief,
+                ...(frozenStory ? { frozenStory } : {}),
+                ...(comparison ? { comparison } : {}),
+                decisionSource: executing.decisionSource === 'server_matcher'
+                    ? 'server_matcher' : 'deterministic_fallback',
+                boundary: entry.strategic.executing.boundary,
+                before, after: entry.state,
+                ...(priorCarrier ? { priorCarrier } : {})
+            });
+            if (chapterCarrier.selectedCandidateId !== executing.selectedCandidateId) {
+                throw new Error('Chapter carrier selection differs from the executed capability.');
+            }
+        }
+        const committed = committedStrategicTurnV10R8(executing, entry.stateHash, chapterCarrier);
         entry.replay.strategicTurns[entry.strategic.executing.recordIndex] = committed;
         const bytes = jsonBytesV10(entry.replay);
         if (bytes > this.maxBytes - V10_REPLAY_LIMITS.terminalBytes) {
@@ -876,7 +1016,38 @@ export class LiveSimulationCoordinatorV10 {
 
 }
 
+function chapterUnavailableResult(brief: ChapterStoryBriefV10R8,
+    preparationMs: number): ChapterStoryProviderResultV10R8 {
+    const preparation = Math.max(0, Math.round(preparationMs));
+    return Object.freeze({
+        outcome: 'provider_error', frozenStory: null,
+        requestHash: hashCanonicalV10Value(chapterStoryRequestBodyV10R8(brief)),
+        modelId: WP027_MISTRAL_MODEL_ID, usage: null, responseBytes: null,
+        diagnostic: 'chapter_provider_unconfigured',
+        timingMs: Object.freeze({ preparation, provider: 0, validation: 0, total: preparation })
+    });
+}
+
+function chapterResultFromReplay(record: StrategicTurnRecordV10R8,
+    brief: ChapterStoryBriefV10R8): ChapterStoryProviderResultV10R8 {
+    if (record.policyId !== V10_R8_CHAPTER_POLICY_ID || !record.chapter ||
+        record.modelId !== WP027_MISTRAL_MODEL_ID ||
+        !['selected', 'invalid_response', 'timeout', 'provider_error', 'concurrency_limit']
+            .includes(record.operationalOutcome)) {
+        throw new Error('Chapter replay provider evidence is invalid.');
+    }
+    return Object.freeze({
+        outcome: record.operationalOutcome as ChapterStoryProviderResultV10R8['outcome'],
+        frozenStory: record.chapter.story ? validateChapterStoryV10R8(brief, record.chapter.story) : null,
+        requestHash: hashCanonicalV10Value(chapterStoryRequestBodyV10R8(brief)),
+        modelId: WP027_MISTRAL_MODEL_ID,
+        usage: record.usage, responseBytes: record.responseBytes, diagnostic: record.diagnostic,
+        timingMs: record.timingMs
+    });
+}
+
 function providerResultFromReplay(record: StrategicTurnRecordV10R8): StrategicProviderResultV10R8 | undefined {
+    if (record.providerMode === 'chapter_mistral') throw new Error('Chapter replay uses its own provider evidence.');
     if (record.providerMode === 'deterministic') return undefined;
     if (!record.modelId) throw new Error('Provider-backed strategic replay is missing its model identity.');
     return Object.freeze({

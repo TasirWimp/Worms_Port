@@ -35,7 +35,7 @@ export class StrategicShadowTelemetryV10R8 {
         if (record.decisionSource === 'deterministic_fallback') this.#deterministicSelections += 1;
         this.#tokens += record.usage?.totalTokens ?? 0;
         this.#costMicros += record.usage?.estimatedCostUsdMicros ?? 0;
-        this.logger(`[wp027-shadow] ${JSON.stringify({
+        this.logger(`${record.providerMode === 'chapter_mistral' ? '[wp027-chapter-canary]' : '[wp027-shadow]'} ${JSON.stringify({
             promptVersion: record.promptVersion,
             providerMode: record.providerMode,
             modelId: record.modelId,

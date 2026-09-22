@@ -1,6 +1,6 @@
 # WP-027 Strategic-Voyage Model Loomkeeper
 
-Status: **in progress; expanded Mistral high-reasoning shadow gate failed, live selection blocked**
+Status: **in progress; private chapter Practice canary pending deployment and owner phone gate**
 Required predecessor: completed WP-026 R8 objective-mode canary
 
 ## Active revision: match-framed chapters (2026-09-22)
@@ -74,25 +74,29 @@ rubric. Score evidence grounding, mode-role correctness, hypothesis revision,
 strategy-to-action fit, legal execution, fallback, total wait and provider cost.
 The previous five-probe gate remains failed and is not retroactively rescored.
 Only a demonstrated useful path advances to the private R8 Practice canary.
-The 60-second Mistral shadow allowance is experimental; a live wait limit and
-phone acceptance require an explicit contract decision after latency evidence.
+The r4 comparison selected the one-story/server-matcher path for that canary.
+Its measured story calls ranged from 2,740 to 10,890 ms, before deterministic
+preparation; use a 15-second whole-window Practice limit including preparation
+and no retry. Timeout, invalid output or provider error selects the server's
+deterministic fallback. The phone gate judges whether this wait is tolerable;
+it is not evidence that the older eight-second release target passes.
 Standard R7 Practice, PEI-gated Daily, rewards and public R8 stay unchanged.
 
-The provider-free chapter implementation now has five pinned, server-produced
-opening/follow-up cases (`collect-opening`, `collect-followup`, `defend-opening`,
-`claim-opening`, `claim-followup`). `node --import tsx
-scripts/run-wp027-chapter-shadow.ts --fixture-only` checks their state,
-observation and atlas identities without a provider; `--local-fake` checks both
-response ports. The explicit `--provider=mistral` mode makes two high-reasoning
-requests per case with a 60-second limit on each request and no automatic retry,
-writing sanitized comparison data to ignored `test-results/`. A complete JSON
-response means only that the comparison is ready, **not** that the model improves
-strategy. Before canary promotion, extend the fixed cases to include setbacks,
-counterevidence and terminal player turns, inspect exact action consequences and
-latency/cost, and decide whether the second model call adds practical value.
+The chapter comparison began with five pinned, server-produced opening and
+follow-up cases. The current r3 fixture has eight cases, including a
+terrain-changing shot, a Defend counteraction and a Collect score counteraction.
+`node --import tsx scripts/run-wp027-chapter-shadow.ts --fixture-only` checks
+their state, observation and atlas identities without a provider; `--local-fake`
+checks both response ports. The shadow-only `--provider=mistral` mode makes two
+high-reasoning requests per case with a 60-second limit on each request and no
+automatic retry, writing sanitized results to ignored `test-results/`. A
+complete JSON response means the comparison is ready, **not** that the model
+improves strategy. The private canary instead makes one candidate-hidden story
+call within a 15-second whole-window limit and uses the server matcher.
 
-The r1 five-case provider trial remains pinned to deployed commit `cffd30a` and
-must be archived under its own identity. Local fixture revision r2 retains those
+The r1 five-case provider trial remains pinned to deployed commit `cffd30a`.
+Its exact ignored artifact was not durably archived; its SHA-256 and failure
+summary remain in this package evidence. Local fixture revision r2 retains those
 five source cases and adds `defend-followup` (the player shifts from Threadguard
 to a terrain-changing Spoolburst), `collect-shot-opening` (an observed shot and
 terrain change without a claimed future route), and
@@ -110,21 +114,18 @@ result carried into each follow-up: it now reports authoritative terrain
 revision, player-stitching and Loomkeeper-score changes observed after the
 committed turn, instead of the candidate's projected immediate summary. Four
 follow-up story-basis pins changed; all eight state and legal-atlas pins stayed
-fixed. The r1 deployed trial and r2 local fake remain historical inputs. R3 is
-a new story input and has not made a provider request or earned live authority.
+fixed. The r1 deployed trial and r2 local fake remain historical inputs. R3
+supplied the distinct story input to the real r4 comparison below.
 
-The provider-independent `chapter-carrier-r1` builder now defines the compact
+The provider-independent `chapter-carrier-r1` builder defines the compact
 post-action record for either action port. It binds the fixed mode, preceding
 carrier hash, replay observation/fact IDs, validated story and intention,
 selected legal candidate/source, questions that could weaken the reading, and
 authoritative outcome deltas. Its constructor recomputes the hidden story brief
-and deterministic match from their source inputs. This is a preparation seam:
-the carrier is not yet written into R8 replay, and the current one-call policy
-still owns every live turn. Replay migration and provider-free reconstruction
-remain part of the eventual private canary implementation after the paired
-shadow comparison selects an action port. Until that integration binds the
-selected candidate to a reconstructed executed turn, this carrier alone is not
-an execution proof.
+and deterministic match from their source inputs. The new chapter replay policy
+now writes it only after the selected legal turn executes and its consequence is
+observed. Replay reconstructs that selection and result without another provider
+call. Historical one-call replay keeps its own policy identity and semantics.
 
 The pinned five-case chapter r1 deployed comparison ran on commit `cffd30a`
 with no retry. All five Mistral story requests returned HTTP 200. One of five
@@ -140,8 +141,33 @@ a copy was retained on that deployment as
 failure, not evidence that either action port makes better choices. The new
 `chapter-shadow-r4` request asks for substantially shorter prose in both the
 system instruction and field descriptions, while the existing strict server
-limits and failure behavior remain. The next trial uses the eight-case r3
-fixtures and changed story requests; it must keep its own artifact identity.
+limits and failure behavior remain. The subsequent trial used the eight-case
+r3 fixtures and changed story requests under its own artifact identity.
+
+The changed-input r4 comparison ran once on deployed commit `fe36ae5` on
+2026-09-23 with eight r3 fixtures. All eight candidate-hidden stories and all
+eight second-stage fit replies passed strict validation; five model choices
+matched the server matcher. Captured provider time was 100,124 ms over 16
+calls (story calls 2,740–10,890 ms; fit calls 5,015–8,737 ms), with estimated
+cost USD 0.014034. The exact ignored Render result was copied there as
+`test-results/wp027-chapter-shadow-r4-8case.json`, SHA-256
+`31abb0360a42bb404def5629f1074298de3be7f6052db87815844ad01386fba0`.
+This establishes the shortened response contract, not strategic acceptance.
+
+Direct review of the three disagreements found no measured improvement from
+the second call: Defend opening favored less terrain removal with the same
+position change; Defend follow-up favored immediate player damage while the
+server advanced farther; Claim follow-up favored moving toward the chest while
+the server's route proxy ranked another turn. None has a computed future-route
+witness. In a Collect shot case both ports selected a one-coin-scoring turn,
+but the model fit described it as contesting coin-6 although the observed
+resolved object was coin-3. That explanation does not follow from the
+completed-turn facts. The second call costs another 5–9 seconds per exchange
+and does not establish better choices on these fixed cases. Advance only the
+candidate-hidden Mistral story plus deterministic server matcher to a private
+R8 Practice canary, with strict story validation, a bounded live wait and
+deterministic fallback. Keep the fit call shadow-only; do not enable R8 Daily
+or present the eight cases as a release gate.
 
 ## Product outcome
 
@@ -1197,23 +1223,27 @@ decisions. More context did not improve the observed one-shot choices, while
 it raised token use and transport pressure. A model may express a strategic
 preference only over server-computed current-turn facts; next-turn route
 reachability must stay unknown until a deterministic witness computes it.
-The five-probe gate remains failed and live model authority remains blocked.
+The five-probe gate remains failed; its one-call policy gained no live model
+authority from that diagnostic.
 
-### Phone Gate A - live accepted-provider Practice
+### Phone Gate A - private chapter Practice
 
-After a shadow provider passes and its live authority mode is explicitly added,
-enable it only in the R8 Practice canary. Across Defend, Collect and Claim,
-verify:
+After deploying `LOOMKEEPER_PROVIDER=mistral-chapter-practice`, use only the
+private R8 Practice routes. Across Defend, Collect and Claim, verify:
 
 1. coherent pursuit of the objective over several turns;
 2. preparation and continuation through a reasonable temporary cost;
 3. repair/switch after a player action invalidates a necessary route;
 4. legal world-shaping actions with visible consequences matching simulation;
-5. decision waits within the eight-second bound, with smooth controls/presentation;
+5. decision waits within the canary's 15-second whole-window bound, with smooth controls/presentation; record how the wait feels on the phone and whether later release work can restore the eight-second target;
 6. close/reopen preserves the same match, selected action and committed strategy;
-7. controlled provider failure falls back and finishes the match; and
-8. operational recovery permits external reasoning to resume without requiring fallback to
-   improve the score.
+7. after a close/reopen, the next chapter can still use external reasoning; and
+8. if a provider fault occurs naturally, the server falls back and the match finishes.
+
+The local fake HTTP 503 and ignored-abort deadline tests cover controlled
+failure without changing a production credential for phone testing. Inspect the
+sanitized `[wp027-chapter-canary]` log lines for selected/fallback source and
+whole-window timing; do not include credentials or wallet identifiers.
 
 Live Practice establishes realized multi-turn behavior. Shadow evidence cannot
 substitute for this gate.

@@ -5,12 +5,15 @@ import {
 } from './loomkeeper-strategy-provider-v10-r8';
 import { StrategicShadowTelemetryV10R8 } from './loomkeeper-strategy-telemetry-v10-r8';
 import { MistralStrategicDecisionProviderV10R8, WP027_MISTRAL_MODEL_ID } from './mistral-strategy-provider-v10-r8';
+import { MistralChapterStoryAdapterV10R8 } from './loomkeeper-chapter-provider-v10-r8';
 
-export type LoomkeeperProviderModeV10R8 = 'deterministic' | 'gemini-shadow' | 'gemini' | 'mistral-shadow';
+export type LoomkeeperProviderModeV10R8 = 'deterministic' | 'gemini-shadow' | 'gemini' | 'mistral-shadow' |
+    'mistral-chapter-practice';
 
 export type LoomkeeperStrategyRuntimeV10R8 = Readonly<{
     mode: LoomkeeperProviderModeV10R8;
     strategicAdapter?: StrategicDecisionAdapterV10R8;
+    chapterAdapter?: MistralChapterStoryAdapterV10R8;
     telemetry?: StrategicShadowTelemetryV10R8;
 }>;
 
@@ -22,21 +25,26 @@ export function loomkeeperStrategyRuntimeFromEnvironmentV10R8(
     logger: (line: string) => void = line => console.log(line)
 ): LoomkeeperStrategyRuntimeV10R8 {
     const configured = environment.LOOMKEEPER_PROVIDER?.trim() || 'deterministic';
-    if (!['deterministic', 'gemini-shadow', 'gemini', 'mistral-shadow'].includes(configured)) {
-        throw new Error('LOOMKEEPER_PROVIDER must be deterministic, gemini-shadow, gemini or mistral-shadow.');
+    if (!['deterministic', 'gemini-shadow', 'gemini', 'mistral-shadow', 'mistral-chapter-practice']
+        .includes(configured)) {
+        throw new Error('LOOMKEEPER_PROVIDER has an unsupported mode.');
     }
     const mode = configured as LoomkeeperProviderModeV10R8;
     if (mode === 'deterministic') return Object.freeze({ mode });
     if (environment.WP014_QUALITY_TEST === 'true') {
         throw new Error('WP-014 quality tests refuse an external Loomkeeper provider.');
     }
-    if (mode === 'mistral-shadow') {
+    if (mode === 'mistral-shadow' || mode === 'mistral-chapter-practice') {
         const model = environment.MISTRAL_MODEL?.trim();
         if (model !== WP027_MISTRAL_MODEL_ID) {
             throw new Error(`MISTRAL_MODEL must be the frozen stable model ${WP027_MISTRAL_MODEL_ID}.`);
         }
         const apiKey = environment.MISTRAL_API_KEY?.trim();
         if (!apiKey) throw new Error('MISTRAL_API_KEY is required for the Mistral Loomkeeper provider.');
+        if (mode === 'mistral-chapter-practice') {
+            return Object.freeze({ mode, chapterAdapter: new MistralChapterStoryAdapterV10R8(apiKey, fetchImpl),
+                telemetry: new StrategicShadowTelemetryV10R8(logger) });
+        }
         const telemetry = new StrategicShadowTelemetryV10R8(logger);
         return Object.freeze({
             mode,

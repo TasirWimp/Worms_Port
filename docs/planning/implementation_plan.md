@@ -14,18 +14,17 @@ Phaser/Socket.IO stack.
   [match-framed chapter revision](wp-027-gemini-objective-loomkeeper.md#active-revision-match-framed-chapters-2026-09-22):
   Collect, Defend and Claim stay immutable whole-match frames; compile an
   actor-attributed observed chapter before a candidate-hidden Mistral story
-  pass, freeze its validated intention, and compare deterministic versus
-  Mistral candidate matching in shadow on the same legal atlas. Version any
-  new replay policy; do not reinterpret the failed one-call artifacts. Live
-  selection, public R8 and Daily remain blocked until the revised shadow and
-  private Practice gates pass.
-  The deployed chapter r1 five-case shadow failed at bounded-text validation:
-  1/5 stories passed, and its one action-fit response also exceeded the reason
-  limit, leaving 0/5 complete pairs. All six calls returned HTTP 200. The `chapter-shadow-r4` prompt
-  correction requests concise prose; the local eight-case r3 fixture also
-  uses authoritative prior-turn result text and remains provider-unrun.
-  The provider-independent committed chapter-carrier builder passed its local
-  selected gate; it is not yet a live replay or selection policy.
+  pass, freeze its validated intention, and match it to a server-produced legal
+  turn. The eight-case r4 deployed shadow comparison validated 8/8 stories and
+  8/8 fit replies, with 5/8 candidate agreement. Direct consequence review
+  found no demonstrated advantage from a second Mistral fit call, which added
+  5–9 seconds. The selected private-canary action port is the deterministic
+  server matcher after one strictly validated story; the prior one-call gate
+  and r1 chapter validation failure remain immutable history. The new chapter
+  replay policy, bounded 15-second Practice decision window, provider-free
+  reconstruction, fallback and all three modes have passed the selected local
+  verification. Public R8 and Daily remain blocked until the private phone gate
+  and later release acceptance.
   WP-026 V10 R8 Objective Modes is complete.
   Standard Practice and PEI-gated Daily remain R7; the server-backed R8
   objective canary remains private. **WP-027 Waypoints 1 and 2 are implemented**:

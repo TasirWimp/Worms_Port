@@ -112,7 +112,8 @@ export type SessionRegistryOptions = {
     v10PracticeOnly?: boolean;
     v10TestOnly?: Pick<LiveSimulationCoordinatorV10Options, 'nowUs' | 'yieldBatch' | 'tickIntervalMs' | 'maxReplayRecords' | 'maxReplayBytes'>;
     /** Server-only strategic transport and sanitized observer for private R8 objective matches. */
-    v10Strategy?: Pick<LiveSimulationCoordinatorV10Options, 'strategicAdapter' | 'onStrategicTurnObserved'>;
+    v10Strategy?: Pick<LiveSimulationCoordinatorV10Options,
+        'strategicAdapter' | 'chapterAdapter' | 'onStrategicTurnObserved'>;
     onChallengeSnapshotV10?: (snapshot: ChallengeSnapshotV10, socketId?: string) => void;
     onChallengeCompletedV10?: (result: ChallengeResultV10, socketId?: string) => void;
     onChallengeSettledV10?: (result: ChallengeResultV10, replay: CoordinatorReplayV10Automated) => void;

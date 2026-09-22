@@ -123,20 +123,39 @@ no-retry calls and writes the sanitized direct-review artifact to
 startup. Set `LOOMKEEPER_PROVIDER=deterministic` after the shadow gate; dormant
 credentials are ignored in deterministic mode.
 
-The active WP-027 chapter experiment has a separate, candidate-hidden story
-pass followed by a comparison of server and Mistral legal-turn matching. It
-does not activate model-controlled gameplay. On a checkout of this branch,
+The active WP-027 chapter revision has a separate, candidate-hidden story
+pass followed by a comparison of server and Mistral legal-turn matching. On a checkout of this branch,
 `node --import tsx scripts/run-wp027-chapter-shadow.ts --fixture-only` checks
 the eight pinned R8 chapters in the current r3 fixture set without an API key.
-The r1 five-case run stays pinned to deployed commit `cffd30a`. With the existing
+The r1 five-case run stays pinned to deployed commit `cffd30a`. The changed-input
+r4 eight-case trial on `fe36ae5` validated every story and fit reply; direct
+review selected the server matcher for the private canary because the second
+Mistral call did not show a reliable advantage and added 5–9 seconds. With the existing
 `MISTRAL_API_KEY` present on the game service, run
 `node --import tsx scripts/run-wp027-chapter-shadow.ts --provider=mistral`
 in its server shell to make one no-retry, two-call comparison per chapter. The
 sanitized result is written to `test-results/wp027-chapter-shadow.json`; the
 console summary reports whether all responses validated, not whether the model
-improved strategy. A run on the current branch uses the distinct eight-case r3
-inputs; archive the deployed r1 result before a later deployment. Keep
-`LOOMKEEPER_PROVIDER=deterministic` for this experiment.
+improved strategy. The pinned r4 trial should not be repeated unchanged.
+Keep `LOOMKEEPER_PROVIDER=deterministic` while reviewing shadow evidence.
+
+After deploying the chapter canary implementation, the game service can enable
+model-conditioned selection **only for the private R8 Practice routes** with:
+
+```text
+LOOMKEEPER_PROVIDER=mistral-chapter-practice
+MISTRAL_MODEL=mistral-small-2603
+MISTRAL_API_KEY=<Render secret>
+```
+
+The server validates one candidate-hidden story, matches its intention to a
+legal complete turn, and falls back to its deterministic turn on invalid,
+unavailable or late responses. The whole decision window is 15 seconds,
+including deterministic preparation, with no retry. A versioned replay retains
+the story, selected candidate and actual consequence so reconnect and replay
+need no provider call. Standard R7 Practice, Daily, PEI and 1 NIM rewards stay
+unchanged. Restore `LOOMKEEPER_PROVIDER=deterministic` after the private phone
+gate until WP-027's release acceptance is complete.
 The [active contract](docs/planning/wp-027-gemini-objective-loomkeeper.md#active-revision-match-framed-chapters-2026-09-22)
 defines the evaluation and private Practice gate.
 

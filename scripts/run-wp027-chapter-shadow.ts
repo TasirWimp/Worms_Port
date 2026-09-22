@@ -9,10 +9,11 @@ import {
     candidateFitCardsV10R8, matchChapterIntentionV10R8, validateCandidateFitV10R8
 } from '../server/src/simulation/loomkeeper-chapter-matcher-v10-r8';
 import {
-    buildChapterStoryBriefV10R8, chapterStorySystemInstructionV10R8,
+    buildChapterStoryBriefV10R8,
     validateChapterStoryV10R8, type ChapterStoryBriefV10R8,
     type ChapterStoryProposalV10R8
 } from '../server/src/simulation/loomkeeper-chapter-story-v10-r8';
+import { chapterStoryRequestBodyV10R8 } from '../server/src/simulation/loomkeeper-chapter-provider-v10-r8';
 import { hashCanonicalV10Value } from '../shared/simulation-v10';
 import { createWp027ChapterFixtures, WP027_CHAPTER_FIXTURE_VERSION, type Wp027ChapterFixture } from
     './wp027-chapter-shadow-fixtures';
@@ -39,27 +40,8 @@ const conciseText = (purpose: string, characters: number): JsonSchema => ({
     type: 'string', description: `${purpose} Use at most ${characters} characters.`
 });
 
-export function chapterStoryJsonSchema(brief: ChapterStoryBriefV10R8): JsonSchema {
-    const evidence = brief.facts.map(fact => fact.id).filter(id =>
-        id !== 'prior.committed' && id !== 'world.no_material_change');
-    const reading = objectSchema({
-        hypothesis: conciseText('A tentative player hypothesis.', 110),
-        evidenceIds: { type: 'array', items: stringEnum(evidence), minItems: 1, maxItems: 3 },
-        alternative: conciseText('A plausible alternative reading.', 110),
-        watchFor: conciseText('One observation that would weaken the reading.', 110)
-    });
-    return objectSchema({
-        chapterClosure: conciseText('Only witnessed events in one short sentence.', 180),
-        playerReading: { anyOf: [reading, { type: 'null' }] },
-        intention: objectSchema({
-            posture: stringEnum(brief.allowedPostures),
-            targetId: stringEnum(brief.targetIds),
-            horizonOwnTurns: { type: 'integer', minimum: 1, maximum: 3 },
-            reason: conciseText('Why this intention fits the fixed mode and observed facts.', 110),
-            watchFor: conciseText('One observation that would change this intention.', 110)
-        })
-    });
-}
+export { chapterStoryJsonSchemaV10R8 as chapterStoryJsonSchema } from
+    '../server/src/simulation/loomkeeper-chapter-provider-v10-r8';
 
 export function candidateFitJsonSchema(ids: readonly string[]): JsonSchema {
     return objectSchema({
@@ -79,12 +61,7 @@ function requestBody(system: string, user: unknown, schemaName: string, schema: 
     };
 }
 
-export function chapterStoryRequestBody(brief: ChapterStoryBriefV10R8): Readonly<Record<string, unknown>> {
-    return requestBody(chapterStorySystemInstructionV10R8(brief.mode), {
-        task: 'Close only the observed chapter, then open the next exchange with one tentative mode-correct intention. Cite fact IDs for any player reading. Return JSON.',
-        brief
-    }, 'wp027_chapter_story', chapterStoryJsonSchema(brief));
-}
+export const chapterStoryRequestBody = chapterStoryRequestBodyV10R8;
 
 export function chapterFitRequestBody(
     fixture: Wp027ChapterFixture,

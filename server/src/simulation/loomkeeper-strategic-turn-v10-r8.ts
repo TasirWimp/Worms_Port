@@ -1,5 +1,7 @@
 import { hashCanonicalV10Value } from '../../../shared/simulation-v10';
 import type { SimulationStateV10R8 } from '../../../shared/simulation-v10-r8';
+import { V10_R8_CHAPTER_POLICY_ID, V10_R8_CHAPTER_PROMPT_VERSION,
+    type CommittedChapterCarrierV10R8 } from '../../../shared/chapter-v10-r8';
 import {
     CommittedStrategicVoyageV10R8Schema,
     EMPTY_COMMITTED_VOYAGE_V10_R8,
@@ -17,6 +19,11 @@ import {
     type StrategicDecisionBoundaryV10R8
 } from './loomkeeper-strategy-v10-r8';
 import type { StrategicProviderResultV10R8 } from './loomkeeper-strategy-provider-v10-r8';
+import type { ChapterStoryProviderResultV10R8 } from './loomkeeper-chapter-provider-v10-r8';
+import { chapterStoryRequestBodyV10R8 } from './loomkeeper-chapter-provider-v10-r8';
+import { matchChapterIntentionV10R8 } from './loomkeeper-chapter-matcher-v10-r8';
+import { validateChapterStoryV10R8, type ChapterStoryBriefV10R8,
+    type FrozenChapterStoryV10R8 } from './loomkeeper-chapter-story-v10-r8';
 
 export type PendingStrategicTurnV10R8 = Readonly<{
     boundary: StrategicDecisionBoundaryV10R8;
@@ -95,6 +102,112 @@ export function authorizeStrategicTurnV10R8(input: Readonly<{
     });
 }
 
+/** The chapter story conditions only server ranking; the current-basis capability still executes. */
+export function authorizeChapterTurnV10R8(input: Readonly<{
+    boundary: StrategicDecisionBoundaryV10R8;
+    state: SimulationStateV10R8;
+    storyBrief: ChapterStoryBriefV10R8;
+    currentStrategy: CommittedStrategicVoyageV10R8;
+    providerResult: ChapterStoryProviderResultV10R8;
+}>): PendingStrategicTurnV10R8 {
+    const { boundary, state, storyBrief, providerResult } = input;
+    if (storyBrief.stateHash !== boundary.brief.stateHash ||
+        storyBrief.mode !== state.objective.objectiveMode ||
+        (providerResult.frozenStory !== null &&
+            hashCanonicalV10Value(storyBrief) !== providerResult.frozenStory.briefHash)) {
+        throw new Error('Chapter story and legal atlas must share the current authoritative state.');
+    }
+    const currentStrategy = CommittedStrategicVoyageV10R8Schema.parse(input.currentStrategy);
+    const fallback = boundary.deterministicFallbackCandidate();
+    let selected = fallback;
+    let frozenStory: FrozenChapterStoryV10R8 | null = null;
+    let outcome: StrategicTurnRecordV10R8['operationalOutcome'] = providerResult.outcome;
+    let diagnostic = providerResult.diagnostic;
+    let decisionSource: StrategicTurnRecordV10R8['decisionSource'] = 'deterministic_fallback';
+    if (providerResult.outcome === 'selected' && providerResult.frozenStory) {
+        try {
+            frozenStory = validateChapterStoryV10R8(storyBrief, providerResult.frozenStory.proposal);
+            const comparison = matchChapterIntentionV10R8({ storyBrief, frozenStory,
+                decisionBrief: boundary.brief, fallbackCandidateId: fallback.candidateId });
+            const chosen = boundary.brief.legalCandidates.find(candidate =>
+                candidate.candidateId === comparison.deterministicCandidateId);
+            if (!chosen) throw new Error('Matcher selected a missing candidate.');
+            selected = chosen;
+            decisionSource = 'server_matcher';
+        } catch {
+            frozenStory = null;
+            outcome = 'invalid_response';
+            diagnostic = 'chapter_match_rejected';
+        }
+    } else if (providerResult.outcome === 'selected') {
+        outcome = 'invalid_response';
+        diagnostic = 'chapter_story_missing';
+    }
+    const proposedVoyage = frozenStory ? chapterVoyage(state, currentStrategy, frozenStory, selected) :
+        fallbackVoyage(state, currentStrategy, selected);
+    const evidence = boundary.evidence();
+    const record = StrategicTurnRecordV10R8Schema.parse({
+        revision: boundary.brief.revision,
+        policyId: V10_R8_CHAPTER_POLICY_ID,
+        promptVersion: V10_R8_CHAPTER_PROMPT_VERSION,
+        providerMode: 'chapter_mistral', modelId: providerResult.modelId,
+        operationalOutcome: outcome, turn: state.turn,
+        ...evidence,
+        selectedCandidateId: selected.candidateId,
+        decisionSource, providerDecision: null,
+        chapter: {
+            observationBasisId: storyBrief.basisId,
+            storyRequestHash: providerResult.requestHash,
+            storyBriefHash: frozenStory?.briefHash ?? null,
+            storyHash: frozenStory?.proposalHash ?? null,
+            story: frozenStory?.proposal ?? null,
+            carrier: null
+        },
+        status: 'pending', proposedVoyage, committedVoyage: null,
+        immediatePredictionHash: hashCanonicalV10Value(selected.immediate), observedStateHash: null,
+        timingMs: providerResult.timingMs,
+        usage: providerResult.usage, responseBytes: providerResult.responseBytes,
+        diagnostic
+    });
+    if (record.chapter?.storyRequestHash !== hashCanonicalV10Value(chapterStoryRequestBodyV10R8(storyBrief))) {
+        throw new Error('Chapter request changed before authorization.');
+    }
+    return Object.freeze({ boundary, capability: boundary.resolve(selected.candidateId), candidate: selected, record });
+}
+
+function chapterVoyage(
+    state: SimulationStateV10R8,
+    current: CommittedStrategicVoyageV10R8,
+    story: FrozenChapterStoryV10R8,
+    candidate: StrategicCandidateSummaryV10R8
+): CommittedStrategicVoyageV10R8 {
+    const intention = story.proposal.intention;
+    const milestoneId = chapterMilestone(intention.posture);
+    const decision: Extract<StrategicDecisionV10R8, { candidateId: string }> = {
+        candidateId: candidate.candidateId,
+        strategy: current.targetId === intention.targetId && current.milestoneId === milestoneId
+            ? 'continue' : 'switch',
+        targetId: intention.targetId,
+        milestoneId,
+        horizonOwnTurns: intention.horizonOwnTurns,
+        reason: intention.reason,
+        watchFor: intention.watchFor
+    };
+    return voyageFromDecision(state, current, decision, candidate);
+}
+
+function chapterMilestone(posture: FrozenChapterStoryV10R8['proposal']['intention']['posture']): string {
+    switch (posture) {
+    case 'contest_coin': case 'dislodge_chest': return 'resolve-objective';
+    case 'approach_chest': return 'approach-objective';
+    case 'shape_coin_route': case 'open_chest_route': return 'create-route';
+    case 'deny_coin_route': case 'deny_chest_route': return 'deny-player-route';
+    case 'hold_chest': return 'preserve-route';
+    case 'intercept_player': case 'pressure_player': return 'pressure-player';
+    case 'survive': return 'survive-response';
+    }
+}
+
 export function executingStrategicTurnV10R8(
     pending: StrategicTurnRecordV10R8
 ): StrategicTurnRecordV10R8 {
@@ -104,16 +217,21 @@ export function executingStrategicTurnV10R8(
 
 export function committedStrategicTurnV10R8(
     executing: StrategicTurnRecordV10R8,
-    observedStateHash: string
+    observedStateHash: string,
+    chapterCarrier?: CommittedChapterCarrierV10R8
 ): StrategicTurnRecordV10R8 {
     if (executing.status !== 'executing' || !executing.proposedVoyage) {
         throw new Error('Only an executing strategic turn with a proposed voyage can commit.');
+    }
+    if ((executing.policyId === V10_R8_CHAPTER_POLICY_ID) !== (chapterCarrier !== undefined)) {
+        throw new Error('A chapter turn must commit its authoritative chapter carrier.');
     }
     return StrategicTurnRecordV10R8Schema.parse({
         ...executing,
         status: 'committed',
         committedVoyage: executing.proposedVoyage,
-        observedStateHash
+        observedStateHash,
+        ...(chapterCarrier && executing.chapter ? { chapter: { ...executing.chapter, carrier: chapterCarrier } } : {})
     });
 }
 

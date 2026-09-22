@@ -1,7 +1,9 @@
-import { z } from 'zod';
-
 import { hashCanonicalV10Value } from '../../../shared/simulation-v10';
 import type { V10R8ObjectiveMode } from '../../../shared/simulation-v10-r8';
+import {
+    ChapterStoryProposalV10R8Schema,
+    type ChapterStoryProposalV10R8
+} from '../../../shared/chapter-v10-r8';
 import type { StrategicDecisionBriefV10R8 } from './loomkeeper-strategy-v10-r8';
 import type { ChapterObservationV10R8 } from './loomkeeper-chapter-observation-v10-r8';
 import { MODE_GAME_CONTRACT } from './loomkeeper-strategy-prompt-v10-r8';
@@ -14,32 +16,8 @@ export const MODE_POSTURES_V10_R8 = Object.freeze({
     claim: ['hold_chest', 'deny_chest_route', 'intercept_player', 'pressure_player', 'survive']
 } as const);
 
-const boundedText = z.string().trim().min(1).max(240);
-const shortText = z.string().trim().min(1).max(160);
-const id = z.string().regex(/^[A-Za-z0-9_.-]{1,80}$/);
-
-export const ChapterStoryProposalV10R8Schema = z.object({
-    chapterClosure: boundedText,
-    playerReading: z.object({
-        hypothesis: shortText,
-        evidenceIds: z.array(id).min(1).max(3),
-        alternative: shortText,
-        watchFor: shortText
-    }).strict().nullable(),
-    intention: z.object({
-        posture: z.enum([
-            'contest_coin', 'deny_coin_route', 'shape_coin_route',
-            'approach_chest', 'open_chest_route', 'dislodge_chest',
-            'hold_chest', 'deny_chest_route', 'intercept_player',
-            'pressure_player', 'survive'
-        ]),
-        targetId: z.string().regex(/^[A-Za-z0-9_-]{1,64}$/),
-        horizonOwnTurns: z.number().int().min(1).max(3),
-        reason: shortText,
-        watchFor: shortText
-    }).strict()
-}).strict();
-export type ChapterStoryProposalV10R8 = z.infer<typeof ChapterStoryProposalV10R8Schema>;
+export { ChapterStoryProposalV10R8Schema } from '../../../shared/chapter-v10-r8';
+export type { ChapterStoryProposalV10R8 } from '../../../shared/chapter-v10-r8';
 
 export type ChapterStoryFactV10R8 = Readonly<{ id: string; text: string }>;
 export type ChapterStoryBriefV10R8 = Readonly<{

@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { ChapterTurnEvidenceV10R8Schema, V10_R8_CHAPTER_POLICY_ID,
+    V10_R8_CHAPTER_PROMPT_VERSION } from './chapter-v10-r8';
 
 export const V10_R8_STRATEGY_POLICY_ID = 'nimble-knots-strategy-v1' as const;
 export const V10_R8_BRIEF_REVISION = 'v10-r8-strategic-brief-r2' as const;
@@ -92,9 +94,10 @@ export type StrategicProviderUsageV10R8 = z.infer<typeof StrategicProviderUsageV
 
 export const StrategicTurnRecordV10R8Schema = z.object({
     revision: z.literal(V10_R8_BRIEF_REVISION),
-    policyId: z.literal(V10_R8_STRATEGY_POLICY_ID),
-    promptVersion: z.literal(V10_R8_PROMPT_VERSION),
-    providerMode: z.enum(['deterministic', 'local_fake', 'gemini_shadow', 'gemini', 'mistral_shadow']),
+    policyId: z.enum([V10_R8_STRATEGY_POLICY_ID, V10_R8_CHAPTER_POLICY_ID]),
+    promptVersion: z.enum([V10_R8_PROMPT_VERSION, V10_R8_CHAPTER_PROMPT_VERSION]),
+    providerMode: z.enum(['deterministic', 'local_fake', 'gemini_shadow', 'gemini', 'mistral_shadow',
+        'chapter_mistral']),
     modelId: z.string().min(1).max(96).nullable(),
     operationalOutcome: z.enum([
         'selected', 'abstained', 'invalid_response', 'timeout', 'provider_error',
@@ -106,8 +109,9 @@ export const StrategicTurnRecordV10R8Schema = z.object({
     briefHash: hash,
     candidateAtlasHash: hash,
     selectedCandidateId: candidateId,
-    decisionSource: z.enum(['gemini', 'local_fake', 'deterministic_fallback']),
+    decisionSource: z.enum(['gemini', 'local_fake', 'server_matcher', 'deterministic_fallback']),
     providerDecision: StrategicDecisionV10R8Schema.nullable(),
+    chapter: ChapterTurnEvidenceV10R8Schema.optional(),
     status: z.enum(['pending', 'executing', 'committed']),
     proposedVoyage: CommittedStrategicVoyageV10R8Schema.nullable(),
     committedVoyage: CommittedStrategicVoyageV10R8Schema.nullable(),
@@ -120,10 +124,38 @@ export const StrategicTurnRecordV10R8Schema = z.object({
         total: z.number().int().min(0)
     }).strict().readonly(),
     usage: StrategicProviderUsageV10R8Schema.nullable(),
-    responseBytes: z.number().int().min(0).max(1_024).nullable(),
+    responseBytes: z.number().int().min(0).max(64 * 1_024).nullable(),
     diagnostic: z.string().max(160).nullable()
 }).strict().superRefine((record, context) => {
     const committed = record.status === 'committed';
+    const chapter = record.policyId === V10_R8_CHAPTER_POLICY_ID;
+    if (!chapter && record.responseBytes !== null && record.responseBytes > 1_024) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['responseBytes'],
+            message: 'Historical strategic responses retain the 1024-byte bound.' });
+    }
+    if (chapter !== (record.chapter !== undefined) ||
+        (chapter && record.providerMode !== 'chapter_mistral') ||
+        (chapter && record.promptVersion !== V10_R8_CHAPTER_PROMPT_VERSION) ||
+        (!chapter && record.promptVersion !== V10_R8_PROMPT_VERSION) ||
+        (!chapter && (record.providerMode === 'chapter_mistral' || record.decisionSource === 'server_matcher'))) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ['policyId'],
+            message: 'Chapter and historical strategic records cannot mix policy fields.' });
+    }
+    if (chapter && record.chapter) {
+        if ((record.decisionSource === 'server_matcher') !== (record.chapter.story !== null) ||
+            record.providerDecision !== null ||
+            (committed !== (record.chapter.carrier !== null)) ||
+            (record.chapter.carrier !== null && (
+                record.chapter.carrier.selectedCandidateId !== record.selectedCandidateId ||
+                record.chapter.carrier.observedStateHash !== record.observedStateHash ||
+                record.chapter.carrier.decisionSource !== record.decisionSource ||
+                record.chapter.carrier.observationBasisId !== record.chapter.observationBasisId ||
+                record.chapter.carrier.storyBriefHash !== record.chapter.storyBriefHash ||
+                record.chapter.carrier.storyHash !== record.chapter.storyHash))) {
+            context.addIssue({ code: z.ZodIssueCode.custom, path: ['chapter'],
+                message: 'The chapter decision and committed consequence must share one source.' });
+        }
+    }
     if (record.proposedVoyage === null) {
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['proposedVoyage'],
             message: 'Every authorized strategic turn must carry a proposed voyage.' });
@@ -169,7 +201,7 @@ export const StrategicTurnRecordV10R8Schema = z.object({
         context.addIssue({ code: z.ZodIssueCode.custom, path: ['usage'],
             message: 'Local fakes cannot claim external provider usage.' });
     }
-    if (record.providerMode !== 'deterministic') {
+    if (record.providerMode !== 'deterministic' && !chapter) {
         const selectedProposal = record.providerDecision?.candidateId !== null &&
             record.providerDecision?.candidateId !== undefined;
         if (record.operationalOutcome === 'selected' && !selectedProposal) {

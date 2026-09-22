@@ -17,6 +17,7 @@ import {
     StrategicTurnRecordV10R8Schema,
     V10_R8_STRATEGY_POLICY_ID
 } from './strategic-voyage-v10-r8';
+import { V10_R8_CHAPTER_POLICY_ID } from './chapter-v10-r8';
 import {
     CoordinatorReplayV10Schema, ReplayOperationV10Schema, ReplayRecordV10Schema,
     V10_REPLAY_LIMITS, jsonBytesV10
@@ -81,12 +82,19 @@ export const CoordinatorReplayV10R8Schema = z.object({
     recipeRevision: z.literal(V10_R7_BATTLEFIELD_RECIPE_REVISION), candidateIndex: z.literal(0),
     objectiveMode: z.enum(V10_R8_OBJECTIVE_MODES),
     objectiveRecipeRevision: z.literal(V10_R8_OBJECTIVE_RECIPE_REVISION),
-    strategyPolicyId: z.literal(V10_R8_STRATEGY_POLICY_ID),
+    strategyPolicyId: z.enum([V10_R8_STRATEGY_POLICY_ID, V10_R8_CHAPTER_POLICY_ID]),
     automationId: z.literal(V10_R8_AUTOMATION_ID), initialStateHash: hash,
     records: z.array(ReplayRecordV10Schema).max(V10_REPLAY_LIMITS.records),
     chosenPlans: z.array(LoomkeeperSelectionV10Schema).max(16),
     strategicTurns: z.array(StrategicTurnRecordV10R8Schema).max(8)
-}).strict();
+}).strict().superRefine((replay, context) => {
+    for (const [index, turn] of replay.strategicTurns.entries()) {
+        if (turn.policyId !== replay.strategyPolicyId) context.addIssue({
+            code: z.ZodIssueCode.custom, path: ['strategicTurns', index, 'policyId'],
+            message: 'A replay cannot mix chapter and historical strategy policies.'
+        });
+    }
+});
 
 export const CoordinatorReplayV10AutomatedSchema = z.union([
     CoordinatorReplayV10R7AutomatedSchema,
