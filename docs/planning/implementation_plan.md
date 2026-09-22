@@ -126,8 +126,14 @@ Phaser/Socket.IO stack.
   process-wide request, concurrency and circuit limits and the probe p95/cost
   acceptance ceilings. Five fixed probes, one call per decision, strict
   validation and deterministic shadow execution remain. Gemini's envelope is
-  unchanged. Verify locally, then collect and review one new deployed artifact
-  before any live-authority decision.
+  unchanged. Local selected verification passed with zero retries. The one
+  changed-input Render gate on `d59fa54` returned 5/5 valid, 2/5 useful,
+  5/5 within the new provider window, zero provider fallbacks, zero authority
+  violations, 31,603 ms p95 total time and USD 0.013502 captured estimated
+  cost. Its [v6 artifact](../evidence/wp-027-shadow-gate-mistral-small-4-v6/result.json)
+  shows correct continuation and route switching, but misses temporary cost,
+  terrain preservation and explicit uncertainty. Preserve the failed gate;
+  do not repeat unchanged inputs or grant live authority.
   No live Gemini selection, public R8 promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port

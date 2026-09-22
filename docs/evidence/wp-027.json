@@ -288,6 +288,11 @@
       "command": "npm.cmd run verify:changes for Mistral 60-second provider window and removed operational ceilings",
       "status": "pass",
       "details": "Delegated zero-retry execution by worms_port_test_runner at selector fingerprint 90db006ef5e22cdd557556a2e317bf8df3c7ef9e80d449d506242735cbab6545 passed types, 26/26 focused strategy cases, all 303 selected supported units, fresh build proof 11b24e83b365 / da0e8d19f4b5, built smoke, identity/reward security, bundle budgets and 19/19 canonical Chromium phone journeys. No external Mistral call ran. PostgreSQL used its expected local prerequisite skip because WP014_TEST_DATABASE_URL is absent. Visual, performance, daily, release and retired legacy suites were not selected. Package-transition housekeeping passed with no manual reconciliation. Logs .cache/wp027-mistral-60s-{types,loomkeeper,selector,housekeeping}.log."
+    },
+    {
+      "command": "single deployed five-probe Mistral Small 4 gate at commit d59fa54 with high reasoning and a 60-second provider window",
+      "status": "fail",
+      "details": "Render deployment dep-dap0u2jtqb8s73eu8kj0 succeeded and was live before one fixed five-probe command ran. The sanitized v6 artifact at docs/evidence/wp-027-shadow-gate-mistral-small-4-v6/result.json records 5/5 valid, 2/5 useful, 5/5 completed before the new provider deadline, zero provider fallbacks, zero authority violations, 31,603 ms p95 total decision time and USD 0.013502 captured estimated cost. Setback continuation and destroyed-route switch passed. Temporary-cost preparation selected a candidate improving objective distance by 100 and removing 32 terrain cells despite claiming to accept a cost; future-option preservation selected 32 cells removed when a legal one-cell candidate existed; information-gap acknowledgment neither mentioned the missing fact nor chose the conservative fallback. Shadow execution remained deterministic. This failed unchanged gate will not be repeated."
     }
   ],
   "reviews": [
@@ -380,6 +385,11 @@
       "reviewer": "primary assistant direct Mistral 60-second uncapped shadow trial review",
       "status": "pass",
       "details": "The owner authorized a full minute for Mistral reasoning and removal of completion, probe spending and operational request ceilings. Direct review confirms only the Mistral runtime receives a 60-second provider window after deterministic preparation; Gemini keeps its prior bounds. The Mistral request omits max_tokens, accepts a larger reasoning-bearing HTTP body, and has no process-wide request budget, global concurrency ceiling or circuit breaker. Same-match deduplication, one call per decision, abort, exact response and replay validation, fixed five probes and deterministic execution authority remain. The probe runner still records latency and estimated cost but does not reject Mistral solely for either metric. The timeout probe accounting now excludes timed-out calls from on-time counts."
+    },
+    {
+      "reviewer": "primary assistant direct deployed Mistral v6 strategy review",
+      "status": "pass",
+      "details": "The 60-second high-reasoning trial solved the prior deadline fallback failure but missed three of five scenario-specific usefulness checks. The deterministic candidate facts disprove the temporary-cost explanation: selected c07 improves objective distance by 100, removes 32 terrain cells and accepts no measured temporary cost. The preserve-option selection removes 32 terrain cells although the legal minimum is one. The information-gap reply does not mention uncertainty and does not select the deterministic fallback. These are strategy-evidence mismatches, not provider transport failures. The failed result blocks live authority and does not justify repeating the identical gate."
     }
   ],
   "skipped_checks": [
@@ -400,6 +410,7 @@
     "The frozen cost estimate uses Gemini 3.6 Flash standard paid rates of USD 0.75 input and USD 3.75 output per million tokens through 2026-12-31; the free tier is free of charge, and the estimate must be reviewed if shadow operation continues under later pricing.",
     "Local fake and transport tests prove the authority and measurement harness, not deployed Gemini or Mistral latency or multi-turn strategy quality.",
     "The first three deployed Mistral artifacts did not reach inference. The fourth high-reasoning gate reached the model but returned no final decisions within the 2,048-token completion cap and missed the eight-second timing threshold. The owner-authorized 4,096-token high-reasoning gate also failed: three provider deadlines, two valid but strategically non-useful proposals, and 0/5 useful. Timed-out calls can incur actual cost without returned usage, so the recorded USD 0.002732 is only captured estimated cost.",
-    "Mistral Small 4 remains shadow-only. It cannot receive execution authority unless a later explicit live-mode slice follows a passing fixed five-probe gate."
+    "Mistral Small 4 remains shadow-only. It cannot receive execution authority unless a later explicit live-mode slice follows a passing fixed five-probe gate.",
+    "The deployed v6 60-second trial removed the provider-completion failure but failed the strategic usefulness gate at 2/5. Two replies successfully continued or switched a committed route; three still chose actions inconsistent with temporary cost, terrain preservation or explicit uncertainty. P95 total decision time was 31.603 seconds, which was measured but not capped in this Mistral trial; its acceptability for live mobile play remains unproven."
   ]
 }

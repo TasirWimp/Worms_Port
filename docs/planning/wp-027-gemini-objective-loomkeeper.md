@@ -696,6 +696,21 @@ existing envelope. The provider and hosting platform may still impose their
 own context, rate and connection limits. Review the new five-probe result
 before considering live authority or a player-facing wait this long.
 
+The single changed-input deployed gate ran on Render deployment
+`dep-dap0u2jtqb8s73eu8kj0` from commit `d59fa54`. Its
+[sanitized v6 artifact](../evidence/wp-027-shadow-gate-mistral-small-4-v6/result.json)
+records 5/5 valid replies, 2/5 useful choices, 5/5 completed before the new
+provider deadline, zero provider fallbacks, zero authority violations, 31,603
+ms p95 total decision time and USD 0.013502 captured estimated cost. Continuing
+through a feasible setback and switching after route destruction passed. The
+temporary-cost proposal claimed to move away while its selected candidate
+actually improved objective distance by 100 and removed 32 terrain cells; the
+preserve-option proposal removed 32 cells when a legal one-cell option existed.
+The information-gap reply neither acknowledged the missing fact nor selected
+the conservative fallback. The v6 gate therefore fails the 4/5 usefulness
+requirement despite solving v5's response-completion failure. Do not repeat
+this unchanged gate or promote Mistral to live authority on this evidence.
+
 ### Phone Gate A - live accepted-provider Practice
 
 After a shadow provider passes and its live authority mode is explicitly added,
