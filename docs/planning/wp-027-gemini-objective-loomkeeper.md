@@ -3,6 +3,94 @@
 Status: **in progress; expanded Mistral high-reasoning shadow gate failed, live selection blocked**
 Required predecessor: completed WP-026 R8 objective-mode canary
 
+## Active revision: match-framed chapters (2026-09-22)
+
+The owner has selected a new WP-027 implementation direction after the failed
+one-call candidate-choice gate. This section is the active contract for the next
+shadow slice. The one-call contract and its immutable experiments below describe
+the implemented baseline and historical evidence; they do not authorize live
+Mistral selection or public R8 promotion. Version the new protocol and evidence
+instead of changing the meaning of existing strategic-turn records.
+
+**Match frame.** The server binds exactly one objective mode for the entire
+match. Collect is a seven-coin contest between player and Loomkeeper. In Defend
+the player protects the player chest and the Loomkeeper attacks; in Claim the
+player attacks the Loomkeeper chest and the Loomkeeper protects it. The
+authoritative elimination, capture, chest-loss, score and turn-16 rules remain
+those of R8. Neither a model-authored chapter nor a tactical candidate family
+can change the mode or either actor's role. Only the active mode's rules enter a
+model request.
+
+**Chapter boundary.** At the beginning of each Loomkeeper turn, compile one
+bounded chapter from the preceding committed Loomkeeper outcome (if any), the
+just-completed player turn and the current world. The first chapter has an
+explicit opening with no prior Loomkeeper outcome. If the match finished during
+the player turn, there is no model call. The chapter reports actor-attributed
+intents and observed effects separately: movement, jumps, relic use, terrain
+change, objective change, damage, and survival pressure only when witnessed.
+It uses the existing replay and R8 state/event lineage, not player-authored text
+or a second gameplay authority. A compact event/window compiler may summarize
+several exchanges, but it may not promote an unwitnessed motive or future route
+into a game fact.
+
+**Story port.** Mistral receives the immutable frame, the observed chapter, a
+small carried interpretation and the current world, without legal candidates,
+candidate IDs, fallback identity, ordering or simulated candidate outcomes. It
+returns a short closure and opener: cited observations, at most one tentative
+player-intent hypothesis, one mode-appropriate Loomkeeper intention, a bounded
+target/horizon, and a condition that would weaken that reading. Psychology is
+an interpretation of repeated behavior, never an identity, a world mutation or
+an assertion that an uncomputed player response will occur. Unknown remains a
+valid outcome. Server validation freezes the accepted intention before any
+candidate information is exposed to the model.
+
+**Action port.** The existing server-owned planner and complete-turn simulator
+prepare a diverse legal atlas independently of the story request. The frozen
+intention may condition coverage/ranking only through a trusted, versioned
+mapping; it cannot construct an operation or remove the deterministic fallback.
+Compare two finishes on the same frozen chapters and atlases: (A) a deterministic
+server matcher and (B) a short second Mistral response selecting only from the
+revealed legal candidates. The second response cannot revise the chapter or
+intention. The resolver still owns one-use capabilities, validation, execution,
+replay and fallback. Do not assume a second call improves choice: the completed
+compact-card diagnostic favored one-shot local choice and showed additional
+cost and latency for staged calls.
+
+**Continuity and recovery.** Store a compact, versioned chapter carrier and
+observed evidence beside the selected turn: frame identity, prior carrier,
+observation basis, validated intention, selected source, actual consequence and
+unresolved counterevidence. Commit the new carrier only when the turn's action
+has an observed result. Reconnect/replay must reconstruct the same chapter and
+selection without a provider request; late replies cannot mutate an already
+committed turn. Keep the currently deployed one-call replay policy intact until
+a new policy identity and migration/recovery tests prove the replacement.
+
+**Operational gate.** First verify the observation compiler and replay/resume
+without any provider call. Freeze representative chapters for all three modes,
+including opening, setback, apparent player-risk pattern, contrary evidence,
+unknown future support and terminal player turn. Run a shadow-only paired
+comparison of the two action ports with identical frozen input, legal atlas and
+rubric. Score evidence grounding, mode-role correctness, hypothesis revision,
+strategy-to-action fit, legal execution, fallback, total wait and provider cost.
+The previous five-probe gate remains failed and is not retroactively rescored.
+Only a demonstrated useful path advances to the private R8 Practice canary.
+The 60-second Mistral shadow allowance is experimental; a live wait limit and
+phone acceptance require an explicit contract decision after latency evidence.
+Standard R7 Practice, PEI-gated Daily, rewards and public R8 stay unchanged.
+
+The provider-free chapter implementation now has five pinned, server-produced
+opening/follow-up cases (`collect-opening`, `collect-followup`, `defend-opening`,
+`claim-opening`, `claim-followup`). `node --import tsx
+scripts/run-wp027-chapter-shadow.ts --fixture-only` checks their state,
+observation and atlas identities without a provider; `--local-fake` checks both
+response ports. The explicit `--provider=mistral` mode makes two high-reasoning
+requests per case with a 60-second limit on each request and no automatic retry,
+writing sanitized comparison data to ignored `test-results/`. A complete JSON
+response means only that the comparison is ready, **not** that the model improves
+strategy. Before canary promotion, extend the fixed cases to include setbacks,
+counterevidence and terminal player turns, inspect exact action consequences and
+latency/cost, and decide whether the second model call adds practical value.
+
 ## Product outcome
 
 Give the Loomkeeper a coherent multi-turn strategy across Defend, Collect and

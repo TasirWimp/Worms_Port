@@ -9,7 +9,7 @@ const SHARED_GAME_CONTRACT = [
     'A locally weaker action can be correct when it preserves or creates a stronger multi-turn route.'
 ] as const;
 
-const MODE_GAME_CONTRACT: Readonly<Record<StrategicDecisionBriefV10R8['objective']['mode'], string>> = Object.freeze({
+export const MODE_GAME_CONTRACT: Readonly<Record<StrategicDecisionBriefV10R8['objective']['mode'], string>> = Object.freeze({
     collect: 'Mode Collect: both actors compete for scattered coins. Either actor wins immediately by gaining an unbeatable coin lead or eliminating the opponent. When all coins resolve or the 16-turn limit is reached, higher score wins and equal score draws.',
     defend: "Mode Defend: the player defends the player's chest and the Loomkeeper attacks it. The Loomkeeper wins by touching the chest, dropping it out of the arena or eliminating the player. The player wins by eliminating the Loomkeeper or keeping the chest active through the 16-turn limit.",
     claim: "Mode Claim: the player attacks the Loomkeeper's chest and the Loomkeeper defends it. The player wins by touching the chest, dropping it out of the arena or eliminating the Loomkeeper. The Loomkeeper wins by eliminating the player or keeping the chest active through the 16-turn limit."

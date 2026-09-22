@@ -10,6 +10,15 @@ Phaser/Socket.IO stack.
 - Development policy: **Primary ownership with testing-only delegation**, effective 2026-09-10. The primary selects coverage and owns implementation/product corrections/direct review; one Terra/medium `worms_port_test_runner` executes and manages the tests. Other agents and WP-016 remain retired. See [Testing delegation](../process/development_workflow.md#testing-delegation). Main model/effort follow the user selection, with no repo pin. The selector and 22:00 Europe/Berlin daily suite remain in use.
 
 - Canonical package state: **WP-027 Strategic-Voyage Gemini Loomkeeper is in progress**.
+  The owner-selected next slice is the
+  [match-framed chapter revision](wp-027-gemini-objective-loomkeeper.md#active-revision-match-framed-chapters-2026-09-22):
+  Collect, Defend and Claim stay immutable whole-match frames; compile an
+  actor-attributed observed chapter before a candidate-hidden Mistral story
+  pass, freeze its validated intention, and compare deterministic versus
+  Mistral candidate matching in shadow on the same legal atlas. Version any
+  new replay policy; do not reinterpret the failed one-call artifacts. Live
+  selection, public R8 and Daily remain blocked until the revised shadow and
+  private Practice gates pass.
   WP-026 V10 R8 Objective Modes is complete.
   Standard Practice and PEI-gated Daily remain R7; the server-backed R8
   objective canary remains private. **WP-027 Waypoints 1 and 2 are implemented**:

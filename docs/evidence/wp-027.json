@@ -40,7 +40,9 @@
     "Run a separate preregistered micro-decision diagnostic on the five fixed worlds: explicit two-option evidence cards, one-shot and staged classifications/choices, frozen deterministic assembly and abstention guards, with no change to the failed release gate or gameplay authority.",
     "Version the diagnostic assembler so server-certified claim status and action policy remain guards while model citation identity is audit evidence, preserving the original artifact and scorer; run a no-retry compact-versus-crowded, one-shot-versus-staged follow-up with computed current-turn controls and unknown next-turn claims.",
     "After eight crowded-arm HTTP errors, preserve the first 50-call artifact and perform one separately versioned, ten-second-spaced recovery of only those eight unanswered exact request bodies, recording safe HTTP status and rate-limit evidence without rerunning completed calls.",
-    "Archive the recovery separately, compare the ten fixed compact/crowded arms across their different schedules, retain the original failed transport result and five-probe release failure, and select the simpler next shadow contract without granting live model authority."
+    "Archive the recovery separately, compare the ten fixed compact/crowded arms across their different schedules, retain the original failed transport result and five-probe release failure, and select the simpler next shadow contract without granting live model authority.",
+    "Owner-selected match-framed chapter revision: compile actor-attributed opening and exchange observations from the R8 replay and world, freeze a candidate-hidden, mode-correct interpretation and Loomkeeper intention, then compare deterministic and Mistral candidate matching on the same atlas in shadow.",
+    "Version chapter carrier, policy, recovery and replay evidence before any live authority; retain deterministic fallback and private R8 Practice until the revised shadow comparison and owner phone gate pass."
   ],
   "non_goals": [
     "No Gemini SDK, API key, network call, provider adapter, prompt execution, shadow mode or live model selection in Waypoint 1.",
@@ -388,6 +390,21 @@
       "command": "npm.cmd run verify:changes for archived recovery evidence",
       "status": "pass",
       "details": "Delegated zero-retry documentation selector by worms_port_test_runner passed work-package evidence 74 records at fingerprint da0f065a482344d3df6b80514c7ac1831df4c2e541dc1a6753fe0d5fb248621f. No build, browser, PostgreSQL, performance, fallback, provider, visual, daily or release phase was selected. Log .cache/wp027-transport-recovery-archive-selector.log."
+    },
+    {
+      "command": "WP-027 chapter r1 focused types, observation/story tests and provider-free five-case comparison",
+      "status": "pass",
+      "details": "Delegated zero-retry execution by worms_port_test_runner on the dcb1d98a change-selector input passed server/client types and 4/4 focused chapter tests. Five pinned server-produced source chapters across Collect, Defend and Claim produced 5/5 validated local-fake story/fit pairs, with no provider call or model cost. The runner reports comparisonReady=true and strategicGatePassed=null; its synthetic 1/5 candidate agreement is a plumbing check, not a strategy score. Logs .cache/wp027-chapter-shadow-r1-final-{types,focused,local-fake}.log; ignored artifact test-results/wp027-chapter-shadow.json."
+    },
+    {
+      "command": "first npm.cmd run verify:changes for chapter r1 at fingerprint 7b92e5b9",
+      "status": "fail",
+      "details": "The first zero-retry selected run passed work-package evidence (74), types, import boundary and supported Loomkeeper tests, then stopped at tooling 139/140. tests/tooling/verification-cadence.test.js expected the old supported Loomkeeper file inventory and omitted the two new chapter tests; this was a product test-inventory mismatch, not infrastructure. Build, browser, PostgreSQL and security phases did not run. Primary corrected the inventory without changing chapter behavior. Original log .cache/wp027-chapter-r1-selector.log; the failed run remains failed."
+    },
+    {
+      "command": "corrected chapter r1 selector at fingerprint 7cb610ba",
+      "status": "skipped",
+      "details": "Primary direct review found that previous Loomkeeper action/result prose still included cNN candidate identities after the selectedCandidateId field was hidden. The already-running corrected selector was stopped as stale after work packages (74), types, import boundary and Loomkeeper 62/62 passed; tooling was interrupted before a result, and build/browser/security/PostgreSQL did not run. No pass is claimed for the interrupted selector. Primary now strips and rejects candidate identity in the story projection and adds a real-format regression assertion. Log .cache/wp027-chapter-r1-selector-corrected.log."
     }
   ],
   "reviews": [
@@ -545,6 +562,11 @@
       "reviewer": "primary assistant direct recovered factorial interpretation",
       "status": "pass",
       "details": "Across the original and separately paced recovery, one-shot actions match 10/10 fixed expected actions, staged narrow choices 9/10, computed-turn controls 10/10, one-shot unknown-future statuses 10/10 and isolated unknown-future statuses 8/10. The two unsupported isolated certainties are both in the temporary-cost world; the compact setback staged choice is the other error. V2 would accept five non-abstaining preferences, require four abstentions and veto that wrong choice. Crowded cards used 212,463 captured input tokens versus compact 15,968 and USD 0.038749 versus USD 0.008514 in estimated cost, without better one-shot actions. Recovery headers report a 100,000-token/minute limit, making burst pressure plausible for the original eight unclassified errors but not proving their cause. Fixed cases, two request schedules and absent future-route witnesses preclude a general success-rate or live-play claim."
+    },
+    {
+      "reviewer": "primary assistant direct match-framed chapter r1 review",
+      "status": "pass",
+      "details": "The authoritative R8 coordinator derives an actor-attributed chapter only at a Loomkeeper turn boundary and keeps its observer outside gameplay authority. The story request contains one active mode and no legal candidate IDs or fallback identity. The server validates an evidence-cited tentative reading and mode-correct intention before either action port sees candidates; the fit stage receives only a neutralized two-or-three-card shortlist. Frozen source identities and focused replay reconstruction passed. Current five fixtures do not yet test setbacks, contrary evidence or a terminal player turn; the server matcher uses labeled geometric proxies for route postures. No real Mistral comparison or live model selection has occurred, so private canary promotion remains blocked."
     }
   ],
   "skipped_checks": [

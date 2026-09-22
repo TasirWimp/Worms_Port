@@ -48,6 +48,10 @@ import {
     executingStrategicTurnV10R8,
     type PendingStrategicTurnV10R8
 } from './loomkeeper-strategic-turn-v10-r8';
+import {
+    compileChapterObservationV10R8,
+    type ChapterObservationV10R8
+} from './loomkeeper-chapter-observation-v10-r8';
 
 export { V10_REPLAY_LIMITS } from '../../../shared/protocol-v10-live';
 export type { CoordinatorReplayV10 } from '../../../shared/protocol-v10-live';
@@ -85,6 +89,8 @@ export type LiveSimulationCoordinatorV10Options = {
     strategicAdapter?: StrategicDecisionAdapterV10R8;
     /** Sanitized provider-result observer; it receives no session or wallet identity. */
     onStrategicTurnObserved?: (record: StrategicTurnRecordV10R8) => void;
+    /** Read-only R8 chapter evidence for shadow evaluation; no gameplay authority. */
+    onChapterObserved?: (observation: ChapterObservationV10R8) => void;
     /** Provider-free replay input, accepted only by the internal verification kernel. */
     replayStrategicTurns?: readonly StrategicTurnRecordV10R8[];
     /** Exact terminal tick for an R8 replay that ends with an uncommitted provider call. */
@@ -106,6 +112,8 @@ type StrategicRuntimeV10R8 = {
     decisionStateHash?: string;
     executing?: Readonly<{ recordIndex: number; candidate: StrategicCandidateSummaryV10R8 }>;
     lastObserved?: SimulationStateV10R8;
+    lastObservedHash?: string;
+    observedChapter?: ChapterObservationV10R8;
     lastAction?: string;
     lastObservedResult?: string;
     planningWorkUs: number;
@@ -574,6 +582,7 @@ export class LiveSimulationCoordinatorV10 {
             if (isR8State(entry.state) && entry.strategic) {
                 entry.strategic.source = structuredClone(entry.state);
                 entry.strategic.recentChanges = this.recentStrategicChanges(entry, entry.state);
+                entry.strategic.observedChapter = this.observeChapter(entry, entry.state);
                 entry.strategic.request = undefined;
                 entry.strategic.ready = undefined;
                 entry.strategic.decisionStateHash = undefined;
@@ -771,6 +780,7 @@ export class LiveSimulationCoordinatorV10 {
         entry.bytes = bytes;
         entry.strategic.currentStrategy = committed.committedVoyage!;
         entry.strategic.lastObserved = structuredClone(entry.state);
+        entry.strategic.lastObservedHash = entry.stateHash;
         entry.strategic.lastAction = describeStrategicAction(entry.strategic.executing.candidate);
         entry.strategic.lastObservedResult = describeStrategicResult(entry.strategic.executing.candidate);
         entry.strategic.executing = undefined;
@@ -785,6 +795,40 @@ export class LiveSimulationCoordinatorV10 {
             previousAction: strategic.lastAction ?? null,
             observedResult: strategic.lastObservedResult ?? null
         });
+    }
+    private observeChapter(entry: Entry, current: SimulationStateV10R8): ChapterObservationV10R8 | undefined {
+        const strategic = entry.strategic;
+        if (!strategic || !('strategicTurns' in entry.replay)) return undefined;
+        const prior = entry.replay.strategicTurns.at(-1);
+        const before = strategic.lastObserved ?? createSimulationV10R8(
+            entry.replay.seed, entry.replay.calling, current.objective.objectiveMode
+        );
+        const beforeStateHash = strategic.lastObservedHash ?? entry.replay.initialStateHash;
+        try {
+            const observation = compileChapterObservationV10R8({
+                before,
+                after: current,
+                beforeStateHash,
+                afterStateHash: entry.stateHash,
+                replayRecords: entry.replay.records,
+                ...(prior?.status === 'committed' && prior.observedStateHash ? { priorLoomkeeper: {
+                    turn: prior.turn,
+                    selectedCandidateId: prior.selectedCandidateId,
+                    observedStateHash: prior.observedStateHash,
+                    action: strategic.lastAction ?? null,
+                    result: strategic.lastObservedResult ?? null
+                } } : {})
+            });
+            if (!this.replayVerificationKernel) {
+                try { this.options.onChapterObserved?.(structuredClone(observation)); } catch {
+                    // A shadow observer cannot interrupt the deterministic match.
+                }
+            }
+            return observation;
+        } catch {
+            // Observational failure leaves existing R8 selection and replay authority untouched.
+            return undefined;
+        }
     }
     private hasSelection(entry: Entry, turn: number): boolean { return 'chosenPlans' in entry.replay && entry.replay.chosenPlans.some(plan => plan.turn === turn); }
     private excludeMeasuredAuthorityWork(elapsedUs: number): void {
