@@ -711,7 +711,7 @@ the conservative fallback. The v6 gate therefore fails the 4/5 usefulness
 requirement despite solving v5's response-completion failure. Do not repeat
 this unchanged gate or promote Mistral to live authority on this evidence.
 
-Owner-authorized visual-grounding comparison: render only the current
+The owner-authorized visual-grounding comparison renders only the current
 server-owned 64x36 battlefield ASCII as a deterministic high-contrast PNG,
 with one cell per 16x16 pixels and distinct terrain, actor and objective
 markers. Send it as a base64 image part alongside the unchanged structured
@@ -720,11 +720,29 @@ image legend explains that the PNG repeats the coarse ASCII view; exact
 positions, support, outcomes and legality still come from the structured
 brief. Record the visual-input version separately from the unchanged shared
 `r4` prompt identity so Gemini and existing private replay remain unaffected.
-Do not render game art or candidate after-state images in this first comparison.
-Run the same five fixed probes once after local image and request validation;
-compare with v6 for validity, actual choice usefulness, explanation/fact
-agreement, latency, cost and fallback. A passing transport alone does not
-authorize live Mistral selection.
+It renders neither game art nor candidate after-state images. The locally
+inspected [battlefield preview](../evidence/wp-027-shadow-gate-mistral-small-4-v7/battlefield-preview.png)
+shows the full coarse arena and distinct actor/objective markers.
+
+The single deployed comparison ran on Render deployment
+`dep-dap3mk5g1s2s739aate0` from commit `717b226`. The
+[sanitized v7 artifact](../evidence/wp-027-shadow-gate-mistral-small-4-v7/result.json)
+has the same five fixture identities and thresholds as v6. It records 5/5
+valid responses, 1/5 useful choices, 5/5 responses before the 60-second
+provider deadline, zero provider fallbacks, zero authority violations,
+20,543 ms p95 total decision time and USD 0.010369 captured estimated cost.
+The only useful choice switched after route destruction. The temporary-cost
+reply again said it moved away, while selected `c01` improved objective
+distance by 100 and removed two terrain cells. The feasible-setback reply
+switched to immediate coin scoring instead of continuing the commitment.
+The future-option reply claimed route preservation but selected `c02`, which
+removed 32 terrain cells where a legal one-cell option existed. The
+information-gap reply selected immediate scoring without acknowledging the
+missing support fact. The image improved neither the fixed usefulness count
+nor explanation/fact agreement. It reduced this sample's p95 by 11,060 ms
+and captured estimated cost by USD 0.003133, but five non-randomized calls
+cannot establish an image-caused latency or cost improvement. Preserve this
+failed gate; do not repeat unchanged inputs or promote live authority.
 
 ### Phone Gate A - live accepted-provider Practice
 

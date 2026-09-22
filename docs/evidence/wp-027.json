@@ -300,6 +300,11 @@
       "command": "npm.cmd run check:types, focused Mistral tests, npm.cmd run verify:changes and npm.cmd run audit:housekeeping for visual battlefield input",
       "status": "pass",
       "details": "worms_port_test_runner on GPT-5.6 Terra/medium completed the zero-retry selected check at fingerprint 3d2ba31d446c2cdd102b29deb0101426cc98b3623343afe56e2f72de9bfdca62. Types and 9/9 focused image/request/transport tests passed. The selector passed 50 Loomkeeper, 25 protocol, 85 simulation, 10 relics, 53 combat, 6 Practice, 22 identity, 28 reward and 25 PEI tests, fresh build proof 92cc877e9701 / fc9288082e77, standard R7 built smoke, identity/reward security, bundle budgets and 19/19 Chromium phone journeys. PostgreSQL used its expected local prerequisite skip because WP014_TEST_DATABASE_URL is absent. Visual, performance, daily, release and retired legacy suites were not selected. Package-transition housekeeping passed with no manual reconciliation. No external Mistral call ran locally. Logs .cache/wp027-mistral-image-{types,focused,selector,housekeeping}.log."
+    },
+    {
+      "command": "single deployed five-probe Mistral Small 4 visual-grounding gate at commit 717b226",
+      "status": "fail",
+      "details": "Render deployment dep-dap3mk5g1s2s739aate0 succeeded and was live before exactly one five-probe command ran. The sanitized v7 artifact at docs/evidence/wp-027-shadow-gate-mistral-small-4-v7/result.json matches the deployed output SHA-256 F41B51690D36C347487E7B5D369A9F3979CDAD2735B2AECFE859700B896650B3. It has the exact same five fixture identities and thresholds as v6, plus visual-input identity v10-r8-ascii-image-r1. It records 5/5 valid, 1/5 useful, 5/5 before the 60-second provider deadline, zero provider fallbacks, zero authority violations, 20,543 ms p95 total decision time and USD 0.010369 captured estimated cost. Only the destroyed-route switch passed. Shadow execution remained deterministic. The unchanged gate will not be repeated."
     }
   ],
   "reviews": [
@@ -402,6 +407,11 @@
       "reviewer": "primary assistant direct Mistral visual-grounding implementation review",
       "status": "pass",
       "details": "A deterministic PNG encodes only the existing 64x36 server-produced ASCII projection; the image is presentation context rather than a new state or action surface. Direct review and pixel-level tests confirm stable, distinct terrain, actor and objective cells, correct dimensions and byte-deterministic output; visual inspection confirmed the entire arena is readable. The Mistral request retains the same structured brief, exact candidate after-facts, response schema, high reasoning and private deterministic fallback while adding one image plus a short legend. Gemini, live Practice/Daily, PEI and rewards are unchanged. The separate visual-input version makes the changed deployed comparison identifiable without changing the shared r4 prompt or replay contract."
+    },
+    {
+      "reviewer": "primary assistant direct deployed Mistral v7 visual-grounding review",
+      "status": "pass",
+      "details": "The failed gate is preserved as strategy evidence, not transport acceptance. It decreased fixed-probe usefulness from v6's 2/5 to 1/5 while all five requests remained valid and the deterministic fallback retained execution authority. The temporary-cost explanation claimed movement away although c01 improved objective distance by 100; the feasible-setback decision switched to immediate coin scoring; the future-option explanation claimed route preservation while c02 removed 32 terrain cells despite a legal one-cell option; the information-gap response ignored the missing support fact. The single useful reply switched after the player destroyed the route. Lower observed p95 and estimated cost are descriptive only because the five calls were not randomized or repeated. No live Mistral promotion follows."
     }
   ],
   "skipped_checks": [
@@ -423,6 +433,7 @@
     "Local fake and transport tests prove the authority and measurement harness, not deployed Gemini or Mistral latency or multi-turn strategy quality.",
     "The first three deployed Mistral artifacts did not reach inference. The fourth high-reasoning gate reached the model but returned no final decisions within the 2,048-token completion cap and missed the eight-second timing threshold. The owner-authorized 4,096-token high-reasoning gate also failed: three provider deadlines, two valid but strategically non-useful proposals, and 0/5 useful. Timed-out calls can incur actual cost without returned usage, so the recorded USD 0.002732 is only captured estimated cost.",
     "Mistral Small 4 remains shadow-only. It cannot receive execution authority unless a later explicit live-mode slice follows a passing fixed five-probe gate.",
-    "The deployed v6 60-second trial removed the provider-completion failure but failed the strategic usefulness gate at 2/5. Two replies successfully continued or switched a committed route; three still chose actions inconsistent with temporary cost, terrain preservation or explicit uncertainty. P95 total decision time was 31.603 seconds, which was measured but not capped in this Mistral trial; its acceptability for live mobile play remains unproven."
+    "The deployed v6 60-second trial removed the provider-completion failure but failed the strategic usefulness gate at 2/5. Two replies successfully continued or switched a committed route; three still chose actions inconsistent with temporary cost, terrain preservation or explicit uncertainty. P95 total decision time was 31.603 seconds, which was measured but not capped in this Mistral trial; its acceptability for live mobile play remains unproven.",
+    "The deployed v7 image trial failed the same strategic usefulness gate at 1/5 with identical fixture identities. A current-state map image alone did not resolve temporary-cost, commitment-continuation, terrain-preservation or information-gap mistakes. P95 total time was 20.543 seconds and five non-randomized calls do not establish a causal latency improvement. Live Mistral authority remains blocked; no unchanged rerun is planned."
   ]
 }

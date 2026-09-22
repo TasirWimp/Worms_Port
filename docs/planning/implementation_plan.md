@@ -134,12 +134,16 @@ Phaser/Socket.IO stack.
   shows correct continuation and route switching, but misses temporary cost,
   terrain preservation and explicit uncertainty. Preserve the failed gate;
   do not repeat unchanged inputs or grant live authority.
-  The next owner-authorized comparison adds one deterministic PNG rendering
-  of the current 64x36 ASCII battlefield to Mistral's shadow request, while
-  retaining the structured brief and candidate consequences. Its separate
-  visual-input identity leaves shared prompt r4, Gemini and replay unchanged.
-  Verify the image and request locally, then run the same five deployed probes
-  once and review both strategy quality and latency before any live promotion.
+  The owner-authorized visual comparison added one deterministic PNG rendering
+  of the current 64x36 ASCII battlefield to Mistral's shadow request while
+  retaining the structured brief and candidate consequences. The image and
+  request passed local checks; deployed commit `717b226` then ran the same
+  five fixture identities once. The
+  [v7 gate](../evidence/wp-027-shadow-gate-mistral-small-4-v7/result.json)
+  failed at 1/5 useful despite 5/5 valid replies and zero authority violations.
+  Its p95 was 20.543 seconds; the image did not resolve the observed strategy
+  misses. Shared prompt r4, Gemini and replay remain unchanged. Preserve the
+  failed artifact and do not repeat identical inputs.
   No live Gemini selection, public R8 promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
