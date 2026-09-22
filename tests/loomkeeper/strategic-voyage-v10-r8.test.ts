@@ -275,10 +275,16 @@ test('WP-027 detached candidate consequences match one authoritative R8 complete
         .sort((left, right) => right.immediate.terrainCellsRemoved - left.immediate.terrainCellsRemoved ||
             left.candidateId.localeCompare(right.candidateId))[0];
     const resolved = boundary.consume(boundary.resolve(projected.candidateId));
-    let state = advanceSimulationTicksV10R8(
-        fixture.state,
-        V10_R8_CANDIDATE_CAPS.planningTicks
-    ).state;
+    const actorPoint = (current: typeof fixture.state) => ({
+        x: Math.round(current.units[1].xFp / 256),
+        y: Math.round(current.units[1].yFp / 256)
+    });
+    const observed = [actorPoint(fixture.state)];
+    let state = fixture.state;
+    for (let tick = 0; tick < V10_R8_CANDIDATE_CAPS.planningTicks; tick += 1) {
+        state = advanceSimulationTicksV10R8(state, 1).state;
+        observed.push(actorPoint(state));
+    }
     const execution = new LoomkeeperExecutionV10R8(resolved.candidate, resolved.prefix, state);
     let fired = false;
     for (let ticks = V10_R8_CANDIDATE_CAPS.planningTicks;
@@ -295,10 +301,14 @@ test('WP-027 detached candidate consequences match one authoritative R8 complete
                 : applySimulationBarrierV10R8(state, operation.barrier);
             assert.equal(transition.accepted, true);
             if (operation.kind === 'intent' && operation.intent.type === 'fire') fired = true;
-            if (transition.mutated) state = transition.state;
+            if (transition.mutated) {
+                state = transition.state;
+                observed.push(actorPoint(state));
+            }
         }
         if (state.phase === 'finished' || state.turn !== fixture.state.turn) break;
         state = advanceSimulationTicksV10R8(state, 1).state;
+        observed.push(actorPoint(state));
     }
     const ownBefore = fixture.state.units[1];
     const ownAfter = state.units[1];
@@ -319,6 +329,21 @@ test('WP-027 detached candidate consequences match one authoritative R8 complete
         terminalWinner: state.winner
     });
     assert.equal(projected.action.shotFired, fired);
+    const path = boundary.pathAtlas().paths.find(item => item.candidateId === projected.candidateId)!;
+    assert.deepEqual(path.waypoints[0], actorPoint(fixture.state));
+    assert.deepEqual(path.waypoints.at(-1), actorPoint(state));
+    let observedIndex = 0;
+    for (const waypoint of path.waypoints) {
+        const next = observed.findIndex((point, index) => index >= observedIndex &&
+            point.x === waypoint.x && point.y === waypoint.y);
+        assert.ok(next >= 0, `waypoint ${JSON.stringify(waypoint)} was absent from authoritative execution`);
+        observedIndex = next;
+    }
+    if (path.shot) {
+        assert.equal(fired, true);
+        assert.deepEqual(path.shot.impact, { x: state.lastProjectile!.endX, y: state.lastProjectile!.endY });
+        assert.equal(path.shot.kind, state.lastProjectile!.impact);
+    }
     const beforeSurface = projectWorldSurfaceV10R8(fixture.state);
     const afterSurface = projectWorldSurfaceV10R8(state);
     assert.ok(projected.worldDelta.asciiRuns.length > 0);

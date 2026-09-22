@@ -9,9 +9,9 @@ import {
 } from '../../server/src/simulation/mistral-strategy-provider-v10-r8';
 import { loomkeeperStrategyRuntimeFromEnvironmentV10R8 } from '../../server/src/simulation/loomkeeper-strategy-config-v10-r8';
 import {
-    renderBattlefieldImageV10R8,
-    WP027_BATTLEFIELD_IMAGE_CELL_PX
-} from '../../server/src/simulation/loomkeeper-battlefield-image-v10-r8';
+    renderCandidatePathImageV10R8,
+    WP027_CANDIDATE_PATH_IMAGE_VERSION
+} from '../../server/src/simulation/loomkeeper-candidate-path-image-v10-r8';
 import {
     createWp027ProbeFixturesV10R8,
     evaluateWp027ProbeV10R8,
@@ -49,6 +49,7 @@ test('WP-027 Mistral transport sends one bounded structured request and records 
     const response = await provider.decide({
         promptVersion: 'v10-r8-strategic-prompt-r4',
         brief: fixture.boundary.brief,
+        pathAtlas: fixture.boundary.pathAtlas(),
         signal: new AbortController().signal,
         deadlineMs: 8_000
     });
@@ -71,11 +72,16 @@ test('WP-027 Mistral transport sends one bounded structured request and records 
     assert.doesNotMatch(body.messages[0].content, /Mode Defend:|Mode Claim:/);
     assert.deepEqual(body.messages[1].content.map((part: { type: string }) => part.type),
         ['text', 'image_url']);
-    const providerInput = JSON.parse(body.messages[1].content[0].text.split('\nThe attached image')[0]);
-    assert.equal(providerInput.brief.legalCandidates.some((candidate: Record<string, unknown>) =>
+    const providerInput = JSON.parse(body.messages[1].content[0].text);
+    assert.equal(providerInput.legalCandidates.some((candidate: Record<string, unknown>) =>
         'deterministicFallback' in candidate), false);
+    assert.equal('ascii' in providerInput.battlefield, false);
+    assert.equal(providerInput.legalCandidates.some((candidate: { after: Record<string, unknown> }) =>
+        'asciiRuns' in candidate.after), false);
+    assert.deepEqual(providerInput.legalCandidates.map((candidate: { path: { candidateId: string } }) =>
+        candidate.path.candidateId), fixture.boundary.brief.legalCandidates.map(candidate => candidate.candidateId));
     assert.equal(body.messages[1].content[1].image_url,
-        `data:image/png;base64,${renderBattlefieldImageV10R8(fixture.boundary.brief.battlefield).toString('base64')}`);
+        `data:image/png;base64,${renderCandidatePathImageV10R8(fixture.boundary.brief, fixture.boundary.pathAtlas()).toString('base64')}`);
     const schema = body.response_format.json_schema.schema;
     assert.equal(schema.type, 'object');
     assert.equal(schema.additionalProperties, false);
@@ -95,34 +101,24 @@ test('WP-027 Mistral transport sends one bounded structured request and records 
     });
 });
 
-test('WP-027 Mistral battlefield image faithfully renders the fixed ASCII grid', () => {
+test('WP-027 Mistral path sheet is deterministic, bounded and bound to legal candidate order', () => {
     const fixtures = createWp027ProbeFixturesV10R8();
-    const sample = fixtures[0].boundary.brief.battlefield;
-    const synthetic = { ...sample, ascii: sample.ascii.replace('.', '+').replace('#', '*') };
-    const colors = new Map<string, string>();
-    for (const battlefield of [...fixtures.map(fixture => fixture.boundary.brief.battlefield), synthetic]) {
-        const png = renderBattlefieldImageV10R8(battlefield);
+    assert.equal(WP027_CANDIDATE_PATH_IMAGE_VERSION, 'v10-r8-candidate-path-r1');
+    for (const fixture of fixtures) {
+        const brief = fixture.boundary.brief;
+        const atlas = fixture.boundary.pathAtlas();
+        const png = renderCandidatePathImageV10R8(brief, atlas);
         assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
-        assert.equal(png.readUInt32BE(16), 64 * WP027_BATTLEFIELD_IMAGE_CELL_PX);
-        assert.equal(png.readUInt32BE(20), 36 * WP027_BATTLEFIELD_IMAGE_CELL_PX);
-        assert.deepEqual(renderBattlefieldImageV10R8(battlefield), png);
+        assert.equal(png.readUInt32BE(16), 900);
+        assert.equal(png.readUInt32BE(20), 24 + atlas.paths.length * 48);
+        assert.deepEqual(renderCandidatePathImageV10R8(brief, atlas), png);
         const pixels = inflateSync(png.subarray(41, png.length - 16));
-        const imageWidth = 64 * WP027_BATTLEFIELD_IMAGE_CELL_PX;
-        const rows = battlefield.ascii.split('\n');
-        for (let y = 0; y < rows.length; y += 1) {
-            for (let x = 0; x < rows[y].length; x += 1) {
-                const symbol = rows[y][x];
-                const offset = (y * WP027_BATTLEFIELD_IMAGE_CELL_PX) * (imageWidth * 4 + 1) +
-                    1 + x * WP027_BATTLEFIELD_IMAGE_CELL_PX * 4;
-                const color = pixels.subarray(offset, offset + 4).toString('hex');
-                assert.equal(color.slice(6), 'ff');
-                if (colors.has(symbol)) assert.equal(color, colors.get(symbol));
-                else colors.set(symbol, color);
-            }
-        }
+        assert.equal(pixels.length, png.readUInt32BE(20) * (900 * 4 + 1));
+        assert.ok(atlas.paths.every(path => path.waypoints.length >= 1 && path.waypoints.length <= 16));
+        assert.throws(() => renderCandidatePathImageV10R8(brief, {
+            ...atlas, paths: [...atlas.paths].reverse()
+        }), /does not match/);
     }
-    assert.deepEqual([...colors.keys()].sort(), ['#', '*', '+', '.', 'C', 'L', 'P', 'o'].sort());
-    assert.equal(new Set(colors.values()).size, colors.size);
 });
 
 test('WP-027 Mistral transport accepts one text block alongside hidden reasoning', async () => {
@@ -150,6 +146,7 @@ test('WP-027 Mistral transport accepts one text block alongside hidden reasoning
     const response = await provider.decide({
         promptVersion: 'v10-r8-strategic-prompt-r4',
         brief: fixture.boundary.brief,
+        pathAtlas: fixture.boundary.pathAtlas(),
         signal: new AbortController().signal,
         deadlineMs: 8_000
     });
@@ -161,6 +158,7 @@ test('WP-027 Mistral transport exposes only bounded operational failure categori
     const request = {
         promptVersion: 'v10-r8-strategic-prompt-r4' as const,
         brief: fixture.boundary.brief,
+        pathAtlas: fixture.boundary.pathAtlas(),
         signal: new AbortController().signal,
         deadlineMs: 8_000
     };
@@ -237,7 +235,7 @@ test('WP-027 Mistral gets a full provider minute after preparation and accepts p
     const adapter = runtime.strategicAdapter!;
     const active = Array.from({ length: 3 }, (_, index) =>
         adapter.request(`wp027_mistral_parallel_${index}`, fixture.boundary.brief,
-            index === 0 ? 59_000 : 0));
+            index === 0 ? 59_000 : 0, fixture.boundary.pathAtlas()));
     for (let attempt = 0; attempt < 10 && requests.length < 3; attempt += 1) await Promise.resolve();
     assert.equal(requests.length, 3);
     assert.equal(adapter.diagnostics().active, 3);
@@ -262,7 +260,7 @@ test('WP-027 Mistral shadow has no process request budget or failure circuit', a
     const adapter = runtime.strategicAdapter!;
     for (let index = 0; index < 251; index += 1) {
         const result = await adapter.request(`wp027_mistral_uncapped_${index}`, fixture.boundary.brief,
-            index === 0 ? 59_000 : 0);
+            index === 0 ? 59_000 : 0, fixture.boundary.pathAtlas());
         assert.equal(result.outcome, 'provider_error');
     }
     assert.equal(calls, 251);

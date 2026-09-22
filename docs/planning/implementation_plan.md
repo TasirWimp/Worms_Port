@@ -144,6 +144,13 @@ Phaser/Socket.IO stack.
   Its p95 was 20.543 seconds; the image did not resolve the observed strategy
   misses. Shared prompt r4, Gemini and replay remain unchanged. Preserve the
   failed artifact and do not repeat identical inputs.
+  The current owner-authorized changed-input slice replaces the full-field
+  Mistral image with a candidate-path sheet derived from the already simulated
+  complete-turn alternatives. Ordered actor waypoints, shot impact and sparse
+  objective/terrain-change marks pair with a compact Mistral-only path brief;
+  the shared Gemini brief and private deterministic authority stay unchanged.
+  Verify path points against authoritative execution, inspect the sheet, then
+  run the same five shadow probes once and record their strategy quality.
   No live Gemini selection, public R8 promotion or reward-path change is authorized.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port

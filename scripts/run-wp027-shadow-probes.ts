@@ -4,9 +4,8 @@ import { performance } from 'node:perf_hooks';
 
 import { V10_R8_PROMPT_VERSION } from '../shared/strategic-voyage-v10-r8';
 import {
-    WP027_BATTLEFIELD_IMAGE_CELL_PX,
-    WP027_BATTLEFIELD_IMAGE_VERSION
-} from '../server/src/simulation/loomkeeper-battlefield-image-v10-r8';
+    WP027_CANDIDATE_PATH_IMAGE_VERSION
+} from '../server/src/simulation/loomkeeper-candidate-path-image-v10-r8';
 import { loomkeeperStrategyRuntimeFromEnvironmentV10R8 } from '../server/src/simulation/loomkeeper-strategy-config-v10-r8';
 import {
     createWp027ProbeScenarioV10R8,
@@ -38,7 +37,8 @@ async function main(): Promise<void> {
         const providerResult = await runtime.strategicAdapter.request(
             `wp027_shadow_probe_${String(index + 1).padStart(2, '0')}`,
             fixture.boundary.brief,
-            preparationMs
+            preparationMs,
+            fixture.boundary.pathAtlas()
         );
         results.push(evaluateWp027ProbeV10R8(fixture, providerResult, thresholds));
     }
@@ -48,10 +48,10 @@ async function main(): Promise<void> {
         modelId: runtime.strategicAdapter.provider.modelId,
         promptVersion: V10_R8_PROMPT_VERSION,
         visualInput: runtime.mode === 'mistral-shadow' ? Object.freeze({
-            version: WP027_BATTLEFIELD_IMAGE_VERSION,
-            source: 'brief.battlefield.ascii',
+            version: WP027_CANDIDATE_PATH_IMAGE_VERSION,
+            source: 'boundary.pathAtlas',
             mimeType: 'image/png',
-            cellPixels: WP027_BATTLEFIELD_IMAGE_CELL_PX
+            layout: 'one_lane_per_legal_candidate'
         }) : null,
         fixtures: fixtures.map(fixture => Object.freeze({
             id: fixture.id,

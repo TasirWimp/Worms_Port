@@ -178,6 +178,21 @@ export type StrategicCandidateSummaryV10R8 = Readonly<{
     }>;
 }>;
 
+export type StrategicPathPointV10R8 = Readonly<{ x: number; y: number }>;
+export type StrategicCandidatePathV10R8 = Readonly<{
+    candidateId: string;
+    waypoints: readonly StrategicPathPointV10R8[];
+    shot: Readonly<{
+        from: StrategicPathPointV10R8;
+        impact: StrategicPathPointV10R8;
+        kind: NonNullable<SimulationStateV9['lastProjectile']>['impact'];
+    }> | null;
+}>;
+export type StrategicPathAtlasV10R8 = Readonly<{
+    basisId: string;
+    paths: readonly StrategicCandidatePathV10R8[];
+}>;
+
 export type StrategicDecisionBriefV10R8 = Readonly<{
     revision: typeof V10_R8_BRIEF_REVISION;
     policyId: typeof V10_R8_STRATEGY_POLICY_ID;
@@ -216,6 +231,7 @@ type SimulatedCandidate = Readonly<{
     completed: CandidateOutcomeV10R8;
     deterministicFallback: boolean;
     summary: CandidateSummaryCoreV10R8;
+    path: Omit<StrategicCandidatePathV10R8, 'candidateId'>;
 }>;
 
 type CandidateObjectiveProjectionV10R8 = {
@@ -293,6 +309,18 @@ export class StrategicDecisionBoundaryV10R8 {
             item.candidateId === this.#deterministicFallbackCandidateId);
         if (!candidate) throw new Error('Strategic boundary deterministic fallback is unavailable.');
         return candidate;
+    }
+
+    /** Presentation-only traces from the same detached legal-candidate rollouts. */
+    pathAtlas(): StrategicPathAtlasV10R8 {
+        return Object.freeze({
+            basisId: this.brief.basisId,
+            paths: Object.freeze(this.brief.legalCandidates.map(candidate => {
+                const path = this.#candidates.get(candidate.candidateId)?.path;
+                if (!path) throw new Error('Strategic path is missing from the current candidate atlas.');
+                return Object.freeze({ candidateId: candidate.candidateId, ...path });
+            }))
+        });
     }
 
     resolve(candidateId: string): CandidateCapabilityV10R8 {
@@ -554,17 +582,29 @@ function simulateCandidate(
     const dynamics = dynamicsForV10(V10_R7_RULESET_ID);
     const sourceCombat = simulationV9ViewOfV10(simulationV10R7ViewOfR8(source));
     const rollout = DetachedSimulationRolloutV9.fromTrustedSource(sourceCombat, dynamics);
+    const positions: Array<StrategicPathPointV10R8 & { grounded: boolean }> = [];
+    const capturePosition = (state: SimulationStateV9): void => {
+        const actor = unit(state, 'loomkeeper');
+        const point = { x: worldUnits(actor.xFp), y: worldUnits(actor.yFp), grounded: actor.grounded };
+        const last = positions.at(-1);
+        if (!last || point.x !== last.x || point.y !== last.y || point.grounded !== last.grounded) {
+            positions.push(point);
+        }
+    };
+    capturePosition(sourceCombat);
     const objective = createObjectiveProjection(source.objective);
     for (let index = 0; index < PLANNING_TICKS; index += 1) {
         const before = rollout.state;
         const transition = advanceSimulationTicksV9DetachedRollout(rollout, 1, mechanics);
         if (!transition.mutated) return undefined;
+        capturePosition(rollout.state);
         advanceObjectiveProjection(objective, before, rollout.state);
         if (objective.terminalWinner) break;
     }
     const prefix = prefixFor(sourceCombat);
     const execution = new LoomkeeperExecutionV9(candidate, prefix, rollout.state);
     let fired = false;
+    let fireAt: StrategicPathPointV10R8 | null = null;
     let ticks = PLANNING_TICKS;
     while (!objective.terminalWinner && rollout.state.phase !== 'finished' &&
         rollout.state.turn === source.turn && ticks < MAX_ROLLOUT_TICKS) {
@@ -585,13 +625,21 @@ function simulateCandidate(
                 )
                 : applySimulationBarrierV9(state, operation.barrier, dynamics);
             if (!transition.accepted) return undefined;
-            if (operation.kind === 'intent' && operation.intent.type === 'fire') fired = true;
-            if (transition.mutated) rollout.replace(transition.state);
+            if (operation.kind === 'intent' && operation.intent.type === 'fire') {
+                fired = true;
+                const actor = unit(state, 'loomkeeper');
+                fireAt = Object.freeze({ x: worldUnits(actor.xFp), y: worldUnits(actor.yFp) });
+            }
+            if (transition.mutated) {
+                rollout.replace(transition.state);
+                capturePosition(rollout.state);
+            }
         }
         if (objective.terminalWinner || rollout.state.turn !== source.turn) break;
         const before = rollout.state;
         const transition = advanceSimulationTicksV9DetachedRollout(rollout, 1, mechanics);
         if (!transition.mutated) break;
+        capturePosition(rollout.state);
         advanceObjectiveProjection(objective, before, rollout.state);
         ticks += 1;
     }
@@ -608,13 +656,52 @@ function simulateCandidate(
         }),
         shotFired: fired
     });
+    const lastProjectile = fired ? completed.combat.lastProjectile : null;
+    const path = Object.freeze({
+        waypoints: selectPathWaypoints(positions, fireAt),
+        shot: lastProjectile && fireAt ? Object.freeze({
+            from: Object.freeze({ x: lastProjectile.startX, y: lastProjectile.startY }),
+            impact: Object.freeze({ x: lastProjectile.endX, y: lastProjectile.endY }),
+            kind: lastProjectile.impact
+        }) : null
+    });
     return Object.freeze({
         candidate: Object.freeze({ ...candidate }),
         prefix,
         completed,
         deterministicFallback,
-        summary: summarizeCandidate(source, completed, candidate, prefix, currentStrategy, beforeSurface)
+        summary: summarizeCandidate(source, completed, candidate, prefix, currentStrategy, beforeSurface),
+        path
     });
+}
+
+function selectPathWaypoints(
+    positions: readonly (StrategicPathPointV10R8 & { grounded: boolean })[],
+    fireAt: StrategicPathPointV10R8 | null
+): readonly StrategicPathPointV10R8[] {
+    if (!positions.length) throw new Error('Strategic candidate produced no path positions.');
+    const keep = new Set<number>([0, positions.length - 1]);
+    let apex = 0;
+    let minimumX = 0;
+    let maximumX = 0;
+    for (let index = 1; index < positions.length; index += 1) {
+        if (positions[index].y < positions[apex].y) apex = index;
+        if (positions[index].x < positions[minimumX].x) minimumX = index;
+        if (positions[index].x > positions[maximumX].x) maximumX = index;
+        if (!positions[index - 1].grounded && positions[index].grounded) keep.add(index);
+    }
+    keep.add(apex);
+    keep.add(minimumX);
+    keep.add(maximumX);
+    if (fireAt) {
+        const fireIndex = positions.findIndex(point => point.x === fireAt.x && point.y === fireAt.y);
+        if (fireIndex >= 0) keep.add(fireIndex);
+    }
+    for (let sample = 1; sample < 9; sample += 1) {
+        keep.add(Math.round(sample * (positions.length - 1) / 9));
+    }
+    const ordered = [...keep].sort((left, right) => left - right);
+    return Object.freeze(ordered.map(index => Object.freeze({ x: positions[index].x, y: positions[index].y })));
 }
 
 function summarizeCandidate(

@@ -695,7 +695,8 @@ export class LiveSimulationCoordinatorV10 {
         request = this.options.strategicAdapter.request(
             entry.replay.challengeId,
             boundary.brief,
-            preparationMs
+            preparationMs,
+            boundary.pathAtlas()
         ).then(providerResult => {
             const current = this.matches.get(entry.replay.challengeId);
             if (current !== entry || !entry.strategic || entry.strategic.request !== request) return;

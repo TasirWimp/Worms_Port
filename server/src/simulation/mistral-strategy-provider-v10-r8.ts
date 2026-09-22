@@ -2,7 +2,7 @@ import {
     StrategicProviderUsageV10R8Schema,
     type StrategicProviderUsageV10R8
 } from '../../../shared/strategic-voyage-v10-r8';
-import type { StrategicDecisionBriefV10R8 } from './loomkeeper-strategy-v10-r8';
+import type { StrategicDecisionBriefV10R8, StrategicPathAtlasV10R8 } from './loomkeeper-strategy-v10-r8';
 import type {
     StrategicDecisionProviderRequestV10R8,
     StrategicDecisionProviderResponseV10R8,
@@ -10,11 +10,11 @@ import type {
     StrategicProviderFailureDiagnosticV10R8
 } from './loomkeeper-strategy-provider-v10-r8';
 import { StrategicProviderOperationalErrorV10R8 } from './loomkeeper-strategy-provider-v10-r8';
-import { renderBattlefieldImageV10R8 } from './loomkeeper-battlefield-image-v10-r8';
+import { renderCandidatePathImageV10R8 } from './loomkeeper-candidate-path-image-v10-r8';
 import {
     strategicMistralResponseSchemaV10R8,
-    strategicSystemInstructionV10R8,
-    strategicUserPromptV10R8
+    strategicPathSystemInstructionV10R8,
+    strategicPathUserPromptV10R8
 } from './loomkeeper-strategy-prompt-v10-r8';
 
 export const WP027_MISTRAL_MODEL_ID = 'mistral-small-2603' as const;
@@ -49,7 +49,7 @@ export class MistralStrategicDecisionProviderV10R8 implements StrategicDecisionP
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${this.apiKey}`
                 },
-                body: JSON.stringify(mistralRequestBody(request.brief))
+                body: JSON.stringify(mistralRequestBody(request.brief, request.pathAtlas))
             });
         } catch (error) {
             throw new StrategicProviderOperationalErrorV10R8(
@@ -79,16 +79,20 @@ export class MistralStrategicDecisionProviderV10R8 implements StrategicDecisionP
     }
 }
 
-export function mistralRequestBody(brief: StrategicDecisionBriefV10R8): Readonly<Record<string, unknown>> {
-    const imageUrl = `data:image/png;base64,${renderBattlefieldImageV10R8(brief.battlefield).toString('base64')}`;
+export function mistralRequestBody(
+    brief: StrategicDecisionBriefV10R8,
+    pathAtlas: StrategicPathAtlasV10R8 | undefined
+): Readonly<Record<string, unknown>> {
+    if (!pathAtlas) throw new Error('Mistral requires the current simulated candidate paths.');
+    const imageUrl = `data:image/png;base64,${renderCandidatePathImageV10R8(brief, pathAtlas).toString('base64')}`;
     return Object.freeze({
         model: WP027_MISTRAL_MODEL_ID,
         messages: Object.freeze([
-            Object.freeze({ role: 'system', content: strategicSystemInstructionV10R8(brief) }),
+            Object.freeze({ role: 'system', content: strategicPathSystemInstructionV10R8(brief) }),
             Object.freeze({ role: 'user', content: Object.freeze([
                 Object.freeze({
                     type: 'text',
-                    text: `${strategicUserPromptV10R8(brief)}\nThe attached image is an exact colored rendering of the same coarse battlefield ASCII in the brief. Dark cells are solid terrain, brown + cells are partial terrain, blue P is the player, purple L is the Loomkeeper, gold o is a coin, green C is a chest, and red * is an overlap. Use structured positions and candidate after-facts for exact values.`
+                    text: strategicPathUserPromptV10R8(brief, pathAtlas)
                 }),
                 Object.freeze({ type: 'image_url', image_url: imageUrl })
             ]) })

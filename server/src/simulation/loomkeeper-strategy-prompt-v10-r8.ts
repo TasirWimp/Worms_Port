@@ -1,4 +1,4 @@
-import type { StrategicDecisionBriefV10R8 } from './loomkeeper-strategy-v10-r8';
+import type { StrategicDecisionBriefV10R8, StrategicPathAtlasV10R8 } from './loomkeeper-strategy-v10-r8';
 
 const SHARED_GAME_CONTRACT = [
     'NIMble Knots is a turn-based 2D tactics game on destructible terrain.',
@@ -36,6 +36,56 @@ export function strategicUserPromptV10R8(brief: StrategicDecisionBriefV10R8): st
     return JSON.stringify({
         instruction: 'Select the best current candidate for the multi-turn strategy, or abstain when the brief is insufficient.',
         brief
+    });
+}
+
+/** Mistral-only presentation: legal complete-turn paths and exact after-facts without the full pixel/ASCII field. */
+export function strategicPathSystemInstructionV10R8(brief: StrategicDecisionBriefV10R8): string {
+    return [...SHARED_GAME_CONTRACT, MODE_GAME_CONTRACT[brief.objective.mode],
+        'You choose one legal Loomkeeper candidate ID, or abstain when essential facts are missing.',
+        'The path sheet has one lane per candidate. Purple is the simulated actor path, black its start, orange the shot vector, red its impact and removed-terrain marks, blue the player, gold coins and green chests. Vertical displacement is magnified and clipped; structured coordinates are exact.',
+        'Each path waypoint is sampled from that candidate complete-turn rollout. Use the accompanying structured after-facts for exact values.',
+        'A one-turn path does not prove a future route remains reachable. Treat uncomputed future support and reachability as unknown.',
+        'Candidate identifiers and list positions carry no preference. Never invent an action, route, target or observation.',
+        'Prefer continuing a feasible committed strategy through its declared temporary cost. Repair or switch only when evidence invalidates it or protects a more valuable future option.',
+        'Keep reason and watchFor non-empty and at most 160 characters each. Your output is advice only; the server alone validates and executes.'
+    ].join('\n');
+}
+
+export function strategicPathUserPromptV10R8(
+    brief: StrategicDecisionBriefV10R8,
+    atlas: StrategicPathAtlasV10R8
+): string {
+    if (atlas.basisId !== brief.basisId || atlas.paths.length !== brief.legalCandidates.length ||
+        atlas.paths.some((path, index) => path.candidateId !== brief.legalCandidates[index].candidateId)) {
+        throw new Error('Strategic path atlas does not match the current brief.');
+    }
+    return JSON.stringify({
+        instruction: 'Select the best current candidate for the multi-turn strategy, or abstain when the supplied facts are insufficient.',
+        objective: brief.objective,
+        strategyVocabulary: brief.strategyVocabulary,
+        battlefield: {
+            actors: brief.battlefield.actors,
+            objects: brief.battlefield.objects,
+            relationships: brief.battlefield.relationships
+        },
+        currentStrategy: brief.currentStrategy,
+        recentChanges: brief.recentChanges,
+        legalCandidates: brief.legalCandidates.map((candidate, index) => ({
+            candidateId: candidate.candidateId,
+            families: candidate.families,
+            path: atlas.paths[index],
+            action: candidate.action,
+            immediate: candidate.immediate,
+            opportunities: candidate.opportunities,
+            risks: candidate.risks,
+            uncertainty: candidate.uncertainty,
+            after: {
+                actors: candidate.worldDelta.actorsAfter,
+                objects: candidate.worldDelta.objectsAfter,
+                committedTarget: candidate.worldDelta.committedTargetAfter
+            }
+        }))
     });
 }
 

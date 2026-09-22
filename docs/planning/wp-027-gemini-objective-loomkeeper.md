@@ -744,6 +744,23 @@ and captured estimated cost by USD 0.003133, but five non-randomized calls
 cannot establish an image-caused latency or cost improvement. Preserve this
 failed gate; do not repeat unchanged inputs or promote live authority.
 
+Owner-authorized candidate-path comparison: the v7 image repeated the whole
+before-state terrain but left each selectable turn's motion implicit. Capture
+small, ordered actor waypoints and exact projectile impact from the same
+detached complete-turn rollout that supplies the legal candidate after-facts.
+Render one sparse lane per candidate: start/end and motion path, shot vector,
+impact, active objective markers, player position and terrain-removal marks.
+Mistral receives the matching structured path atlas and exact candidate
+consequences. Remove the full battlefield ASCII and changed-row spans from
+its model-facing presentation while retaining structured actor/object facts,
+strategy, recent changes and the active mode contract. The server makes no
+uncomputed claim that a future route is preserved or reachable. First prove
+every displayed waypoint belongs to the authoritative rollout, inspect the
+rendered sheet, and run the same five deployed shadow probes once as a new
+input version. Gemini's original brief/prompt and all server execution/replay
+authority remain unchanged. A passing gate would still require a separate
+live Practice authorization.
+
 ### Phone Gate A - live accepted-provider Practice
 
 After a shadow provider passes and its live authority mode is explicitly added,

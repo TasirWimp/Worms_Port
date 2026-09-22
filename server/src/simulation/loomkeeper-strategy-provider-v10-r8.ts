@@ -3,7 +3,8 @@ import { performance } from 'node:perf_hooks';
 import {
     V10_R8_CANDIDATE_CAPS,
     parseStrategicDecisionV10R8,
-    type StrategicDecisionBriefV10R8
+    type StrategicDecisionBriefV10R8,
+    type StrategicPathAtlasV10R8
 } from './loomkeeper-strategy-v10-r8';
 import {
     StrategicProviderUsageV10R8Schema,
@@ -19,6 +20,7 @@ export const V10_R8_MISTRAL_PROVIDER_DEADLINE_MS = 60_000;
 export type StrategicDecisionProviderRequestV10R8 = Readonly<{
     promptVersion: typeof V10_R8_PROMPT_VERSION;
     brief: StrategicDecisionBriefV10R8;
+    pathAtlas?: StrategicPathAtlasV10R8;
     signal: AbortSignal;
     deadlineMs: number;
 }>;
@@ -117,7 +119,8 @@ export class StrategicDecisionAdapterV10R8 {
     public async request(
         matchId: string,
         brief: StrategicDecisionBriefV10R8,
-        preparationMs: number
+        preparationMs: number,
+        pathAtlas?: StrategicPathAtlasV10R8
     ): Promise<StrategicProviderResultV10R8> {
         if (!/^[A-Za-z0-9_-]{16,64}$/.test(matchId)) throw new Error('Invalid strategic match identity.');
         const preparation = nonNegativeInteger(Math.round(preparationMs));
@@ -140,6 +143,7 @@ export class StrategicDecisionAdapterV10R8 {
         const providerResult = Promise.resolve().then(() => this.provider.decide(Object.freeze({
             promptVersion: V10_R8_PROMPT_VERSION,
             brief,
+            ...(this.provider.mode === 'mistral_shadow' && pathAtlas ? { pathAtlas } : {}),
             signal: controller.signal,
             deadlineMs: remainingMs
         }))).then(value => ({ value }), error => ({ error: providerFailureDiagnostic(error) }));
