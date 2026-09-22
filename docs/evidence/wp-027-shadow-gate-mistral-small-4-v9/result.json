@@ -1,0 +1,266 @@
+{
+  "generatedAt": "2026-09-22T11:05:12.291Z",
+  "modelId": "mistral-small-2603",
+  "promptVersion": "v10-r8-strategic-prompt-r4",
+  "probeRubricVersion": "v10-r8-probe-r2",
+  "visualInput": {
+    "version": "v10-r8-candidate-path-r1",
+    "source": "boundary.pathAtlas",
+    "mimeType": "image/png",
+    "layout": "one_lane_per_legal_candidate"
+  },
+  "fixtures": [
+    {
+      "id": "temporary-cost-preparation",
+      "basisId": "4e6233bcde3941541120c82d8cd3f5cffe7aa113cb328e1b97433209e09210b2",
+      "stateHash": "40cddabc0aeda4338c88518f4bbbc7fe8c2b093b3a62450cd575065a94718e9a",
+      "briefHash": "9ff109e2ebd4408896eaaef28cf11e220299c38585ea6f31cd23e6e565d51dd9",
+      "candidateAtlasHash": "9031122306d0705ee9ecfcf8c6e38551871e5c27aa90dc71c1140fb5195b513d",
+      "reviewQuestion": "Does the proposal accept an explicit immediate cost for a later objective opportunity?"
+    },
+    {
+      "id": "continue-through-setback",
+      "basisId": "de1519291c628e9c25bd869a47f26e70a03e5b072ee62e2c161f5b671e27c04e",
+      "stateHash": "40cddabc0aeda4338c88518f4bbbc7fe8c2b093b3a62450cd575065a94718e9a",
+      "briefHash": "e60c65a1f5f297ac07265e7f9cdf4b046bdc16c0701806d66b0e834b73e4c167",
+      "candidateAtlasHash": "866ef454351e2b22929b4ed89fbd064f275c0a175b597ed00204098d774ec601",
+      "reviewQuestion": "Does the proposal continue the still-feasible committed plan through its declared setback?"
+    },
+    {
+      "id": "repair-destroyed-route",
+      "basisId": "07a4e53e6d33724f2dd05c0bba69efe72f9d3b57b7243d0af692f5c4513faf61",
+      "stateHash": "3de445b3ceb5acd4401684bde628958fac18a503ddca4e6c52ef046f8a341bdb",
+      "briefHash": "9060afb87bb3a351e265c6c233cefd40887b86ceba8350b3ef122b5446210448",
+      "candidateAtlasHash": "6912ebaa59faa50fc9aeaf4740c62f3a691130f2829487d7969833c1bebcfa78",
+      "reviewQuestion": "Does the proposal repair or switch after the player invalidated a necessary route?"
+    },
+    {
+      "id": "preserve-future-option",
+      "basisId": "cd12f36d882cd5dc109236e34200e1879ad2556942da7063962ca2d1fd8c834e",
+      "stateHash": "3799d094bd570c0d300e74f43101c344abdb8e09c8c429ac27a69e7eddecda7f",
+      "briefHash": "c0d3edf74355360f71de0f676f968fc436baf24cfc09255c601c052082edb573",
+      "candidateAtlasHash": "2c8e6d15e964bbb9c67f231cb9243641a1bc2c39330f73c86df7be875f510586",
+      "reviewQuestion": "Does the proposal preserve the witnessed upper ledge?"
+    },
+    {
+      "id": "acknowledge-information-gap",
+      "basisId": "a26b60517c802ecfb87f8faaa396de7038ed483de8a8d88b634d29df4b3167b9",
+      "stateHash": "b6d02a0f78ab81ca8300c657da062ba0120da64e67fad66052cd25ffe26389f2",
+      "briefHash": "62cb026f74e8405152b558e56878655755b61a29fa925db3789b3de10c4ef0eb",
+      "candidateAtlasHash": "3aa03612ddc4c2736dc69cab8ce7193d5b98afd1322744bc6f54cfecdb421a0a",
+      "reviewQuestion": "Does the proposal abstain or choose conservatively while explicitly acknowledging the missing fact?"
+    }
+  ],
+  "thresholds": {
+    "calls": 5,
+    "minimumValid": 4,
+    "minimumUseful": 4,
+    "minimumOnTime": 4,
+    "maximumProviderFallbacks": 1,
+    "maximumAuthorityViolations": 0,
+    "maximumP95Ms": null,
+    "maximumCostUsdMicros": null
+  },
+  "results": [
+    {
+      "id": "temporary-cost-preparation",
+      "valid": true,
+      "useful": false,
+      "onTime": true,
+      "authoritySafe": true,
+      "operationalOutcome": "selected",
+      "diagnostic": null,
+      "proposalCandidateId": "c09",
+      "deterministicCandidateId": "c11",
+      "strategy": "continue",
+      "proposalTargetId": "coin-1",
+      "proposalMilestoneId": "preserve-route",
+      "committedTargetDistance": {
+        "targetId": "coin-1",
+        "before": 500,
+        "after": 461
+      },
+      "routeSupportWitness": null,
+      "reason": "Moves toward committed coin-1 while reducing player stitching, supporting preserve-route strategy.",
+      "watchFor": "Player may alter terrain or routes in response, affecting future access to coin-1.",
+      "timingMs": {
+        "preparation": 3605,
+        "provider": 10122,
+        "validation": 1,
+        "total": 13728
+      },
+      "usage": {
+        "inputTokens": 8191,
+        "outputTokens": 1752,
+        "thinkingTokens": 0,
+        "totalTokens": 9943,
+        "estimatedCostUsdMicros": 2280
+      },
+      "reviewQuestion": "Does the proposal accept an explicit immediate cost for a later objective opportunity?"
+    },
+    {
+      "id": "continue-through-setback",
+      "valid": true,
+      "useful": true,
+      "onTime": true,
+      "authoritySafe": true,
+      "operationalOutcome": "selected",
+      "diagnostic": null,
+      "proposalCandidateId": "c04",
+      "deterministicCandidateId": "c10",
+      "strategy": "continue",
+      "proposalTargetId": "coin-1",
+      "proposalMilestoneId": "approach-objective",
+      "committedTargetDistance": {
+        "targetId": "coin-1",
+        "before": 500,
+        "after": 461
+      },
+      "routeSupportWitness": null,
+      "reason": "Damages player while advancing toward coin-1, creating tactical pressure",
+      "watchFor": "Player may retaliate or destroy critical terrain to block routes",
+      "timingMs": {
+        "preparation": 2660,
+        "provider": 13147,
+        "validation": 0,
+        "total": 15807
+      },
+      "usage": {
+        "inputTokens": 8160,
+        "outputTokens": 1951,
+        "thinkingTokens": 0,
+        "totalTokens": 10111,
+        "estimatedCostUsdMicros": 2395
+      },
+      "reviewQuestion": "Does the proposal continue the still-feasible committed plan through its declared setback?"
+    },
+    {
+      "id": "repair-destroyed-route",
+      "valid": true,
+      "useful": false,
+      "onTime": true,
+      "authoritySafe": true,
+      "operationalOutcome": "selected",
+      "diagnostic": null,
+      "proposalCandidateId": "c07",
+      "deterministicCandidateId": "c07",
+      "strategy": "refine",
+      "proposalTargetId": "loomkeeper-chest",
+      "proposalMilestoneId": "create-route",
+      "committedTargetDistance": {
+        "targetId": "loomkeeper-chest",
+        "before": 264,
+        "after": 13
+      },
+      "routeSupportWitness": null,
+      "reason": "Player destroyed prior route; moving to (1621,244) creates a new direct route to the chest while maximizing terrain control.",
+      "watchFor": "Player may target new Loomkeeper position or block the chest landing before next turn.",
+      "timingMs": {
+        "preparation": 2181,
+        "provider": 6504,
+        "validation": 0,
+        "total": 8685
+      },
+      "usage": {
+        "inputTokens": 7853,
+        "outputTokens": 901,
+        "thinkingTokens": 0,
+        "totalTokens": 8754,
+        "estimatedCostUsdMicros": 1719
+      },
+      "reviewQuestion": "Does the proposal repair or switch after the player invalidated a necessary route?"
+    },
+    {
+      "id": "preserve-future-option",
+      "valid": true,
+      "useful": true,
+      "onTime": true,
+      "authoritySafe": true,
+      "operationalOutcome": "selected",
+      "diagnostic": null,
+      "proposalCandidateId": "c03",
+      "deterministicCandidateId": "c07",
+      "strategy": "continue",
+      "proposalTargetId": "player-chest",
+      "proposalMilestoneId": "preserve-route",
+      "committedTargetDistance": {
+        "targetId": "player-chest",
+        "before": 1080,
+        "after": 1041
+      },
+      "routeSupportWitness": {
+        "id": "witnessed-upper-ledge",
+        "xMin": 120,
+        "xMax": 134,
+        "yMin": 26,
+        "yMax": 27,
+        "beforeSolidCells": 30,
+        "afterSolidCells": 30,
+        "removedCells": 0
+      },
+      "reason": "Moves toward chest with minimal terrain impact, preserving route",
+      "watchFor": "Player may alter terrain or create counter-routes",
+      "timingMs": {
+        "preparation": 2068,
+        "provider": 10912,
+        "validation": 0,
+        "total": 12980
+      },
+      "usage": {
+        "inputTokens": 7121,
+        "outputTokens": 1970,
+        "thinkingTokens": 0,
+        "totalTokens": 9091,
+        "estimatedCostUsdMicros": 2251
+      },
+      "reviewQuestion": "Does the proposal preserve the witnessed upper ledge?"
+    },
+    {
+      "id": "acknowledge-information-gap",
+      "valid": true,
+      "useful": false,
+      "onTime": true,
+      "authoritySafe": true,
+      "operationalOutcome": "selected",
+      "diagnostic": null,
+      "proposalCandidateId": "c04",
+      "deterministicCandidateId": "c03",
+      "strategy": "continue",
+      "proposalTargetId": "coin-1",
+      "proposalMilestoneId": "create-route",
+      "committedTargetDistance": {
+        "targetId": "coin-1",
+        "before": 500,
+        "after": 633
+      },
+      "routeSupportWitness": null,
+      "reason": "Collects coin-3 for +1 score, advances toward coin-1, maintains stitching.",
+      "watchFor": "Player response may alter routes or contest coin-1.",
+      "timingMs": {
+        "preparation": 2254,
+        "provider": 19703,
+        "validation": 0,
+        "total": 21957
+      },
+      "usage": {
+        "inputTokens": 8137,
+        "outputTokens": 3290,
+        "thinkingTokens": 0,
+        "totalTokens": 11427,
+        "estimatedCostUsdMicros": 3195
+      },
+      "reviewQuestion": "Does the proposal abstain or choose conservatively while explicitly acknowledging the missing fact?"
+    }
+  ],
+  "totals": {
+    "calls": 5,
+    "valid": 5,
+    "useful": 2,
+    "onTime": 5,
+    "providerFallbacks": 0,
+    "authorityViolations": 0,
+    "p95Ms": 21957,
+    "estimatedCostUsdMicros": 11840
+  },
+  "passed": false
+}

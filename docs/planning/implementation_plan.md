@@ -171,6 +171,21 @@ Phaser/Socket.IO stack.
   minimum crater size. This is a support witness, not full route reachability.
   Existing v6-v8 artifact scores remain frozen under their old rubric; any
   new gate must identify the changed rubric and be reviewed separately.
+  The corrected rubric was committed as `fd89ed0`, deployed to Render, and
+  tested once with the same five probe identities. The
+  [v9 artifact](../evidence/wp-027-shadow-gate-mistral-small-4-v9/result.json)
+  records 5/5 valid and on-time replies, zero fallbacks or authority
+  violations, 21,957 ms p95, and USD 0.011840 captured estimated cost, but
+  only 2/5 useful decisions against the unchanged 4/5 threshold. It passes
+  continuation and preservation of the exact upper-ledge witness. The
+  temporary-cost choice instead moves closer to the committed coin; the
+  destroyed-route choice describes a new route but labels its strategy
+  `refine` rather than `repair` or `switch`; and the information-gap choice
+  omits uncertainty while claiming progress toward a coin it ends farther
+  from. This failed gate is not a calibrated multi-turn success rate and must
+  not be repeated unchanged. Live Mistral authority and public R8 promotion
+  remain blocked. Render was returned to `LOOMKEEPER_PROVIDER=deterministic`
+  after the gate, per the shadow-run instructions in `README.md`.
 
 - Verification infrastructure: the isolated change-selection/build-reuse port
   from `da1e7a9` follows the owner-requested 22:00 Berlin daily/full cadence.
