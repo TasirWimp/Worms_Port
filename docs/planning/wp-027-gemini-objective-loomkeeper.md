@@ -1,6 +1,6 @@
 # WP-027 Strategic-Voyage Model Loomkeeper
 
-Status: **in progress; private chapter Practice canary pending deployment and owner phone gate**
+Status: **in progress; private chapter Practice canary live, pending owner phone gate**
 Required predecessor: completed WP-026 R8 objective-mode canary
 
 ## Active revision: match-framed chapters (2026-09-22)
@@ -1244,6 +1244,12 @@ The local fake HTTP 503 and ignored-abort deadline tests cover controlled
 failure without changing a production credential for phone testing. Inspect the
 sanitized `[wp027-chapter-canary]` log lines for selected/fallback source and
 whole-window timing; do not include credentials or wallet identifiers.
+
+The game service deployed exact commit `b7c7c6a21e717ad6603956fbbbc61c230c83bdaa`
+as Render deploy `dep-dapgbl5bedkc738p9s70`, then applied
+`LOOMKEEPER_PROVIDER=mistral-chapter-practice` in environment deploy
+`dep-dapgcdoae00c73d1c32g`. Both reached Live; the private entry returned
+HTTP 200. The provider has not yet been exercised through a real phone match.
 
 Live Practice establishes realized multi-turn behavior. Shadow evidence cannot
 substitute for this gate.

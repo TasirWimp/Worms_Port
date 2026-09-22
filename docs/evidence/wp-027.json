@@ -466,6 +466,11 @@
       "command": "chapter Practice canary focused types, integration and final npm.cmd run verify:changes",
       "status": "pass",
       "details": "Testing-only worms_port_test_runner on GPT-5.6 Terra/medium passed the focused three-mode chapter authorization, replay/resume, HTTP 503 fallback and ignored-abort deadline checks (3/3 final focused test; 67/67 Loomkeeper suite), plus types. One zero-retry final selector passed at fingerprint a12fdad0420b6054291fb10ce79f7c629e606db5da4fe655b9feb597d5151016 on HEAD fe36ae5 with the implementation dirty. Work packages 74, import/types, supported units Loomkeeper 67, protocol 25, simulation 85, relics 10, combat 53, Practice 6, identity 22, reward 28 and PEI 25 passed. Fresh build proof 93f7da75c5a1 / 3bc9f0a3426a passed current R7 built smoke, identity/reward security and bundle limits (1,435,401/1,500,000 initial JavaScript bytes; 419,090/430,000 gzip bytes). Maintained Chromium phone journeys passed 19/19. PostgreSQL had its expected local prerequisite skip because WP014_TEST_DATABASE_URL is absent. No retry, failure, infrastructure recovery, provider call or physical phone test. The later documentation/evidence wording update does not change product inputs; validate it separately without repeating the suite. Logs .cache/wp027-chapter-canary-final-{dry-run,selector}.log and .cache/wp027-chapter-canary-timeout-focused.log."
+    },
+    {
+      "command": "post-selector documentation validation and exact Render private-canary deployment",
+      "status": "pass",
+      "details": "The testing-only worker passed a documentation-only selector dry run at fingerprint bdbbab1b2cdf925001c51604d6c2ff435fb2cf55c12eb4b924310af5771e2deb, diff check and work-package evidence (74 records) after the product selector; unchanged product phases were not rerun. The primary committed/pushed b7c7c6a21e717ad6603956fbbbc61c230c83bdaa and manually deployed that exact commit as dep-dapgbl5bedkc738p9s70. Render build/compliance/health passed and reported Live. The only environment edit set LOOMKEEPER_PROVIDER from deterministic to mistral-chapter-practice; environment deploy dep-dapgcdoae00c73d1c32g also reported Live on the same commit, and the private entry responded HTTP 200. No phone match or real live chapter request has run yet."
     }
   ],
   "reviews": [

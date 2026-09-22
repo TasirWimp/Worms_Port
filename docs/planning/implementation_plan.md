@@ -22,8 +22,9 @@ Phaser/Socket.IO stack.
   server matcher after one strictly validated story; the prior one-call gate
   and r1 chapter validation failure remain immutable history. The new chapter
   replay policy, bounded 15-second Practice decision window, provider-free
-  reconstruction, fallback and all three modes have passed the selected local
-  verification. Public R8 and Daily remain blocked until the private phone gate
+  reconstruction, fallback and all three modes passed selected local
+  verification. Commit `b7c7c6a` is deployed live with the chapter provider
+  enabled only for private R8 Practice. Public R8 and Daily remain blocked until the private phone gate
   and later release acceptance.
   WP-026 V10 R8 Objective Modes is complete.
   Standard Practice and PEI-gated Daily remain R7; the server-backed R8
